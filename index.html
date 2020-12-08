@@ -13,6 +13,8 @@
 
 	<body>
 		<script src="js/markovChain.js"></script>
+		<script src="js/canvasUtils.js"></script>
+		<script src="js/canvasController.js"></script>
 
 
 		<button id="testbtn" title="Test" onclick="markovChain.runTests();">Test</button>
@@ -36,7 +38,7 @@
           		<button class="delegate" title="Hidden Markov Model">Hidden Markov Model</button>
 			</h1>
 			<div id="markovCanvas">
-				<canvas id="canvas" width="1800" height="1000">
+				<canvas id="markovCanvas" width="1800" height="1000">
 					<span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
 				</canvas>
 				<div id="results">

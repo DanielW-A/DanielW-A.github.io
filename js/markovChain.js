@@ -15,7 +15,10 @@ function markovChain(){
     };
 }
 
-markovChain.prototype.addState = function(state,output,init) {
+markovChain.prototype.addState = function(x,y,state,output,init) {
+    if (state == null){
+        state = x + "," + y;
+    }
     if (output == null){
         output = state;
     }
@@ -24,8 +27,11 @@ markovChain.prototype.addState = function(state,output,init) {
         this.transitions[state] = {};
         this.initialProbabilityDistribution[state] = 0;
     }
-    this.states[state] = output;
-    console.log("Add" + state + " with var " + output);
+    this.states[state] = {
+        'x': x,
+        'y': y,
+        'emmision' : output };
+    
     if(init != null){
         this.initialProbabilityDistribution[state] = init;
     }
@@ -33,14 +39,14 @@ markovChain.prototype.addState = function(state,output,init) {
 }
 
 markovChain.prototype.setInitialProbability = function(state,probability){
-    if (!this.states[state]) {this.addState(state,null);}
+    if (!this.states[state]) {this.addState(0,0,state,null);}
 
     this.initialProbabilityDistribution[state] = probability;
 }
 
 markovChain.prototype.addTransistion = function(stateA,stateB,probability) {
-    if (!this.states[stateA]) {this.addState(stateA,null);}
-    if (!this.states[stateB]) {this.addState(stateB,null);}
+    if (!this.states[stateA]) {this.addState(0,0,stateA,null);}
+    if (!this.states[stateB]) {this.addState(0,0,stateB,null);}
 
     if (!this.transitions[stateA]) {
         this.transitions[stateA] = {};
@@ -94,7 +100,7 @@ markovChain.prototype.clearCache = function(){
 
 markovChain.prototype.saveState = function(state){
     this.processor.currentState = state;
-    this.processor.outPut += this.states[state];
+    this.processor.outPut += this.states[state].emmision;
     this.processor.outPutLength ++;
 }
 
@@ -106,7 +112,6 @@ markovChain.prototype.getStartState = function(){
         probSum += initProb[i];
         if (probSum > check){
             this.saveState(i);
-            console.log( this.states[i]);
             return;
         }
     }
@@ -148,14 +153,10 @@ markovChain.runTests = function() {
 
     console.log("Markov Chain Created");
 
-    myMC.addState("s1",null,null);
-    console.log(myMC.states);
-    myMC.addState("s2","2",null);
-    console.log(myMC.states);
-    myMC.addState("s3","da",0.2);
-    console.log(myMC.states);
+    myMC.addState(0,1,"s1",null,null);
+    myMC.addState(0,1,"s2","2",null);
+    myMC.addState(0,1,"s3","da",0.2);
 
-    console.log(myMC.validCheck());
     var states2 = {};
     states2 = myMC.states;
 
@@ -181,9 +182,9 @@ markovChain.runTests = function() {
   
 
     
-    myMC.addState("s1","1");
-    myMC.addState("s2","2");
-    myMC.addState("s3","3");
+    myMC.addState(0,1,"s1","1");
+    myMC.addState(0,1,"s2","2");
+    myMC.addState(0,1,"s3","3");
 
     
     myMC.addTransistion("s3","s3",0.1);
