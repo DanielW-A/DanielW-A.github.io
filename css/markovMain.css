@@ -1,0 +1,19 @@
+body {
+	text-align: center;
+	background: #DFDFDF;
+	margin: 0 30px 100px 30px;
+	font: 14px/18px 'Lucida Grande', 'Segoe UI', sans-serif;
+}
+
+h1 {
+	font: bold italic 50px Georgia, serif;
+}
+
+canvas {
+	display: block;
+	max-width: 2000px;
+	background: white;
+	border-radius: 20px;
+	-moz-border-radius: 20px;
+	margin: 10px auto;
+}
