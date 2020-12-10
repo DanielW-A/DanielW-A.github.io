@@ -1,4 +1,71 @@
+const LinkType = {
+    DIRECT: 'direct',
+    ARC: 'arc',
+    SELF: 'self'
+}
+class TempLink{ // this will be the more adaptive link when being drawn.
+	constructor(node,mousePos){
+		this.startNode = node;
+		this.mousePos = mousePos;
+		this.endNode = null;
+		this.type = null;
+		this.x = null;
+		this.y = null;
+		refresh(mousePos);
+	}
 
+	refresh(mousePos){
+		this.endNode = model.getElementAt(mousePos);
+		if (this.startNode != this.endNode){
+			this.type = LinkType.DIRECT;
+		} else {
+			this.type = LinkType.SELF;
+		}
+		this.x = mousePos.x;
+		this.y = mousePos.y;
+	}
+
+	draw = function(c){
+		var startX,startY,endX,endY,startAngle,endAngle;
+		if(this.type === LinkType.DIRECT){
+			if (this.endNode == null){
+				endX = this.x;
+				endY = this.y;
+			} else {
+				this.x = this.endNode.x;
+				this.y = this.endNode.y;
+				endAngle = (this.startNode.y-this.y == 0)? Math.PI/2 :
+						Math.atan((this.startNode.x-this.x)/(this.startNode.y-this.y));
+				
+				endX = (this.startNode.y < this.y)? -(nodeRadius*Math.sin(endAngle)) : nodeRadius*Math.sin(endAngle);
+				endX += this.endNode.x;
+				endY = (this.startNode.y < this.y)? -(nodeRadius*Math.cos(endAngle)) : nodeRadius*Math.cos(endAngle);
+				endY += this.endNode.y;
+			}
+
+			startAngle = (this.startNode.x-this.x == 0)? Math.PI/2 : 
+						Math.atan((this.startNode.y-this.y)/(this.startNode.x-this.x));
+						
+			startX = (this.startNode.x > this.x)? -(nodeRadius*Math.cos(startAngle)) : nodeRadius*Math.cos(startAngle);
+			startX += this.startNode.x;
+			startY = (this.startNode.x > this.x)? -(nodeRadius*Math.sin(startAngle)) : nodeRadius*Math.sin(startAngle);
+			startY += this.startNode.y;
+
+			c.beginPath();
+			c.moveTo(startX, startY);
+			c.lineTo(endX, endY);
+			c.stroke();
+
+		} else if(this.type == LinkType.SELF){
+
+			// TODO
+			// c.beginPath();
+			// c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
+			// c.stroke();
+		}
+
+	}
+}
 /////////////////////////////////////////////////
 // vars/ consts
 /////////////////////////////////////////////////
@@ -8,6 +75,7 @@ const font ='20px "Times New Roman", serif';
 
 var selectedObj;
 var model = new markovChain;
+var drawingLink;
 var canvas;
 var modelPanel;
 var c;
@@ -21,7 +89,9 @@ window.onload = function() {
 		var mousePos = relativeMousePos(e);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj != null){
-			
+			if(shift && selectedObj instanceof State){
+				drawingLink = new TempLink(selectedObj,mousePos);
+			}
 		}
         refresh();
     };
@@ -35,7 +105,29 @@ window.onload = function() {
 
 		resetCaret();
         refresh();
-    };
+	};
+	
+	canvas.onmousemove = function(e) {
+		var mousePos = relativeMousePos(e);
+		if(drawingLink != null){
+			drawingLink.refresh(mousePos);
+			refresh();
+		}
+	}
+
+	canvas.onmouseup = function(e) {
+		if(drawingLink != null){
+			var mousePos = relativeMousePos(e);
+			selectedObj = model.getElementAt(mousePos);
+			if (selectedObj != null){
+				// TODO create proper one;
+			} else {
+				drawingLink = null;
+			}
+			refresh();
+			
+		}
+	}
 
     modelPanel = document.getElementById('modelPanelBody');
 
@@ -56,9 +148,9 @@ document.onkeydown = function(e) {
 	} else if(key == "Backspace") { // backspace key
 		if(selectedObj != null) {
 			if(control){
-				selectedObj.name = "";
+				selectedObj.text = "";
 			} else {
-				selectedObj.name = selectedObj.name.substr(0, selectedObj.name.length - 1);
+				selectedObj.text = selectedObj.text.substr(0, selectedObj.text.length - 1);
 			}
 			resetCaret();
 			refresh();
@@ -101,7 +193,7 @@ document.onkeypress = function(e) {
 		selectedObj = null;
 		refresh();
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
-		selectedObj.name += key;
+		selectedObj.text += key;
 		resetCaret();
 		refresh();
 
@@ -131,16 +223,13 @@ refreshComponents = function() {
 	for (i in model.states){
 		c.lineWidth = 1;
 		c.fillStyle = c.strokeStyle = (model.states[i] === selectedObj) ? 'blue' : 'black';
-		drawNode(c,model.states[i])
-    }
-}
-
-drawNode = function(c,node){
-    c.beginPath();
-	c.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI, false);
-    c.stroke();
-    
-    addText(c,node.name,node.x,node.y,null,(node === selectedObj))
+		model.states[i].draw(c,(model.states[i] === selectedObj));
+	}
+	if(drawingLink != null){
+		c.lineWidth = 1;
+		c.fillStyle = c.strokeStyle = 'black';
+		drawingLink.draw(c);
+	}
 }
 
 addText = function(c,text,x,y,Angle,isSelected){

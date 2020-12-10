@@ -1,14 +1,27 @@
 // create a class for each visable component;
-class state {
+class State {
+
+
+
+    
     constructor(x,y){
         this.x = x;
         this.y = y;
         this.text = "";
         this.emmision = null;
     }
+
+    draw = function(c,isSelected){
+        c.beginPath();
+        c.arc(this.x, this.y, nodeRadius, 0, 2 * Math.PI, false);
+        c.stroke();
+        
+        addText(c,this.text,this.x,this.y,null,isSelected);
+    }
+
 }
 
-class transition {
+class Transition {
     constructor(x,y,probability){
         this.x = x;
         this.y = y;
@@ -38,7 +51,7 @@ class markovChain {
     /////////////////////////////////////////////////
     addState(x, y) {
         var id = Object.keys(this.states).length; // TODO fix this
-        this.states[id] = new state(x,y);
+        this.states[id] = new State(x,y);
         return this.states[id];
     }
     setName(id, text) {
@@ -54,7 +67,7 @@ class markovChain {
     }
     addTransistion(stateA, stateB, probability) {
         if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
-        this.transitions[stateA][stateB] = new transition(0,0,probability); // might switch stateB and prob in the future.
+        this.transitions[stateA][stateB] = new Transition(0,0,probability); // might switch stateB and prob in the future.
         return this;
     }
     delete(object) {
