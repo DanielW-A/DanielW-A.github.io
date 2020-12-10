@@ -12,6 +12,7 @@
 	</head>
 
 	<body>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<script src="js/markovChain.js"></script>
 		<script src="js/canvasUtils.js"></script>
 		<script src="js/canvasController.js"></script>
@@ -26,6 +27,9 @@
 			  <!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
 			</div>
 			<div id="information">
+				<div id="modelPanel" class="TODO">
+					<div id="modelPanelBody" class="TODO">Panel Content</div>
+				  </div>
 				<!-- The model detals panel -->
 				<!-- The the outputs/ description panel -->
 			</div>
@@ -37,7 +41,7 @@
 				<button class="delegate" disabled="disabled" title="Markov Chain">Markov Chain</button>
           		<button class="delegate" title="Hidden Markov Model">Hidden Markov Model</button>
 			</h1>
-			<div id="markovCanvas">
+			<div id="markovCanvasDiv">
 				<canvas id="markovCanvas" width="1800" height="1000">
 					<span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
 				</canvas>

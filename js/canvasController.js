@@ -1,19 +1,274 @@
-var canvas = null;
-var mode = new markovChain;
+const LinkType = {
+    DIRECT: 'direct',
+    ARC: 'arc',
+    SELF: 'self'
+}
+class TempLink{ // this will be the more adaptive link when being drawn.
+	constructor(node,mousePos){
+		this.startNode = node;
+		this.mousePos = mousePos;
+		this.endNode = null;
+		this.type = null;
+		this.x = null;
+		this.y = null;
+		refresh(mousePos);
+	}
+
+	refresh(mousePos){
+		this.endNode = model.getElementAt(mousePos);
+		if (this.startNode != this.endNode){
+			this.type = LinkType.DIRECT;
+		} else {
+			this.type = LinkType.SELF;
+		}
+		this.x = mousePos.x;
+		this.y = mousePos.y;
+	}
+
+	draw = function(c){
+		var startX,startY,endX,endY,startAngle,endAngle;
+		if(this.type === LinkType.DIRECT){
+			if (this.endNode == null){
+				endX = this.x;
+				endY = this.y;
+			} else {
+				this.x = this.endNode.x;
+				this.y = this.endNode.y;
+				endAngle = (this.startNode.y-this.y == 0)? Math.PI/2 :
+						Math.atan((this.startNode.x-this.x)/(this.startNode.y-this.y));
+				
+				endX = (this.startNode.y < this.y)? -(nodeRadius*Math.sin(endAngle)) : nodeRadius*Math.sin(endAngle);
+				endX += this.endNode.x;
+				endY = (this.startNode.y < this.y)? -(nodeRadius*Math.cos(endAngle)) : nodeRadius*Math.cos(endAngle);
+				endY += this.endNode.y;
+			}
+
+			startAngle = (this.startNode.x-this.x == 0)? Math.PI/2 : 
+						Math.atan((this.startNode.y-this.y)/(this.startNode.x-this.x));
+						
+			startX = (this.startNode.x > this.x)? -(nodeRadius*Math.cos(startAngle)) : nodeRadius*Math.cos(startAngle);
+			startX += this.startNode.x;
+			startY = (this.startNode.x > this.x)? -(nodeRadius*Math.sin(startAngle)) : nodeRadius*Math.sin(startAngle);
+			startY += this.startNode.y;
+
+			c.beginPath();
+			c.moveTo(startX, startY);
+			c.lineTo(endX, endY);
+			c.stroke();
+
+		} else if(this.type == LinkType.SELF){
+
+			// TODO
+			// c.beginPath();
+			// c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
+			// c.stroke();
+		}
+
+	}
+}
+/////////////////////////////////////////////////
+// vars/ consts
+/////////////////////////////////////////////////
+
+const nodeRadius = 50; 
+const font ='20px "Times New Roman", serif';
+
+var selectedObj;
+var model = new markovChain;
+var drawingLink;
+var canvas;
+var modelPanel;
+var c;
 
 window.onload = function() {
 
     canvas = document.getElementById('markovCanvas');
 
+
 	canvas.onmousedown = function(e) {
 		var mousePos = relativeMousePos(e);
-        console.log(mousePos);
+		selectedObj = model.getElementAt(mousePos);
+		if (selectedObj != null){
+			if(shift && selectedObj instanceof State){
+				drawingLink = new TempLink(selectedObj,mousePos);
+			}
+		}
+        refresh();
     };
 
     canvas.ondblclick = function(e) {
         var mousePos = relativeMousePos(e);
-        mode.addState(mousePos.x,mousePos.y,null,null,null);
-    };
+        selectedObj = model.getElementAt(mousePos);
+        if (selectedObj == null){
+            selectedObj = model.addState(mousePos.x,mousePos.y,null,null,null);
+        }
+
+		resetCaret();
+        refresh();
+	};
+	
+	canvas.onmousemove = function(e) {
+		var mousePos = relativeMousePos(e);
+		if(drawingLink != null){
+			drawingLink.refresh(mousePos);
+			refresh();
+		}
+	}
+
+	canvas.onmouseup = function(e) {
+		if(drawingLink != null){
+			var mousePos = relativeMousePos(e);
+			selectedObj = model.getElementAt(mousePos);
+			if (selectedObj != null){
+				// TODO create proper one;
+			} else {
+				drawingLink = null;
+			}
+			refresh();
+			
+		}
+	}
+
+    modelPanel = document.getElementById('modelPanelBody');
+
+}
+
+var shift = false;
+var control = false;
+document.onkeydown = function(e) {
+	var key = e.key;
+	console.log(key);
+	if(key == "Shift") {
+		shift = true;
+	} else if(key == "Control"){
+		control = true;
+	}else if(false){ //!canvasHasFocus()) {
+		// don't read keystrokes when other things have focus
+		return true;
+	} else if(key == "Backspace") { // backspace key
+		if(selectedObj != null) {
+			if(control){
+				selectedObj.text = "";
+			} else {
+				selectedObj.text = selectedObj.text.substr(0, selectedObj.text.length - 1);
+			}
+			resetCaret();
+			refresh();
+		}
+
+		// backspace is a shortcut for the back button, but do NOT want to change pages
+		return false;
+	} else if(key == "Delete") { // delete key
+		if(selectedObj != null) {
+			model.delete(selectedObj);
+			selectedObj = null;
+			refresh();
+		}
+    } else if(key == "Escape") { 
+		selectedObj = null;
+		refresh();
+			
+    }
+}
+
+document.onkeyup = function(e) {
+	var key = e.key;
+
+	if(key == "Shift") {
+		shift = false;
+	} else if(key == "Control"){
+		control = false;
+	}
+}
+
+document.onkeypress = function(e) {
+	// don't read keystrokes when other things have focus
+	var key = e.key;
+	var keyCode = key.charCodeAt(0);
+    console.log(key);
+	if(false){ //TODO !canvasHasFocus()) {
+		// don't read keystrokes when other things have focus
+		return true;
+	} else if (key == "Enter"){
+		selectedObj = null;
+		refresh();
+	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
+		selectedObj.text += key;
+		resetCaret();
+		refresh();
+
+		// don't let keys do their actions (like space scrolls down the page)
+		return false;
+	} else if(key == 8) {
+		// backspace is a shortcut for the back button, but do NOT want to change pages
+		return false;
+	}
+}
+
+
+
+
+refresh = function() {
+    refreshComponents();
+    refreshInfoPanels();
+}
+
+
+refreshComponents = function() {
+
+    c = canvas.getContext("2d");
+    c.clearRect(0, 0, canvas.width, canvas.height);
+
+
+	for (i in model.states){
+		c.lineWidth = 1;
+		c.fillStyle = c.strokeStyle = (model.states[i] === selectedObj) ? 'blue' : 'black';
+		model.states[i].draw(c,(model.states[i] === selectedObj));
+	}
+	if(drawingLink != null){
+		c.lineWidth = 1;
+		c.fillStyle = c.strokeStyle = 'black';
+		drawingLink.draw(c);
+	}
+}
+
+addText = function(c,text,x,y,Angle,isSelected){
+    // TODO text = convertLatexShortcuts(originalText);
+	c.font = font;
+	var width = c.measureText(text).width;
+
+	// center the text
+	x -= width / 2;
+
+	if(Angle != null) {
+		//TODO  for arrows.
+	}
+
+	// draw text and caret (round the coordinates so the caret falls on a pixel)
+
+	x = Math.round(x);
+	y = Math.round(y);
+	c.fillText(text, x, y + 6);
+	if(isSelected && caretVisible && document.hasFocus()) {
+		x += width;
+		c.beginPath();
+		c.moveTo(x, y - 10);
+		c.lineTo(x, y + 10);
+		c.stroke();
+    }
+}
+
+var caretTimer = null;
+var caretVisible = true;
+
+function resetCaret() {
+	clearInterval(caretTimer);
+	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 500);
+	caretVisible = true;
+}
+
+refreshInfoPanels = function(){
+    modelPanel.innerHTML = model.toString();
 }
 // 		if (mode === 'drawing') {
 // 			selectedObject = selectObject(mouse.x, mouse.y);
