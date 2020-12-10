@@ -9,6 +9,7 @@ const font ='20px "Times New Roman", serif';
 var selectedObj;
 var model = new markovChain;
 var canvas;
+var modelPanel;
 var c;
 
 window.onload = function() {
@@ -18,10 +19,10 @@ window.onload = function() {
 
 	canvas.onmousedown = function(e) {
 		var mousePos = relativeMousePos(e);
-        console.log(mousePos);
-        selectedObj = model.getElementAt(mousePos);
-        console.log("Selected Obj");
-        console.log(selectedObj);
+		selectedObj = model.getElementAt(mousePos);
+		if (selectedObj != null){
+			
+		}
         refresh();
     };
 
@@ -30,18 +31,94 @@ window.onload = function() {
         selectedObj = model.getElementAt(mousePos);
         if (selectedObj == null){
             selectedObj = model.addState(mousePos.x,mousePos.y,null,null,null);
-            console.log("selectedObj");
-            console.log(selectedObj);
         }
 
+		resetCaret();
         refresh();
     };
+
+    modelPanel = document.getElementById('modelPanelBody');
+
 }
+
+var shift = false;
+var control = false;
+document.onkeydown = function(e) {
+	var key = e.key;
+	console.log(key);
+	if(key == "Shift") {
+		shift = true;
+	} else if(key == "Control"){
+		control = true;
+	}else if(false){ //!canvasHasFocus()) {
+		// don't read keystrokes when other things have focus
+		return true;
+	} else if(key == "Backspace") { // backspace key
+		if(selectedObj != null) {
+			if(control){
+				selectedObj.name = "";
+			} else {
+				selectedObj.name = selectedObj.name.substr(0, selectedObj.name.length - 1);
+			}
+			resetCaret();
+			refresh();
+		}
+
+		// backspace is a shortcut for the back button, but do NOT want to change pages
+		return false;
+	} else if(key == "Delete") { // delete key
+		if(selectedObj != null) {
+			model.delete(selectedObj);
+			selectedObj = null;
+			refresh();
+		}
+    } else if(key == "Escape") { 
+		selectedObj = null;
+		refresh();
+			
+    }
+}
+
+document.onkeyup = function(e) {
+	var key = e.key;
+
+	if(key == "Shift") {
+		shift = false;
+	} else if(key == "Control"){
+		control = false;
+	}
+}
+
+document.onkeypress = function(e) {
+	// don't read keystrokes when other things have focus
+	var key = e.key;
+	var keyCode = key.charCodeAt(0);
+    console.log(key);
+	if(false){ //TODO !canvasHasFocus()) {
+		// don't read keystrokes when other things have focus
+		return true;
+	} else if (key == "Enter"){
+		selectedObj = null;
+		refresh();
+	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
+		selectedObj.name += key;
+		resetCaret();
+		refresh();
+
+		// don't let keys do their actions (like space scrolls down the page)
+		return false;
+	} else if(key == 8) {
+		// backspace is a shortcut for the back button, but do NOT want to change pages
+		return false;
+	}
+}
+
+
 
 
 refresh = function() {
     refreshComponents();
-    resetCaret();
+    refreshInfoPanels();
 }
 
 
@@ -50,13 +127,10 @@ refreshComponents = function() {
     c = canvas.getContext("2d");
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    console.log("selectedObj");
-    console.log(selectedObj);
+
 	for (i in model.states){
 		c.lineWidth = 1;
 		c.fillStyle = c.strokeStyle = (model.states[i] === selectedObj) ? 'blue' : 'black';
-		console.log("model.states[i]");
-		console.log(model.states[i]);
 		drawNode(c,model.states[i])
     }
 }
@@ -86,7 +160,6 @@ addText = function(c,text,x,y,Angle,isSelected){
 	x = Math.round(x);
 	y = Math.round(y);
 	c.fillText(text, x, y + 6);
-    console.log(caretVisible);
 	if(isSelected && caretVisible && document.hasFocus()) {
 		x += width;
 		c.beginPath();
@@ -96,13 +169,17 @@ addText = function(c,text,x,y,Angle,isSelected){
     }
 }
 
-var caretTimer;
+var caretTimer = null;
 var caretVisible = true;
 
 function resetCaret() {
 	clearInterval(caretTimer);
 	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 500);
-	// caretVisible = true;
+	caretVisible = true;
+}
+
+refreshInfoPanels = function(){
+    modelPanel.innerHTML = model.toString();
 }
 // 		if (mode === 'drawing') {
 // 			selectedObject = selectObject(mouse.x, mouse.y);
