@@ -1,17 +1,15 @@
 // create a class for each visable component;
 class State {
-
-
-
-    
-    constructor(x,y){
+    constructor(x,y,id){
+        this.id = id;
         this.x = x;
         this.y = y;
         this.text = "";
         this.emmision = null;
     }
 
-    draw = function(c,isSelected){
+    draw(c,isSelected){
+        
         c.beginPath();
         c.arc(this.x, this.y, nodeRadius, 0, 2 * Math.PI, false);
         c.stroke();
@@ -22,10 +20,63 @@ class State {
 }
 
 class Transition {
-    constructor(x,y,probability){
-        this.x = x;
-        this.y = y;
-        this.probability = probability;
+    constructor(startNode,endNode,text){
+        this.startNode = startNode;
+		this.endNode = endNode;
+		this.type = (endNode === startNode)? LinkType.SELF: LinkType.DIRECT;
+		this.x = (startNode.x + endNode.x)/2;
+        this.y = (startNode.y + endNode.y)/2;
+        this.text = (text == null)? "" : text;
+        this.endPos = {
+            x :0,
+            y :0
+        };
+        this.startPos = {
+            x :0,
+            y :0
+        };
+    }
+
+    draw(c,isSelected){
+        
+		if(this.type === LinkType.DIRECT){
+            var endAngle = (this.startNode.y-this.endNode.y == 0)? Math.PI/2 :
+                    Math.atan((this.startNode.x-this.endNode.x)/(this.startNode.y-this.endNode.y));
+    
+            this.endPos.x = (this.startNode.y < this.endNode.y)? -(nodeRadius*Math.sin(endAngle)) : nodeRadius*Math.sin(endAngle);
+            this.endPos.x += this.endNode.x;
+            this.endPos.y = (this.startNode.y < this.endNode.y)? -(nodeRadius*Math.cos(endAngle)) : nodeRadius*Math.cos(endAngle);
+            this.endPos.y += this.endNode.y;
+            var startAngle = (this.startNode.x-this.x == 0)? Math.PI/2 : 
+                    Math.atan((this.startNode.y-this.endNode.y)/(this.startNode.x-this.endNode.x));
+            
+            this.startPos.x = (this.startNode.x > this.endNode.x)? -(nodeRadius*Math.cos(startAngle)) : nodeRadius*Math.cos(startAngle);
+            this.startPos.x += this.startNode.x;
+            this.startPos.y = (this.startNode.x > this.endNode.x)? -(nodeRadius*Math.sin(startAngle)) : nodeRadius*Math.sin(startAngle);
+            this.startPos.y += this.startNode.y;
+
+            c.beginPath();
+			c.moveTo(this.startPos.x, this.startPos.y);
+			c.lineTo(this.endPos.x, this.endPos.y);
+            c.stroke();
+            
+        }
+        
+        addText(c,this.text,this.x,this.y,null,isSelected);
+    }
+
+    isNear(mouse){
+        if((mouse.x < Math.max(this.startPos.x,this.endPos.x)) && 
+                (mouse.x > Math.min(this.startPos.x,this.endPos.x)) &&  
+                (mouse.y < Math.max(this.startPos.y,this.endPos.y)) &&  
+                (mouse.y > Math.min(this.startPos.y,this.endPos.y))){
+
+            var d = (((this.endPos.x - this.startPos.x)*(this.startPos.y - mouse.y)) -
+                        ((this.startPos.x - mouse.x) * (this.endPos.y - this.startPos.y)))/
+                        Math.sqrt(Math.pow((this.endNode.x-this.startNode.x),2)+Math.pow((this.endNode.y-this.startNode.y),2));
+            console.log(d);
+            return (d < 5)? true : false;
+        }
     }
 }
 
@@ -40,6 +91,8 @@ class markovChain {
         // TODO allow the user to start at a state they want.
         this.userStartState = null;
 
+        this.lastId = 0;
+
         this.processor = {
             currentState: null,
             outPut: "",
@@ -50,8 +103,9 @@ class markovChain {
     // Editing the model
     /////////////////////////////////////////////////
     addState(x, y) {
-        var id = Object.keys(this.states).length; // TODO fix this
-        this.states[id] = new State(x,y);
+        var id = this.lastId++;
+        console.log("new State with id : " + id);
+        this.states[id] = new State(x,y,id);
         return this.states[id];
     }
     setName(id, text) {
@@ -65,15 +119,27 @@ class markovChain {
     setInitialProbability(state, probability) {
         this.initialProbabilityDistribution[state] = probability;
     }
-    addTransistion(stateA, stateB, probability) {
+    // addTransistion(stateA, stateB, probability) {
+    //     if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
+    //     this.transitions[stateA][stateB] = new Transition(0,0,probability); // might switch stateB and prob in the future.
+    //     return this;
+    // }
+    addTransistion(tempLink){
+        if (!this.transitions[tempLink.startNode.id]) {this.transitions[tempLink.startNode.id] = {};}
+        console.log(tempLink.startNode);
+        console.log(tempLink.endNode);
+        this.transitions[tempLink.startNode.id][tempLink.endNode.id] = new Transition(tempLink.startNode,tempLink.endNode,null);
+        console.log(this.transitions);
+    }
+    editTransistion(stateA, stateB, probability){
         if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
-        this.transitions[stateA][stateB] = new Transition(0,0,probability); // might switch stateB and prob in the future.
-        return this;
+        this.transitions[stateA.id][stateB.id] = probability;
     }
     delete(object) {
         //TODO classify the object
         if (true) {
             console.log(this.states);
+            console.log(object);
             for (i in this.states) {
                 if (this.states[i] === object) {
                     this.removeAllTrasitions(i);
@@ -105,6 +171,14 @@ class markovChain {
             var state = this.states[i];
             if ((mouse.x - state.x) * (mouse.x - state.x) + (mouse.y - state.y) * (mouse.y - state.y) < 50 * 50) {
                 return state;
+            }
+        }
+        for (i in this.transitions){
+            for (j in this.transitions[i]){
+                var trans = this.transitions[i][j];
+                if (trans.isNear(mouse)){
+                    return trans;
+                }
             }
         }
 
@@ -203,7 +277,7 @@ class markovChain {
         for (i in trans) {
             str += "{";
             for (j in trans[i]) {
-                str += trans[i][j].probability + ',';
+                str += trans[i][j].text + ',';
             }
             str += "},";
         }

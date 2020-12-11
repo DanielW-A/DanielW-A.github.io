@@ -11,9 +11,10 @@ h1 {
 
 canvas {
 	display: block;
-	max-width: 2000px;
 	background: white;
-	border-radius: 20px;
-	-moz-border-radius: 20px;
+	/* border-radius: 20px; */
+	/* -moz-border-radius: 20px; */
 	margin: 10px auto;
+	outline: #000000;
+	outline-width: 2px;
 }

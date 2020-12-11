@@ -84,12 +84,17 @@ window.onload = function() {
 
     canvas = document.getElementById('markovCanvas');
 
+	console.log (document.body.clientWidth);
+	canvas.width = document.body.clientWidth;
+	canvas.height = document.body.clientHeight;
 
 	canvas.onmousedown = function(e) {
 		var mousePos = relativeMousePos(e);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj != null){
+			console.log(shift);
 			if(shift && selectedObj instanceof State){
+				console.log("Shift and is state");
 				drawingLink = new TempLink(selectedObj,mousePos);
 			}
 		}
@@ -120,6 +125,8 @@ window.onload = function() {
 			var mousePos = relativeMousePos(e);
 			selectedObj = model.getElementAt(mousePos);
 			if (selectedObj != null){
+				model.addTransistion(drawingLink);
+				drawingLink = null;
 				// TODO create proper one;
 			} else {
 				drawingLink = null;
@@ -174,7 +181,9 @@ document.onkeydown = function(e) {
 document.onkeyup = function(e) {
 	var key = e.key;
 
+	console.log("key up " + e);
 	if(key == "Shift") {
+		console.log("key up shift");
 		shift = false;
 	} else if(key == "Control"){
 		control = false;
@@ -186,6 +195,7 @@ document.onkeypress = function(e) {
 	var key = e.key;
 	var keyCode = key.charCodeAt(0);
     console.log(key);
+    console.log(key.charCodeAt(0));
 	if(false){ //TODO !canvasHasFocus()) {
 		// don't read keystrokes when other things have focus
 		return true;
@@ -193,6 +203,15 @@ document.onkeypress = function(e) {
 		selectedObj = null;
 		refresh();
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
+		if (selectedObj instanceof Transition){
+			if((!(keyCode >= 46 && keyCode <= 57 && keyCode != 47))
+					|| (keyCode == 46 && selectedObj.text.includes("."))
+					|| ((keyCode != 48 && keyCode != 49) && selectedObj.text == "")
+					|| (keyCode != 46 && selectedObj.text == "0")
+					|| (selectedObj.text == "1")){
+				return false;
+			}
+		}
 		selectedObj.text += key;
 		resetCaret();
 		refresh();
@@ -229,6 +248,13 @@ refreshComponents = function() {
 		c.lineWidth = 1;
 		c.fillStyle = c.strokeStyle = 'black';
 		drawingLink.draw(c);
+	}
+	for (i in model.transitions){
+		for (j in model.transitions[i]){
+			c.lineWidth = 1;
+			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj) ? 'blue' : 'black';
+			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
+		}
 	}
 }
 
