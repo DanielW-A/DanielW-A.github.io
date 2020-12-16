@@ -3,6 +3,8 @@ const LinkType = {
     ARC: 'arc',
     SELF: 'self'
 }
+const nodeRadius = 30; 
+const mousePadding = 5;
 
 class viewable{
     constructor(x,y){
@@ -28,6 +30,13 @@ class Link extends viewable {
         this.anchorAngle = 0;
     }
 
+    setAnchorangle(mousePos){
+        this.anchorAngle = Math.atan2(mousePos.y - this.startNode.y, mousePos.x - this.startNode.x) + 0; //this.mouseOffsetAngle;
+        console.log(this.anchorAngle);
+        if(this.anchorAngle < -Math.PI) this.anchorAngle += 2 * Math.PI;
+	    if(this.anchorAngle > Math.PI) this.anchorAngle -= 2 * Math.PI;
+    }
+ 
     det(a, b, c, d, e, f, g, h, i) {
         return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g;
     }
@@ -54,6 +63,11 @@ class StationaryLink extends Link {
         this.perpendicularPart = 0;
         this.parallelPart = 0.5;
         this.anchorAngle = anchorAngle;
+
+        if (this.type === LinkType.SELF){ //TODO
+            this.x = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
+            this.y = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
+        }
     }
 
     getAnchorPoint() {
@@ -68,31 +82,61 @@ class StationaryLink extends Link {
 
     draw(c,isSelected){
         if (this.type === LinkType.SELF){
+            var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
+            var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
+            var circleRadius = 0.75 * nodeRadius;
+            var startAngle = this.anchorAngle - Math.PI * 0.8;
+            var endAngle = this.anchorAngle + Math.PI * 0.8;
+    
 
+            c.beginPath();
+            c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
+            c.stroke();
+
+        } else if(this.type === LinkType.DIRECT){
+            this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
+            this.endPos = this.endNode.closestPointOnCircle(this.x, this.y);
+            
+            c.beginPath();
+		    c.moveTo(this.startPos.x, this.startPos.y);
+		    c.lineTo(this.endPos.x, this.endPos.y);
+            c.stroke();
         } else {
-            if(this.type === LinkType.DIRECT){
-                this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
-                this.endPos = this.endNode.closestPointOnCircle(this.x, this.y);
-            } else {
-                var anchor = this.getAnchorPoint();
-                var circle = this.circleFromThreePoints(this.startNode.x, this.startNode.y, this.endNode.x, this.endNode.y, anchor.x, anchor.y);
-                var isReversed = (this.perpendicularPart > 0);
-                var reverseScale = isReversed ? 1 : -1;
-                var startAngle = Math.atan2(this.startNode.y - circle.y, this.startNode.x - circle.x) - reverseScale * nodeRadius / circle.radius;
-                var endAngle = Math.atan2(this.endNode.y - circle.y, this.endNode.x - circle.x) + reverseScale * nodeRadius / circle.radius;
-                this.startPos.x = circle.x + circle.radius * Math.cos(startAngle);
-                this.startPos.y = circle.y + circle.radius * Math.sin(startAngle);
-                this.endPos.x = circle.x + circle.radius * Math.cos(endAngle);
-                this.endPos.y = circle.y + circle.radius * Math.sin(endAngle);
-            }
+            var anchor = this.getAnchorPoint();
+            var circle = this.circleFromThreePoints(this.startNode.x, this.startNode.y, this.endNode.x, this.endNode.y, anchor.x, anchor.y);
+            var isReversed = (this.perpendicularPart > 0);
+            var reverseScale = isReversed ? 1 : -1;
+            var startAngle = Math.atan2(this.startNode.y - circle.y, this.startNode.x - circle.x) - reverseScale * nodeRadius / circle.radius;
+            var endAngle = Math.atan2(this.endNode.y - circle.y, this.endNode.x - circle.x) + reverseScale * nodeRadius / circle.radius;
+            this.startPos.x = circle.x + circle.radius * Math.cos(startAngle);
+            this.startPos.y = circle.y + circle.radius * Math.sin(startAngle);
+            this.endPos.x = circle.x + circle.radius * Math.cos(endAngle);
+            this.endPos.y = circle.y + circle.radius * Math.sin(endAngle);
         }
 
-        c.beginPath();
-		c.moveTo(this.startPos.x, this.startPos.y);
-		c.lineTo(this.endPos.x, this.endPos.y);
-        c.stroke();
-        
         addText(c,this.text,this.x,this.y,null,isSelected);
     }
+
+    isNear(mouse){
+        if (this.type === LinkType.SELF){
+	        var dx = mouse.x - (this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle));
+	        var dy = mouse.y - (this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle));
+	        var distance = Math.sqrt(dx*dx + dy*dy) - 0.75 * nodeRadius;
+	        return (Math.abs(distance) < mousePadding);
+        }else
+        if((mouse.x < Math.max(this.startPos.x,this.endPos.x) + mousePadding) && 
+                (mouse.x > Math.min(this.startPos.x,this.endPos.x) - mousePadding) &&  
+                (mouse.y < Math.max(this.startPos.y,this.endPos.y) + mousePadding) &&  
+                (mouse.y > Math.min(this.startPos.y,this.endPos.y) - mousePadding)){
+
+            var d = (((this.endPos.x - this.startPos.x)*(this.startPos.y - mouse.y)) -
+                        ((this.startPos.x - mouse.x) * (this.endPos.y - this.startPos.y)))/
+                        Math.sqrt(Math.pow((this.endNode.x-this.startNode.x),2)+Math.pow((this.endNode.y-this.startNode.y),2));
+            console.log(d);
+            return (d < mousePadding);
+        }
+        
+    }
+    
 
 }

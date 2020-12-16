@@ -15,7 +15,7 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 		this.x = mousePos.x;
 		this.y = mousePos.y;
 
-		this.anchorAngle = Math.atan2(mousePos.y - this.startNode.y, mousePos.x - this.startNode.x) + 0; //this.mouseOffsetAngle;
+		this.setAnchorangle(mousePos);
 	}
 
 	draw(c){
@@ -41,6 +41,8 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 			var circleRadius = 0.75 * nodeRadius;
 			var startAngle = this.anchorAngle - Math.PI * 0.8;
 			var endAngle = this.anchorAngle + Math.PI * 0.8;
+
+
 			c.beginPath();
 			c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
 			c.stroke();
@@ -52,7 +54,6 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 // vars/ consts
 /////////////////////////////////////////////////
 
-const nodeRadius = 50; 
 const font ='20px "Times New Roman", serif';
 
 var selectedObj;

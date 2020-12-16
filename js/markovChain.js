@@ -1,3 +1,4 @@
+var tempInitial = false;
 // create a class for each visable component;
 class State {
    
@@ -36,22 +37,8 @@ class State {
 }
 
 class Transition extends StationaryLink{
-    constructor(startNode,endNode,text){
-        super(startNode,endNode,text);
-    }
-
-    isNear(mouse){
-        if((mouse.x < Math.max(this.startPos.x,this.endPos.x)) && 
-                (mouse.x > Math.min(this.startPos.x,this.endPos.x)) &&  
-                (mouse.y < Math.max(this.startPos.y,this.endPos.y)) &&  
-                (mouse.y > Math.min(this.startPos.y,this.endPos.y))){
-
-            var d = (((this.endPos.x - this.startPos.x)*(this.startPos.y - mouse.y)) -
-                        ((this.startPos.x - mouse.x) * (this.endPos.y - this.startPos.y)))/
-                        Math.sqrt(Math.pow((this.endNode.x-this.startNode.x),2)+Math.pow((this.endNode.y-this.startNode.y),2));
-            console.log(d);
-            return (d < 5)? true : false;
-        }
+    constructor(startNode,endNode,anchorAngle,text){
+        super(startNode,endNode,text,anchorAngle);
     }
 }
 
@@ -105,7 +92,7 @@ class markovChain {
         if (!this.transitions[tempLink.startNode.id]) {this.transitions[tempLink.startNode.id] = {};}
         console.log(tempLink.startNode);
         console.log(tempLink.endNode);
-        this.transitions[tempLink.startNode.id][tempLink.endNode.id] = new Transition(tempLink.startNode,tempLink.endNode,null);
+        this.transitions[tempLink.startNode.id][tempLink.endNode.id] = new Transition(tempLink.startNode,tempLink.endNode,tempLink.anchorAngle,null);
         console.log(this.transitions);
     }
     editTransistion(stateA, stateB, probability){
@@ -146,7 +133,7 @@ class markovChain {
     getElementAt(mouse) {
         for (i in this.states) {
             var state = this.states[i];
-            if ((mouse.x - state.x) * (mouse.x - state.x) + (mouse.y - state.y) * (mouse.y - state.y) < 50 * 50) {
+            if ((mouse.x - state.x) * (mouse.x - state.x) + (mouse.y - state.y) * (mouse.y - state.y) < nodeRadius * nodeRadius) {
                 return state;
             }
         }
@@ -193,7 +180,7 @@ class markovChain {
         var probSum = 0.0;
         var trans = this.transitions[state];
         for (i in trans) {
-            probSum += trans[i].text;
+            probSum += parseFloat(trans[i].text);
             if (probSum > check) {
                 return i;
             }
@@ -219,9 +206,9 @@ class markovChain {
             probSum += initProb[i];
         }
         if (probSum == 0) {
-            
-            for (i in initProb) {
-                initProb[i] = 1/initProb.length;
+            tempInitial = true;
+            for (i in this.states) {
+                initProb[i] = 1/Object.keys(this.states).length;
             }
         }else if (probSum != 1) {
             errorMsg += "ERROR : The initial probability distribution sums to : " + probSum + " (Should be 1) \n";
@@ -233,7 +220,7 @@ class markovChain {
         for (i in trans) {
             var probSum = 0.0;
             for (j in trans[i]) {
-                probSum += trans[i][j].text;
+                probSum += parseFloat(trans[i][j].text);
             }
             if (probSum != 1) {
                 errorMsg += "ERROR : " + i + " state trasition sums to : " + probSum + " (Should be 1) \n";
