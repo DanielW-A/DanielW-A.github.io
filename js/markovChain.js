@@ -1,33 +1,11 @@
 var tempInitial = false;
 // create a class for each visable component;
-class State {
+class ChainState extends State{
    
    
     constructor(x,y,id){
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.text = "";
+        super(x,y,id);
         this.emmision = null;
-    }
-
-    draw(c,isSelected){
-        
-        c.beginPath();
-        c.arc(this.x, this.y, nodeRadius, 0, 2 * Math.PI, false);
-        c.stroke();
-        
-        addText(c,this.text,this.x,this.y,null,isSelected);
-    }
-
-    closestPointOnCircle(x,y) {
-        var dx = x - this.x;
-        var dy = y - this.y;
-        var scale = Math.sqrt(dx * dx + dy * dy);
-        return {
-            x: this.x + dx * nodeRadius / scale,
-            y: this.y + dy * nodeRadius / scale
-        };
     }
 
     getEmmision(){
@@ -67,7 +45,7 @@ class markovChain {
     addState(x, y) {
         var id = this.lastId++;
         console.log("new State with id : " + id);
-        this.states[id] = new State(x,y,id);
+        this.states[id] = new ChainState(x,y,id);
         this.initialProbabilityDistribution[id] = 0;
         this.transitions[id] = {};
         return this.states[id];
@@ -94,6 +72,7 @@ class markovChain {
         console.log(tempLink.endNode);
         this.transitions[tempLink.startNode.id][tempLink.endNode.id] = new Transition(tempLink.startNode,tempLink.endNode,tempLink.anchorAngle,null);
         console.log(this.transitions);
+        return this.transitions[tempLink.startNode.id][tempLink.endNode.id];
     }
     editTransistion(stateA, stateB, probability){
         if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
@@ -133,7 +112,7 @@ class markovChain {
     getElementAt(mouse) {
         for (i in this.states) {
             var state = this.states[i];
-            if ((mouse.x - state.x) * (mouse.x - state.x) + (mouse.y - state.y) * (mouse.y - state.y) < nodeRadius * nodeRadius) {
+            if(state.isNear(mouse)){
                 return state;
             }
         }
