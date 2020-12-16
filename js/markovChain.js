@@ -94,6 +94,7 @@ class markovChain {
         console.log(tempLink.endNode);
         this.transitions[tempLink.startNode.id][tempLink.endNode.id] = new Transition(tempLink.startNode,tempLink.endNode,tempLink.anchorAngle,null);
         console.log(this.transitions);
+        return this.transitions[tempLink.startNode.id][tempLink.endNode.id];
     }
     editTransistion(stateA, stateB, probability){
         if (!this.transitions[stateA]) {this.transitions[stateA] = {};}

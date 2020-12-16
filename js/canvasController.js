@@ -108,9 +108,8 @@ window.onload = function() {
 			var mousePos = relativeMousePos(e);
 			selectedObj = model.getElementAt(mousePos);
 			if (selectedObj != null){
-				model.addTransistion(drawingLink);
+				selectedObj = model.addTransistion(drawingLink);
 				drawingLink = null;
-				// TODO create proper one;
 			} else {
 				drawingLink = null;
 			}
@@ -137,7 +136,7 @@ document.onkeydown = function(e) {
 		return true;
 	} else if(key == "Backspace") { // backspace key
 		if(selectedObj != null) {
-			if(control){
+			if(control || selectedObj.text == "0."){
 				selectedObj.text = "";
 			} else {
 				selectedObj.text = selectedObj.text.substr(0, selectedObj.text.length - 1);
@@ -187,15 +186,17 @@ document.onkeypress = function(e) {
 		refresh();
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
 		if (selectedObj instanceof Transition){
-			if((!(keyCode >= 46 && keyCode <= 57 && keyCode != 47))
-					|| (keyCode == 46 && selectedObj.text.includes("."))
-					|| ((keyCode != 48 && keyCode != 49) && selectedObj.text == "")
-					|| (keyCode != 46 && selectedObj.text == "0")
+			if((!(keyCode >= 48 && keyCode <= 57))
+					|| ((keyCode != 48 & keyCode != 49) && selectedObj.text == "")
 					|| (selectedObj.text == "1")){
-				return false;
+
+				if (keyCode == 46 && (selectedObj.text == "" || selectedObj.text == '0')){
+					selectedObj.text = "0.";
+				}
+			} else {
+				selectedObj.text += key;
 			}
 		}
-		selectedObj.text += key;
 		resetCaret();
 		refresh();
 
