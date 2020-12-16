@@ -13,7 +13,9 @@
 
 	<body>
 		<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script src="js/components.js"></script>
 		<script src="js/markovChain.js"></script>
+		<script src="js/pageController.js"></script>
 		<script src="js/canvasUtils.js"></script>
 		<script src="js/canvasController.js"></script>
 
@@ -21,9 +23,11 @@
 		<button id="testbtn" title="Test" onclick="markovChain.runTests();">Test</button>
 		<div id="tools">
 			<div style="text-align:center;">
-			  <button id="saveBtn" title="Save">Save</button> <!-- TODO class, onclick, image -->
-			  <button id="loadBtn" title="Load">Load</button>
-			  <button id="clearBtn" title="Clear">Clear</button>
+			  <button id="saveBtn" title="Save" onclick="pageController.save();">Save</button> <!-- TODO class, onclick, image -->
+			  <button id="loadBtn" title="Load" onclick="pageController.load();">Load</button>
+			  <button id="clearBtn" title="Clear" onclick="pageController.clear();">Clear</button>
+			  <button id="runBtn" title="Run" onclick="run(20,1000);">Run</button>
+			  <div id="outputString" type="text" placeholder="See if this fits">bbacba</div>
 			  <!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
 			</div>
 			<div id="information">

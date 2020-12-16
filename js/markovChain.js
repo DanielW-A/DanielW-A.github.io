@@ -1,5 +1,7 @@
 // create a class for each visable component;
 class State {
+   
+   
     constructor(x,y,id){
         this.id = id;
         this.x = x;
@@ -17,52 +19,25 @@ class State {
         addText(c,this.text,this.x,this.y,null,isSelected);
     }
 
-}
-
-class Transition {
-    constructor(startNode,endNode,text){
-        this.startNode = startNode;
-		this.endNode = endNode;
-		this.type = (endNode === startNode)? LinkType.SELF: LinkType.DIRECT;
-		this.x = (startNode.x + endNode.x)/2;
-        this.y = (startNode.y + endNode.y)/2;
-        this.text = (text == null)? "" : text;
-        this.endPos = {
-            x :0,
-            y :0
-        };
-        this.startPos = {
-            x :0,
-            y :0
+    closestPointOnCircle(x,y) {
+        var dx = x - this.x;
+        var dy = y - this.y;
+        var scale = Math.sqrt(dx * dx + dy * dy);
+        return {
+            x: this.x + dx * nodeRadius / scale,
+            y: this.y + dy * nodeRadius / scale
         };
     }
 
-    draw(c,isSelected){
-        
-		if(this.type === LinkType.DIRECT){
-            var endAngle = (this.startNode.y-this.endNode.y == 0)? Math.PI/2 :
-                    Math.atan((this.startNode.x-this.endNode.x)/(this.startNode.y-this.endNode.y));
-    
-            this.endPos.x = (this.startNode.y < this.endNode.y)? -(nodeRadius*Math.sin(endAngle)) : nodeRadius*Math.sin(endAngle);
-            this.endPos.x += this.endNode.x;
-            this.endPos.y = (this.startNode.y < this.endNode.y)? -(nodeRadius*Math.cos(endAngle)) : nodeRadius*Math.cos(endAngle);
-            this.endPos.y += this.endNode.y;
-            var startAngle = (this.startNode.x-this.x == 0)? Math.PI/2 : 
-                    Math.atan((this.startNode.y-this.endNode.y)/(this.startNode.x-this.endNode.x));
-            
-            this.startPos.x = (this.startNode.x > this.endNode.x)? -(nodeRadius*Math.cos(startAngle)) : nodeRadius*Math.cos(startAngle);
-            this.startPos.x += this.startNode.x;
-            this.startPos.y = (this.startNode.x > this.endNode.x)? -(nodeRadius*Math.sin(startAngle)) : nodeRadius*Math.sin(startAngle);
-            this.startPos.y += this.startNode.y;
+    getEmmision(){
+        return (this.emmision == null)? "("  + this.text + ")" : this.emmision;
+    }
 
-            c.beginPath();
-			c.moveTo(this.startPos.x, this.startPos.y);
-			c.lineTo(this.endPos.x, this.endPos.y);
-            c.stroke();
-            
-        }
-        
-        addText(c,this.text,this.x,this.y,null,isSelected);
+}
+
+class Transition extends StationaryLink{
+    constructor(startNode,endNode,text){
+        super(startNode,endNode,text);
     }
 
     isNear(mouse){
@@ -106,6 +81,8 @@ class markovChain {
         var id = this.lastId++;
         console.log("new State with id : " + id);
         this.states[id] = new State(x,y,id);
+        this.initialProbabilityDistribution[id] = 0;
+        this.transitions[id] = {};
         return this.states[id];
     }
     setName(id, text) {
@@ -194,7 +171,7 @@ class markovChain {
     }
     saveState(state) {
         this.processor.currentState = state;
-        this.processor.outPut += this.states[state].emmision;
+        this.processor.outPut += this.states[state].getEmmision();
         this.processor.outPutLength++;
     }
     getStartState() {
@@ -216,7 +193,7 @@ class markovChain {
         var probSum = 0.0;
         var trans = this.transitions[state];
         for (i in trans) {
-            probSum += trans[i].probability;
+            probSum += trans[i].text;
             if (probSum > check) {
                 return i;
             }
@@ -226,6 +203,7 @@ class markovChain {
         var temp = this.transition(this.processor.currentState);
         console.log(temp);
         this.saveState(temp);
+        return this.processor.outPut;
     }
     /////////////////////////////////////////////////
     // testing / running
@@ -240,15 +218,22 @@ class markovChain {
         for (i in initProb) {
             probSum += initProb[i];
         }
-        if (probSum != 1) {
+        if (probSum == 0) {
+            
+            for (i in initProb) {
+                initProb[i] = 1/initProb.length;
+            }
+        }else if (probSum != 1) {
             errorMsg += "ERROR : The initial probability distribution sums to : " + probSum + " (Should be 1) \n";
         }
+
+        console.log(this.initialProbabilityDistribution);
 
         var trans = this.transitions;
         for (i in trans) {
             var probSum = 0.0;
             for (j in trans[i]) {
-                probSum += trans[i][j].probability;
+                probSum += trans[i][j].text;
             }
             if (probSum != 1) {
                 errorMsg += "ERROR : " + i + " state trasition sums to : " + probSum + " (Should be 1) \n";
@@ -287,15 +272,24 @@ class markovChain {
         str += "}";
         return str;
     }
-    run(count) {
-        if (this.validCheck() != "") { return "There are unresolved errors"; }
-        if (count < 1 || count == null) { return ""; }
+    init(){
+        this.clearCache();
+        this.getStartState();
+    }
+    run(count,step) {
+        if (this.validCheck() != "") { output.innerText("There are unresolved errors"); return;}
+        if (count < 1 || count == null) { output.innerText(""); return; }
+
+        var output = document.getElementById('output');
 
         this.clearCache();
         this.getStartState();
 
         while (this.processor.outPutLength < count) {
             this.step();
+            sleep(step);
+            output.innerText(this.processor.outPut);
+
         }
         return this.processor.outPut;
     }
