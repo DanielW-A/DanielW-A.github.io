@@ -1,5 +1,28 @@
 
+const font ='20px "Times New Roman", serif';
 var running = false;
+var modelPanel;
+
+
+
+window.onload = function() {
+    initCanvas();
+
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            } 
+        });
+    }
+}
 
 run = function(steps,time){
     var output = document.getElementById('outputString');
@@ -18,6 +41,14 @@ run = function(steps,time){
     }
 }
 
+refreshInfoPanels = function(){
+    document.getElementById('modelPanelBody').innerHTML = model.toString();
+    document.getElementById('modelPanelBody').innerHTML = model.toString();
+    
+}
+
+
+
 function sleep(milliseconds) {
     const date = Date.now();
     let currentDate = null;
@@ -25,3 +56,4 @@ function sleep(milliseconds) {
         currentDate = Date.now();
     } while (currentDate - date < milliseconds);
 }
+

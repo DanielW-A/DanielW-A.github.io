@@ -13,6 +13,37 @@ class viewable{
     }
 }
 
+class State extends viewable {
+    constructor(x,y,id){
+        super(x,y);
+        this.id = id;
+        this.text = "";
+    }
+
+    isNear(mouse) {
+        return ((mouse.x - this.x) * (mouse.x - this.x) + (mouse.y - this.y) * (mouse.y - this.y) < nodeRadius * nodeRadius); 
+    }
+   
+    closestPointOnCircle(x,y) {
+        var dx = x - this.x;
+        var dy = y - this.y;
+        var scale = Math.sqrt(dx * dx + dy * dy);
+        return {
+            x: this.x + dx * nodeRadius / scale,
+            y: this.y + dy * nodeRadius / scale
+        };
+    }
+
+    draw(c,isSelected){
+        
+        c.beginPath();
+        c.arc(this.x, this.y, nodeRadius, 0, 2 * Math.PI, false);
+        c.stroke();
+        
+        addText(c,this.text,this.x,this.y,null,isSelected);
+    }
+}
+
 class Link extends viewable {
     constructor(startNode,x,y){
         super(x,y);

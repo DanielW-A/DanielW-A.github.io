@@ -54,25 +54,22 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 // vars/ consts
 /////////////////////////////////////////////////
 
-const font ='20px "Times New Roman", serif';
-
 var selectedObj;
 var model = new markovChain;
 var drawingLink;
 var canvas;
-var modelPanel;
 var c;
 
-window.onload = function() {
+initCanvas = function() {
 
     canvas = document.getElementById('markovCanvas');
 
 	console.log (document.body.clientWidth);
 	canvas.width = document.body.clientWidth;
-	canvas.height = document.body.clientHeight;
+	//canvas.height = document.body.clientHeight;
 
 	canvas.onmousedown = function(e) {
-		var mousePos = relativeMousePos(e);
+		var mousePos = getMousePos(canvas,e);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj != null){
 			console.log(shift);
@@ -81,11 +78,12 @@ window.onload = function() {
 				drawingLink = new TempLink(selectedObj,mousePos);
 			}
 		}
+		resetCaret();
         refresh();
     };
 
     canvas.ondblclick = function(e) {
-        var mousePos = relativeMousePos(e);
+        var mousePos = getMousePos(canvas,e);
         selectedObj = model.getElementAt(mousePos);
         if (selectedObj == null){
             selectedObj = model.addState(mousePos.x,mousePos.y,null,null,null);
@@ -96,7 +94,7 @@ window.onload = function() {
 	};
 	
 	canvas.onmousemove = function(e) {
-		var mousePos = relativeMousePos(e);
+		var mousePos = getMousePos(canvas,e);
 		if(drawingLink != null){
 			drawingLink.refresh(mousePos);
 			refresh();
@@ -105,7 +103,7 @@ window.onload = function() {
 
 	canvas.onmouseup = function(e) {
 		if(drawingLink != null){
-			var mousePos = relativeMousePos(e);
+			var mousePos = getMousePos(canvas,e);
 			selectedObj = model.getElementAt(mousePos);
 			if (selectedObj != null){
 				selectedObj = model.addTransistion(drawingLink);
@@ -118,8 +116,10 @@ window.onload = function() {
 		}
 	}
 
-    modelPanel = document.getElementById('modelPanelBody');
+}
 
+function canvasHasFocus() {
+	return (document.activeElement || document.body) == document.body;
 }
 
 var shift = false;
@@ -131,7 +131,7 @@ document.onkeydown = function(e) {
 		shift = true;
 	} else if(key == "Control"){
 		control = true;
-	}else if(false){ //!canvasHasFocus()) {
+	}else if(!canvasHasFocus()){ //!canvasHasFocus()) {
 		// don't read keystrokes when other things have focus
 		return true;
 	} else if(key == "Backspace") { // backspace key
@@ -193,10 +193,12 @@ document.onkeypress = function(e) {
 				if (keyCode == 46 && (selectedObj.text == "" || selectedObj.text == '0')){
 					selectedObj.text = "0.";
 				}
-			} else {
-				selectedObj.text += key;
+				resetCaret();
+				refresh();
+				return false;
 			}
 		}
+		selectedObj.text += key;
 		resetCaret();
 		refresh();
 
@@ -219,6 +221,17 @@ elementPos = function(e) {
 	return { 'x': x, 'y': y };
 }
 
+
+function  getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect(), // abs. size of element
+        scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
+        scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+  
+    return {
+      x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+      y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
+    }
+  }
 relativeMousePos = function(e){
     var element = elementPos(e);
     return {
@@ -296,9 +309,6 @@ function resetCaret() {
 	caretVisible = true;
 }
 
-refreshInfoPanels = function(){
-    modelPanel.innerHTML = model.toString();
-}
 // 		if (mode === 'drawing') {
 // 			selectedObject = selectObject(mouse.x, mouse.y);
 // 			movingObject = false;

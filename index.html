@@ -29,13 +29,6 @@
 			  <div id="outputString" type="text" placeholder="See if this fits">bbacba</div>
 			  <!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
 			</div>
-			<div id="information">
-				<div id="modelPanel" class="TODO">
-					<div id="modelPanelBody" class="TODO">Panel Content</div>
-				  </div>
-				<!-- The model detals panel -->
-				<!-- The the outputs/ description panel -->
-			</div>
 		</div>
 		
 		<div id="main">
@@ -43,8 +36,30 @@
 				Markov Model Simulator
 				<button class="delegate" disabled="disabled" title="Markov Chain">Markov Chain</button>
           		<button class="delegate" title="Hidden Markov Model">Hidden Markov Model</button>
-			</h1>
-			<div id="markovCanvasDiv">
+            </h1>
+            <div id="information" class=>
+				<div id="modelPanel" class="TODO">
+					<div id="modelPanelBody" class="TODO">Panel Content</div>
+				  </div>
+				<!-- The model detals panel -->
+				<!-- The the outputs/ description panel -->
+				<div id="statePanel" class="right">
+                    <form>
+                        <label for="sID">id:</label>
+                        <input type="text" id="sIDText" name="id" readonly="true"><br>
+                        <label for="sName">Name:</label>
+                        <input type="text" id="sNameText" name="name"><br>
+                        <label for="sName">Name:</label>
+                        <input type="text" id="sNameText" name="name"><br>
+                        <label for="sName">Name:</label>
+                        <input type="text" id="sNameText" name="name"><br>
+                        <label for="sName">Name:</label>
+                        <input type="text" id="sNameText" name="name"><br>
+                      </form>
+					<div id="statePanelBody" class="TODO">Panel Content</div>
+				</div>
+			</div>
+			<div id="markovCanvasDiv" class="markovCanvasDiv">
 				<canvas id="markovCanvas" width="1800" height="1000">
 					<span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
 				</canvas>
