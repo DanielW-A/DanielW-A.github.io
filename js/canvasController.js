@@ -1,17 +1,8 @@
-const LinkType = {
-    DIRECT: 'direct',
-    ARC: 'arc',
-    SELF: 'self'
-}
-class TempLink{ // this will be the more adaptive link when being drawn.
-	constructor(node,mousePos){
-		this.startNode = node;
+
+class TempLink extends Link{ // this will be the more adaptive link when being drawn.
+	constructor(startNode,mousePos){
+		super(startNode,mousePos.x,mousePos.y);
 		this.mousePos = mousePos;
-		this.endNode = null;
-		this.type = null;
-		this.x = null;
-		this.y = null;
-		refresh(mousePos);
 	}
 
 	refresh(mousePos){
@@ -23,45 +14,38 @@ class TempLink{ // this will be the more adaptive link when being drawn.
 		}
 		this.x = mousePos.x;
 		this.y = mousePos.y;
+
+		this.setAnchorangle(mousePos);
 	}
 
-	draw = function(c){
-		var startX,startY,endX,endY,startAngle,endAngle;
+	draw(c){
 		if(this.type === LinkType.DIRECT){
 			if (this.endNode == null){
-				endX = this.x;
-				endY = this.y;
+				this.endPos.x = this.x;
+				this.endPos.y = this.y;
+				this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
 			} else {
-				this.x = this.endNode.x;
-				this.y = this.endNode.y;
-				endAngle = (this.startNode.y-this.y == 0)? Math.PI/2 :
-						Math.atan((this.startNode.x-this.x)/(this.startNode.y-this.y));
-				
-				endX = (this.startNode.y < this.y)? -(nodeRadius*Math.sin(endAngle)) : nodeRadius*Math.sin(endAngle);
-				endX += this.endNode.x;
-				endY = (this.startNode.y < this.y)? -(nodeRadius*Math.cos(endAngle)) : nodeRadius*Math.cos(endAngle);
-				endY += this.endNode.y;
+				this.endPos = this.endNode.closestPointOnCircle(this.startNode.x, this.startNode.y);
+				this.startPos = this.startNode.closestPointOnCircle(this.endNode.x, this.endNode.y);
 			}
 
-			startAngle = (this.startNode.x-this.x == 0)? Math.PI/2 : 
-						Math.atan((this.startNode.y-this.y)/(this.startNode.x-this.x));
-						
-			startX = (this.startNode.x > this.x)? -(nodeRadius*Math.cos(startAngle)) : nodeRadius*Math.cos(startAngle);
-			startX += this.startNode.x;
-			startY = (this.startNode.x > this.x)? -(nodeRadius*Math.sin(startAngle)) : nodeRadius*Math.sin(startAngle);
-			startY += this.startNode.y;
 
 			c.beginPath();
-			c.moveTo(startX, startY);
-			c.lineTo(endX, endY);
+			c.moveTo(this.startPos.x, this.startPos.y);
+			c.lineTo(this.endPos.x, this.endPos.y);
 			c.stroke();
 
 		} else if(this.type == LinkType.SELF){
+			var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
+			var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
+			var circleRadius = 0.75 * nodeRadius;
+			var startAngle = this.anchorAngle - Math.PI * 0.8;
+			var endAngle = this.anchorAngle + Math.PI * 0.8;
 
-			// TODO
-			// c.beginPath();
-			// c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
-			// c.stroke();
+
+			c.beginPath();
+			c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
+			c.stroke();
 		}
 
 	}
@@ -70,7 +54,6 @@ class TempLink{ // this will be the more adaptive link when being drawn.
 // vars/ consts
 /////////////////////////////////////////////////
 
-const nodeRadius = 50; 
 const font ='20px "Times New Roman", serif';
 
 var selectedObj;
@@ -84,12 +67,17 @@ window.onload = function() {
 
     canvas = document.getElementById('markovCanvas');
 
+	console.log (document.body.clientWidth);
+	canvas.width = document.body.clientWidth;
+	canvas.height = document.body.clientHeight;
 
 	canvas.onmousedown = function(e) {
 		var mousePos = relativeMousePos(e);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj != null){
+			console.log(shift);
 			if(shift && selectedObj instanceof State){
+				console.log("Shift and is state");
 				drawingLink = new TempLink(selectedObj,mousePos);
 			}
 		}
@@ -120,6 +108,8 @@ window.onload = function() {
 			var mousePos = relativeMousePos(e);
 			selectedObj = model.getElementAt(mousePos);
 			if (selectedObj != null){
+				model.addTransistion(drawingLink);
+				drawingLink = null;
 				// TODO create proper one;
 			} else {
 				drawingLink = null;
@@ -174,7 +164,9 @@ document.onkeydown = function(e) {
 document.onkeyup = function(e) {
 	var key = e.key;
 
+	console.log("key up " + e);
 	if(key == "Shift") {
+		console.log("key up shift");
 		shift = false;
 	} else if(key == "Control"){
 		control = false;
@@ -186,6 +178,7 @@ document.onkeypress = function(e) {
 	var key = e.key;
 	var keyCode = key.charCodeAt(0);
     console.log(key);
+    console.log(key.charCodeAt(0));
 	if(false){ //TODO !canvasHasFocus()) {
 		// don't read keystrokes when other things have focus
 		return true;
@@ -193,6 +186,15 @@ document.onkeypress = function(e) {
 		selectedObj = null;
 		refresh();
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
+		if (selectedObj instanceof Transition){
+			if((!(keyCode >= 46 && keyCode <= 57 && keyCode != 47))
+					|| (keyCode == 46 && selectedObj.text.includes("."))
+					|| ((keyCode != 48 && keyCode != 49) && selectedObj.text == "")
+					|| (keyCode != 46 && selectedObj.text == "0")
+					|| (selectedObj.text == "1")){
+				return false;
+			}
+		}
 		selectedObj.text += key;
 		resetCaret();
 		refresh();
@@ -203,6 +205,25 @@ document.onkeypress = function(e) {
 		// backspace is a shortcut for the back button, but do NOT want to change pages
 		return false;
 	}
+}
+
+elementPos = function(e) {
+	var target = e.target;
+	var x = 0, y = 0;
+	while(target.offsetParent) {
+		x += target.offsetLeft;
+		y += target.offsetTop;
+		target = target.offsetParent;
+	}
+	return { 'x': x, 'y': y };
+}
+
+relativeMousePos = function(e){
+    var element = elementPos(e);
+    return {
+		'x': e.pageX - element.x,
+		'y': e.pageY - element.y
+	};
 }
 
 
@@ -229,6 +250,13 @@ refreshComponents = function() {
 		c.lineWidth = 1;
 		c.fillStyle = c.strokeStyle = 'black';
 		drawingLink.draw(c);
+	}
+	for (i in model.transitions){
+		for (j in model.transitions[i]){
+			c.lineWidth = 1;
+			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj) ? 'blue' : 'black';
+			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
+		}
 	}
 }
 
