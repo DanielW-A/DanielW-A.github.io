@@ -42,8 +42,52 @@ run = function(steps,time){
 }
 
 refreshInfoPanels = function(){
-    document.getElementById('modelPanelBody').innerHTML = model.toString();
-    document.getElementById('modelPanelBody').innerHTML = model.toString();
+    if (!(selectedObj == null)){
+        if (selectedObj instanceof State){
+            document.getElementById("sIDText").value = selectedObj.id;
+            document.getElementById("sNameText").value = selectedObj.text;
+            document.getElementById("sEmmisionText").value = selectedObj.emmision;
+            document.getElementById("sInitalProability").value = model.initialProbabilityDistribution[selectedObj.id];
+            document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
+        }
+    }
+    var stateStr = "{";
+    for (i in model.states){ stateStr += model.states[i].text + ','; }
+    stateStr = stateStr.substr(0, stateStr.length - 1);
+    stateStr += "}";
+    document.getElementById("mStatesText").innerHTML = stateStr;
+
+    
+    var transStr = "{";
+    for (i in model.states){
+        for (j in model.states){
+            if (model.transitions[i][j] == null || model.transitions[i][j].text == ''){
+                transStr += '0';
+            } else {
+                transStr += model.transitions[i][j].text;
+            }
+            transStr += ',';
+        }
+        transStr += "},<br>{"; //TODO not what i want but good enough for rn.
+    }
+    document.getElementById("mTransitions").innerHTML = transStr;
+
+    var initStr = "{";
+    for (i in model.states){
+        if (model.initialProbabilityDistribution[model.states[i].id] == null){
+            initStr += '0';
+        } else {
+            initStr += model.initialProbabilityDistribution[model.states[i].id];
+        }
+        initStr += ','
+    }
+    initStr = initStr.substr(0, initStr.length - 1);
+    initStr += "}";
+    document.getElementById("mInitalProability").innerHTML = initStr;
+
+    mInitalProability
+    //mLatentStates
+    //mEmmisionProbaility
     
 }
 

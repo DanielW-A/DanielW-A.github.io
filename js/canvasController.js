@@ -66,7 +66,13 @@ initCanvas = function() {
 
 	console.log (document.body.clientWidth);
 	canvas.width = document.body.clientWidth;
-	//canvas.height = document.body.clientHeight;
+	canvas.height = window.innerHeight;
+	document.body.clientHeight;
+	document.body.clientWidth;
+	window.innerHeight;
+	window.innerWidth;
+	document.documentElement.clientHeight;
+	document.documentElement.clientWidth;
 
 	canvas.onmousedown = function(e) {
 		var mousePos = getMousePos(canvas,e);

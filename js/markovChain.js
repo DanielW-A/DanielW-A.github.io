@@ -68,10 +68,11 @@ class markovChain {
     // }
     addTransistion(tempLink){
         if (!this.transitions[tempLink.startNode.id]) {this.transitions[tempLink.startNode.id] = {};}
-        console.log(tempLink.startNode);
-        console.log(tempLink.endNode);
         this.transitions[tempLink.startNode.id][tempLink.endNode.id] = new Transition(tempLink.startNode,tempLink.endNode,tempLink.anchorAngle,null);
-        console.log(this.transitions);
+        if (!(this.transitions[tempLink.endNode.id][tempLink.startNode.id] == null) && tempLink.startNode !== tempLink.endNode){
+            this.transitions[tempLink.endNode.id][tempLink.startNode.id].type = LinkType.ARC;
+            this.transitions[tempLink.startNode.id][tempLink.endNode.id].type = LinkType.ARC;
+        }
         return this.transitions[tempLink.startNode.id][tempLink.endNode.id];
     }
     editTransistion(stateA, stateB, probability){

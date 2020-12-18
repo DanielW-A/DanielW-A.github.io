@@ -91,7 +91,7 @@ class StationaryLink extends Link {
         this.endNode = endNode;
         this.text = (text == null)? "" : text;
 		this.type = (endNode === startNode)? LinkType.SELF: LinkType.DIRECT;
-        this.perpendicularPart = 0;
+        this.perpendicularPart = 20;
         this.parallelPart = 0.5;
         this.anchorAngle = anchorAngle;
 
@@ -143,6 +143,10 @@ class StationaryLink extends Link {
             this.startPos.y = circle.y + circle.radius * Math.sin(startAngle);
             this.endPos.x = circle.x + circle.radius * Math.cos(endAngle);
             this.endPos.y = circle.y + circle.radius * Math.sin(endAngle);
+
+            c.beginPath();
+		    c.arc(circle.x, circle.y, circle.radius, startAngle, endAngle, isReversed);
+            c.stroke();
         }
 
         addText(c,this.text,this.x,this.y,null,isSelected);
