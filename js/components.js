@@ -123,7 +123,11 @@ class StationaryLink extends Link {
             c.beginPath();
             c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
             c.stroke();
-            drawArrow(c, stuff.endX, stuff.endY, stuff.endAngle + Math.PI * 0.4);
+
+            this.endPos.x = circleX + circleRadius * Math.cos(endAngle);
+            this.endPos.y = circleY + circleRadius * Math.sin(endAngle);
+
+            this.drawArrow(c, this.endPos.x, this.endPos.y, endAngle + Math.PI * 0.4);
 
         } else if(this.type === LinkType.DIRECT){
             this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
@@ -133,7 +137,7 @@ class StationaryLink extends Link {
 		    c.moveTo(this.startPos.x, this.startPos.y);
 		    c.lineTo(this.endPos.x, this.endPos.y);
             c.stroke();
-            drawArrow(c, stuff.endX, stuff.endY, Math.atan2(stuff.endY - stuff.startY, stuff.endX - stuff.startX));
+            this.drawArrow(c, this.endPos.x, this.endPos.y, Math.atan2(this.endPos.y - this.startPos.y, this.endPos.x - this.startPos.x));
         } else {
             var anchor = this.getAnchorPoint();
             var circle = this.circleFromThreePoints(this.startNode.x, this.startNode.y, this.endNode.x, this.endNode.y, anchor.x, anchor.y);
@@ -149,7 +153,7 @@ class StationaryLink extends Link {
             c.beginPath();
 		    c.arc(circle.x, circle.y, circle.radius, startAngle, endAngle, isReversed);
             c.stroke();
-            drawArrow(c, stuff.endX, stuff.endY, stuff.endAngle - stuff.reverseScale * (Math.PI / 2));
+            this.drawArrow(c, this.endPos.x, this.endPos.y, endAngle - reverseScale * (Math.PI / 2));
         }
 
         addText(c,this.text,this.x,this.y,null,isSelected);
