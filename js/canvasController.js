@@ -7,6 +7,7 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 
 	refresh(mousePos){
 		this.endNode = model.getElementAt(mousePos);
+		if (!(this.endNode instanceof State)){this.endNode = null;}
 		if (this.startNode != this.endNode){
 			this.type = LinkType.DIRECT;
 		} else {
@@ -19,7 +20,7 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 	}
 
 	draw(c){
-		if(this.type === LinkType.DIRECT){
+		if(this.type === LinkType.DIRECT || this.startNode instanceof EmmisionState){
 			if (this.endNode == null){
 				this.endPos.x = this.x;
 				this.endPos.y = this.y;
@@ -35,6 +36,7 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 			c.lineTo(this.endPos.x, this.endPos.y);
 			c.stroke();
 
+		
 		} else if(this.type == LinkType.SELF){
 			var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
 			var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
@@ -55,12 +57,14 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 /////////////////////////////////////////////////
 
 var selectedObj;
-var model = new markovChain;
+var model;
 var drawingLink;
 var canvas;
 var c;
 
 initCanvas = function() {
+
+	model = new HiddenMarkovModel();
 
     canvas = document.getElementById('markovCanvas');
 
@@ -76,6 +80,7 @@ initCanvas = function() {
 
 	canvas.onmousedown = function(e) {
 		var mousePos = getMousePos(canvas,e);
+		console.log(mousePos);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj != null){
 			console.log(shift);
@@ -90,9 +95,14 @@ initCanvas = function() {
 
     canvas.ondblclick = function(e) {
         var mousePos = getMousePos(canvas,e);
-        selectedObj = model.getElementAt(mousePos);
+		selectedObj = model.getElementAt(mousePos);
         if (selectedObj == null){
-            selectedObj = model.addState(mousePos.x,mousePos.y,null,null,null);
+			if (control && model instanceof HiddenMarkovModel){
+				selectedObj = model.addEmmisionState(mousePos.x,mousePos.y);
+			} else {
+            	selectedObj = model.addState(mousePos.x,mousePos.y);
+
+			}
         }
 
 		resetCaret();
@@ -179,19 +189,17 @@ document.onkeyup = function(e) {
 }
 
 document.onkeypress = function(e) {
-	// don't read keystrokes when other things have focus
 	var key = e.key;
 	var keyCode = key.charCodeAt(0);
     console.log(key);
     console.log(key.charCodeAt(0));
-	if(false){ //TODO !canvasHasFocus()) {
-		// don't read keystrokes when other things have focus
+	if(!canvasHasFocus()){ //TODO !canvasHasFocus()) {
 		return true;
 	} else if (key == "Enter"){
 		selectedObj = null;
 		refresh();
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
-		if (selectedObj instanceof Transition){
+		if (selectedObj instanceof StationaryLink){
 			if((!(keyCode >= 48 && keyCode <= 57))
 					|| ((keyCode != 48 & keyCode != 49) && selectedObj.text == "")
 					|| (selectedObj.text == "1")){
@@ -266,6 +274,13 @@ refreshComponents = function() {
 		c.fillStyle = c.strokeStyle = (model.states[i] === selectedObj) ? 'blue' : 'black';
 		model.states[i].draw(c,(model.states[i] === selectedObj));
 	}
+	if (model instanceof HiddenMarkovModel){
+		for (i in model.emmisionStates){
+			c.lineWidth = 1;
+			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj) ? 'blue' : 'black';
+			model.emmisionStates[i].draw(c,(model.emmisionStates[i] === selectedObj));	
+		}
+	}
 	if(drawingLink != null){
 		c.lineWidth = 1;
 		c.fillStyle = c.strokeStyle = 'black';
@@ -278,32 +293,6 @@ refreshComponents = function() {
 			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
 		}
 	}
-}
-
-addText = function(c,text,x,y,Angle,isSelected){
-    // TODO text = convertLatexShortcuts(originalText);
-	c.font = font;
-	var width = c.measureText(text).width;
-
-	// center the text
-	x -= width / 2;
-
-	if(Angle != null) {
-		//TODO  for arrows.
-	}
-
-	// draw text and caret (round the coordinates so the caret falls on a pixel)
-
-	x = Math.round(x);
-	y = Math.round(y);
-	c.fillText(text, x, y + 6);
-	if(isSelected && caretVisible && document.hasFocus()) {
-		x += width;
-		c.beginPath();
-		c.moveTo(x, y - 10);
-		c.lineTo(x, y + 10);
-		c.stroke();
-    }
 }
 
 var caretTimer = null;

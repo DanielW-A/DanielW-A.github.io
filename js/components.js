@@ -1,3 +1,106 @@
+class MarkovModel{
+    constructor() {
+        "use Strict";
+        this.states = {};
+        this.transitions = {};
+        this.initialProbabilityDistribution = {};
+
+        this.userStartState = null;
+
+        this.lastId = 0;
+
+        this.processor = {
+            currentState: null,
+            outPut: "",
+            outPutLength: 0,
+            errors: [],
+            warnings: []
+        };
+    }
+    deleteState(object){
+        for (i in this.states) {
+            if (this.states[i] === object) {
+                this.removeAllTrasitions(i);
+                delete this.states[i];
+            }
+        }
+    }
+    deleteTrasition(object){
+        for (i in this.transitions) {
+            for (j in this.transitions[i]){
+                if (this.transitions[i][j] === object){
+                    if (this.transitions[i][j].type == LinkType.ARC){
+                        this.transitions[j][i].type = LinkType.DIRECT;
+                    }
+                    delete this.transitions[i][j];
+                }
+            }
+        }
+    }
+    removeAllTrasitions(i) {
+        delete this.transitions[i];
+        var self = this;
+        $.each(self.transitions, function (stateA, sTrans) {
+            $.each(sTrans, function (stateB) {
+                if (stateB == i) { self.removeTransition(stateA, stateB); }
+            });
+        });
+        return this;
+    }
+    removeTransition(stateA, stateB) {
+        if (this.transitions[stateA]) { delete this.transitions[stateA][stateB]; }
+        return this;
+    }
+    /////////////////////////////////////////////////
+    // processing
+    /////////////////////////////////////////////////
+    init(){
+        this.clearCache();
+        this.getStartState();
+    }
+    clearCache() {
+        this.processor.currentState = null;
+        this.processor.outPut = "";
+        this.processor.outPutLength = 0;
+    }
+    saveState(state) {
+        this.processor.currentState = state;
+        this.processor.outPut += this.states[state].getEmmision();
+        this.processor.outPutLength++;
+    }
+    getStartState() {
+        var i;
+        var probSum = 0;
+        var check = Math.random();
+        var initProb = this.initialProbabilityDistribution;
+        for (i in initProb) {
+            probSum += initProb[i];
+            if (probSum > check) {
+                this.saveState(i);
+                return;
+            }
+        }
+    }
+    transition(state) {
+        var i;
+        var check = Math.random();
+        var probSum = 0.0;
+        var trans = this.transitions[state];
+        for (i in trans) {
+            probSum += parseFloat(trans[i].text);
+            if (probSum > check) {
+                return i;
+            }
+        }
+    }
+    step() {
+        var temp = this.transition(this.processor.currentState);
+        console.log(temp);
+        this.saveState(temp);
+        return this.processor.outPut;
+    }
+}
+
 const LinkType = {
     DIRECT: 'direct',
     ARC: 'arc',
@@ -8,6 +111,7 @@ const mousePadding = 5;
 
 class viewable{
     constructor(x,y){
+        "use Strict";
         this.x = x;
         this.y = y;
     }
@@ -40,7 +144,21 @@ class State extends viewable {
         c.arc(this.x, this.y, nodeRadius, 0, 2 * Math.PI, false);
         c.stroke();
         
-        addText(c,this.text,this.x,this.y,null,isSelected);
+        this.addText(c,this.text,this.x,this.y,isSelected);
+    }
+
+    addText = function(c,text,x,y,isSelected){
+        c.font = font;
+        var width = c.measureText(text).width;
+        x -= Math.round(width / 2);
+        c.fillText(text, x, y + 6);
+        if(isSelected && caretVisible && document.hasFocus()) {
+            x += width;
+            c.beginPath();
+            c.moveTo(x, y - 10);
+            c.lineTo(x, y + 10);
+            c.stroke();
+        }
     }
 }
 
@@ -112,6 +230,7 @@ class StationaryLink extends Link {
     }
 
     draw(c,isSelected){
+        var angle = null;
         if (this.type === LinkType.SELF){
             var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
             var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
@@ -129,6 +248,9 @@ class StationaryLink extends Link {
 
             this.drawArrow(c, this.endPos.x, this.endPos.y, endAngle + Math.PI * 0.4);
 
+            // angle = (startAngle + endAngle) / 2 + Math.PI;
+            angle = null;
+        
         } else if(this.type === LinkType.DIRECT){
             this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
             this.endPos = this.endNode.closestPointOnCircle(this.x, this.y);
@@ -154,9 +276,10 @@ class StationaryLink extends Link {
 		    c.arc(circle.x, circle.y, circle.radius, startAngle, endAngle, isReversed);
             c.stroke();
             this.drawArrow(c, this.endPos.x, this.endPos.y, endAngle - reverseScale * (Math.PI / 2));
+            angle = (startAngle + endAngle) / 2 + isReversed * Math.PI
         }
 
-        addText(c,this.text,this.x,this.y,null,isSelected);
+        this.addText(c,this.text,this.x,this.y,angle,isSelected);
     }
 
     
@@ -170,23 +293,46 @@ class StationaryLink extends Link {
 	    c.fill();
     }
 
-    isNear(mouse){ //TODO for arcs
+    addText = function(c,text,x,y,angle,isSelected){
+        c.font = font;
+        var width = c.measureText(text).width;
+        x -= Math.round(width / 2);
+        if(angle != null) {
+            var cos = Math.cos(angle);
+            var sin = Math.sin(angle);
+            var cornerPointX = (width / 2 + 5) * (cos > 0 ? 1 : -1);
+            var cornerPointY = (10 + 5) * (sin > 0 ? 1 : -1);
+            var slide = sin * Math.pow(Math.abs(sin), 40) * cornerPointX - cos * Math.pow(Math.abs(cos), 10) * cornerPointY;
+            x += cornerPointX - sin * slide;
+            y += cornerPointY + cos * slide;
+        }
+        c.fillText(text, x, y + 6);
+        if(isSelected && caretVisible && document.hasFocus()) {
+            x += width;
+            c.beginPath();
+            c.moveTo(x, y - 10);
+            c.lineTo(x, y + 10);
+            c.stroke();
+        }
+    }
+
+    isNear(mouse){ //TODO for arcs maybe just increase the box for time being
         if (this.type === LinkType.SELF){
 	        var dx = mouse.x - (this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle));
 	        var dy = mouse.y - (this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle));
 	        var distance = Math.sqrt(dx*dx + dy*dy) - 0.75 * nodeRadius;
 	        return (Math.abs(distance) < mousePadding);
         }else
-        if((mouse.x < Math.max(this.startPos.x,this.endPos.x) + mousePadding) && 
-                (mouse.x > Math.min(this.startPos.x,this.endPos.x) - mousePadding) &&  
-                (mouse.y < Math.max(this.startPos.y,this.endPos.y) + mousePadding) &&  
-                (mouse.y > Math.min(this.startPos.y,this.endPos.y) - mousePadding)){
+        if((mouse.x < Math.max(this.startNode.x,this.endNode.x) + nodeRadius) && 
+                (mouse.x > Math.min(this.startNode.x,this.endNode.x) - nodeRadius) &&  
+                (mouse.y < Math.max(this.startNode.y,this.endNode.y) + nodeRadius) &&  
+                (mouse.y > Math.min(this.startNode.y,this.endNode.y) - nodeRadius)){
 
             var d = (((this.endPos.x - this.startPos.x)*(this.startPos.y - mouse.y)) -
                         ((this.startPos.x - mouse.x) * (this.endPos.y - this.startPos.y)))/
                         Math.sqrt(Math.pow((this.endNode.x-this.startNode.x),2)+Math.pow((this.endNode.y-this.startNode.y),2));
             console.log(d);
-            return (d < mousePadding);
+            return (Math.abs(d) < mousePadding);
         }
         
     }
