@@ -20,24 +20,9 @@ class Transition extends StationaryLink{
     }
 }
 
-class markovChain {
+class MarkovChain extends MarkovModel{
     constructor() {
-        "use strict";
-        // the 3 - tuple that defines markov chains
-        this.states = {};
-        this.transitions = {};
-        this.initialProbabilityDistribution = {};
-
-        // TODO allow the user to start at a state they want.
-        this.userStartState = null;
-
-        this.lastId = 0;
-
-        this.processor = {
-            currentState: null,
-            outPut: "",
-            outPutLength: 0,
-        };
+        super();
     }
     /////////////////////////////////////////////////
     // Editing the model
@@ -50,17 +35,17 @@ class markovChain {
         this.transitions[id] = {};
         return this.states[id];
     }
-    setName(id, text) {
-        this.states[id].text = text;
-        return this;
-    }
-    setEmmision(id, emmision) {
-        this.states[id].emmision = emmision;
-        return this;
-    }
-    setInitialProbability(state, probability) {
-        this.initialProbabilityDistribution[state] = probability;
-    }
+    // setName(id, text) {
+    //     this.states[id].text = text;
+    //     return this;
+    // }
+    // setEmmision(id, emmision) {
+    //     this.states[id].emmision = emmision;
+    //     return this;
+    // }
+    // setInitialProbability(state, probability) {
+    //     this.initialProbabilityDistribution[state] = probability;
+    // }
     // addTransistion(stateA, stateB, probability) {
     //     if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
     //     this.transitions[stateA][stateB] = new Transition(0,0,probability); // might switch stateB and prob in the future.
@@ -75,67 +60,17 @@ class markovChain {
         }
         return this.transitions[tempLink.startNode.id][tempLink.endNode.id];
     }
-    editTransistion(stateA, stateB, probability){
-        if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
-        this.transitions[stateA.id][stateB.id] = probability;
-    }
-    delete(object) {
-        //TODO classify the object
-        if (true) {
-            console.log(this.states);
-            console.log(object);
-            for (i in this.states) {
-                if (this.states[i] === object) {
-                    this.removeAllTrasitions(i);
-                    delete this.states[i];
-                }
-            }
-            console.log(this.states);
-        }
-    }
-    removeAllTrasitions(i) {
-        delete this.transitions[i];
-        var self = this;
-        $.each(self.transitions, function (stateA, sTrans) {
-            $.each(sTrans, function (stateB) {
-                if (stateB == i) { self.removeTransition(stateA, stateB); }
-            });
-        });
-        return this;
-    }
-    removeTransition(stateA, stateB) {
-        if (this.transitions[stateA]) { delete this.transitions[stateA][stateB]; }
-        return this;
-    }
+    // editTransistion(stateA, stateB, probability){
+    //     if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
+    //     this.transitions[stateA.id][stateB.id] = probability;
+    // }
     /////////////////////////////////////////////////
     // Querying the model
     /////////////////////////////////////////////////
-    getElementAt(mouse) {
-        for (i in this.states) {
-            var state = this.states[i];
-            if(state.isNear(mouse)){
-                return state;
-            }
-        }
-        for (i in this.transitions){
-            for (j in this.transitions[i]){
-                var trans = this.transitions[i][j];
-                if (trans.isNear(mouse)){
-                    return trans;
-                }
-            }
-        }
-
-        return null;
-    }
+    
     /////////////////////////////////////////////////
     // processing
     /////////////////////////////////////////////////
-    clearCache() {
-        this.processor.currentState = null;
-        this.processor.outPut = "";
-        this.processor.outPutLength = 0;
-    }
     saveState(state) {
         this.processor.currentState = state;
         this.processor.outPut += this.states[state].getEmmision();
@@ -171,6 +106,30 @@ class markovChain {
         console.log(temp);
         this.saveState(temp);
         return this.processor.outPut;
+    }
+    delete(object) {
+        if (object instanceof LatentState){
+            this.deleteState(object);
+        } else if( object instanceof StationaryLink){
+            this.deleteTrasition(object);
+        }
+    }
+    getElementAt(mouse) {
+        for (i in this.states) {
+            var state = this.states[i];
+            if(state.isNear(mouse)){
+                return state;
+            }
+        }
+        for (i in this.transitions){
+            for (j in this.transitions[i]){
+                var trans = this.transitions[i][j];
+                if (trans.isNear(mouse)){
+                    return trans;
+                }
+            }
+        }
+        return null;
     }
     /////////////////////////////////////////////////
     // testing / running
@@ -238,10 +197,6 @@ class markovChain {
         for (i in initProb) { str += (initProb[i] == 0) ? '' : initProb[i] + ','; }
         str += "}";
         return str;
-    }
-    init(){
-        this.clearCache();
-        this.getStartState();
     }
     run(count,step) {
         if (this.validCheck() != "") { output.innerText("There are unresolved errors"); return;}

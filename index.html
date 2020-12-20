@@ -17,6 +17,7 @@
 	<script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
 	<script src="js/components.js"></script>
 	<script src="js/markovChain.js"></script>
+	<script src="js/hiddenMarkovModel.js"></script>
 	<script src="js/pageController.js"></script>
 	<script src="js/canvasController.js"></script>
 
@@ -86,10 +87,16 @@
 						</form>
 					</div>
 				</div>
-				<div id="statePanel" class="panelWrapper">
+				<div id="errorPanel" class="panelWrapper">
+					<button id="errorButton" class="accordion">Errors</button>
+					<div id="errorPanelInfo" class="panel">
+						<label>Errors : TODO</label>
+					</div>
+				</div>
+				<div id="InstructionsPanel" class="panelWrapper">
 					<button id="instructionsButton" class="accordion">Instructions</button>
 					<div id="instructionsPanelInfo" class="panel">
-						<label>Instructions : TODO</label>
+						<label id="instructionsPanelText">Instructions : TODO</label>
 					</div>
 				</div>
 			</div>
