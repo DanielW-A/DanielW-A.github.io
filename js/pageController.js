@@ -76,7 +76,11 @@ validateProability = function(text){
 var runner = null;
 run = function(steps,time){
     var output = document.getElementById('outputString');
-    if (!model.validCheck()) { output.innerHTML = "There are unresolved errors";alert(model.validCheck()); return;}
+    if (!model.validCheck()) { 
+        output.innerHTML = "There are unresolved errors";
+        refresh();
+        return;
+    }
     if (steps < 1 || steps == null) { output.innerHTML = ""; return; }
     model.init();
     selectedObj = null;
@@ -179,6 +183,16 @@ refreshInfoPanels = function(){
     } else if (model instanceof HiddenMarkovModel){
 
     }
+
+    var errors = "";
+    for (i in model.processor.errors){
+        errors += "ERROR : " + model.processor.errors[i] + "<br>";
+    }
+    for (i in model.processor.warnings){
+        errors += "WARNING : " + model.processor.warnings[i] + "<br>";
+    }
+
+    document.getElementById("errorPanelInfo").innerHTML = errors;
     
 }
 
