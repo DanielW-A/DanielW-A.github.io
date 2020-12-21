@@ -73,20 +73,50 @@ validateProability = function(text){
 
 }
 
+var runner = null;
 run = function(steps,time){
     var output = document.getElementById('outputString');
     if (!model.validCheck()) { output.innerHTML = "There are unresolved errors";alert(model.validCheck()); return;}
     if (steps < 1 || steps == null) { output.innerHTML = ""; return; }
     model.init();
-    while (model.processor.outPutLength < steps) {
-        sleep(time);
-        document.getElementById('outputString').innerHTML = model.step();
+    selectedObj = null;
+    clearInterval(caretTimer);
+    runner = setInterval('step()',time/2);
+    // while (model.processor.outPutLength < steps) {
+    //     // do nothing.
+    // }
+    // runner = null;
+    // while (model.processor.outPutLength < steps) {
+    //     selectedObj = model.states[model.processor.currentState];
+    //     refresh();
+    //     // sleep(time/2);
+    //     document.getElementById('outputString').innerHTML = model.step();
+    //     selectedObj = model.transitions[selectedObj.id][model.processor.currentState];
+    //     refresh();
+    //     // sleep(time/2);
 
-    }
+    // }
 
     if (tempInitial){
         model.initialProbabilityDistribution = {};
         tempInitial = false;
+    }
+}
+
+function step() {
+    if (selectedObj == null){
+        selectedObj = model.states[model.processor.currentState]; //init state
+    } else if (selectedObj instanceof State){
+        model.step();
+        selectedObj = model.transitions[selectedObj.id][model.processor.currentState];
+    } else if (selectedObj instanceof StationaryLink){
+        selectedObj = model.states[model.processor.currentState];
+        document.getElementById('outputString').innerHTML = model.processor.outPut;
+    }
+    refresh();
+    if (model.processor.outPutLength > 20){
+        clearInterval(runner);
+        resetCaret();
     }
 }
 

@@ -175,7 +175,7 @@ class MarkovChain extends MarkovModel{
             }
         }
 
-        return errorMsg; // should objectify this later.
+        return true; // should objectify this later.
     }
     toString() {
         var i,j;

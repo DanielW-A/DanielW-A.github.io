@@ -64,7 +64,7 @@ var c;
 
 initCanvas = function() {
 
-	model = new HiddenMarkovModel();
+	model = new MarkovChain();
 
     canvas = document.getElementById('markovCanvas');
 
