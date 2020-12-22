@@ -4,6 +4,16 @@ var running = false;
 var modelPanel;
 
 
+toggleAccordion = function(component){
+    component.classList.toggle("active");
+    var panel = component.nextElementSibling;
+    if (panel.style.maxHeight) {
+        panel.style.maxHeight = null;
+    } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+    }
+}
+
 
 window.onload = function() {
     initCanvas();
@@ -13,15 +23,35 @@ window.onload = function() {
 
     for (i = 0; i < acc.length; i++) {
         acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            } 
+            toggleAccordion(this);
         });
     }
+
+    // buttons
+    document.getElementById("saveBtn").addEventListener("click", function() {
+        save();
+    });
+    document.getElementById("loadBtn").addEventListener("click", function() {
+        load();
+    });
+    document.getElementById("clearBtn").addEventListener("click", function() {
+        clear();
+    });
+    document.getElementById("runBtn").addEventListener("click",  function() {
+        run(20,1000);
+    });
+
+    document.getElementById("markovChainBtn").disabled = true;
+    document.getElementById("markovChainBtn").addEventListener("click", function(){
+        model = new MarkovChain();
+        document.getElementById("markovChainBtn").disabled = true;
+        document.getElementById("hiddenMarkovModelBtn").disabled = false;
+    });
+    document.getElementById("hiddenMarkovModelBtn").addEventListener("click", function(){
+        model = new HiddenMarkovModel();
+        document.getElementById("markovChainBtn").disabled = false;
+        document.getElementById("hiddenMarkovModelBtn").disabled = true;
+    });
 
     // State details
     var stateName = document.getElementById("sNameText");
@@ -73,33 +103,44 @@ validateProability = function(text){
 
 }
 
+save = function(){
+    alert("TODO");
+}
+
+load = function(){
+    alert("TODO");
+}
+
+clear = function(){
+    if (model instanceof HiddenMarkovModel){
+        model = new HiddenMarkovModel();
+    } else if (model instanceof MarkovChain){
+        model = new MarkovChain();
+    }
+
+    model = new MarkovChain();
+}
+
 var runner = null;
 run = function(steps,time){
     var output = document.getElementById('outputString');
     if (!model.validCheck()) { 
         output.innerHTML = "There are unresolved errors";
         refresh();
+        var panel = document.getElementById("errorPanelInfo");
+        panel.style.maxHeight = panel.scrollHeight + "px";
+        document.getElementById("errorButton").classList.add("active");
         return;
     }
+
+
     if (steps < 1 || steps == null) { output.innerHTML = ""; return; }
     model.init();
     selectedObj = null;
     clearInterval(caretTimer);
+    caretVisible = false;
     runner = setInterval('step()',time/2);
-    // while (model.processor.outPutLength < steps) {
-    //     // do nothing.
-    // }
-    // runner = null;
-    // while (model.processor.outPutLength < steps) {
-    //     selectedObj = model.states[model.processor.currentState];
-    //     refresh();
-    //     // sleep(time/2);
-    //     document.getElementById('outputString').innerHTML = model.step();
-    //     selectedObj = model.transitions[selectedObj.id][model.processor.currentState];
-    //     refresh();
-    //     // sleep(time/2);
 
-    // }
 
     if (tempInitial){
         model.initialProbabilityDistribution = {};
@@ -119,6 +160,7 @@ function step() {
     }
     refresh();
     if (model.processor.outPutLength > 20){
+        selectedObj = 0;
         clearInterval(runner);
         resetCaret();
     }
@@ -134,6 +176,11 @@ refreshInfoPanels = function(){
             document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
         }
     }
+    var panel = document.getElementById("statePanelInfo");
+    if (panel.style.maxHeight){
+        panel.style.maxheight = panel.scrollHeight + "px";
+    }
+
     var stateStr = "{";
     for (i in model.states){ stateStr += model.states[i].text + ','; }
     stateStr = stateStr.substr(0, stateStr.length - 1);
@@ -170,6 +217,12 @@ refreshInfoPanels = function(){
 
     //mLatentStates
     //mEmmisionProbaility
+
+    
+    panel = document.getElementById("modelPanelInfo");
+    if (panel.style.maxHeight){
+        panel.style.maxHeight = panel.scrollHeight + "px";
+    }
 
     if (model instanceof MarkovChain){
         document.getElementById("instructionsPanelInfo").innerHTML = 
