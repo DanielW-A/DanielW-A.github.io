@@ -148,22 +148,31 @@ run = function(steps,time){
     }
 }
 
+var currentEmmision = null;
 function step() {
     if (selectedObj == null){
         selectedObj = model.states[model.processor.currentState]; //init state
+        if (model instanceof HiddenMarkovModel) {currentEmmision = model.processor.emmisionState}
     } else if (selectedObj instanceof State){
         model.step();
         selectedObj = model.transitions[selectedObj.id][model.processor.currentState];
+        currentEmmision = null;
     } else if (selectedObj instanceof StationaryLink){
         selectedObj = model.states[model.processor.currentState];
+        if (model instanceof HiddenMarkovModel) {currentEmmision = model.processor.emmisionState}
         document.getElementById('outputString').innerHTML = model.processor.outPut;
     }
     refresh();
     if (model.processor.outPutLength > 20){
-        selectedObj = 0;
-        clearInterval(runner);
+        selectedObj = null;
+        stopStep();
         resetCaret();
     }
+}
+
+function stopStep(){
+    clearInterval(runner);
+    runner = null;
 }
 
 refreshInfoPanels = function(){

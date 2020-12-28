@@ -147,10 +147,10 @@ document.onkeydown = function(e) {
 		shift = true;
 	} else if(key == "Control"){
 		control = true;
-	}else if(!canvasHasFocus()){ //!canvasHasFocus()) {
+	}else if(!canvasHasFocus()){
 		// don't read keystrokes when other things have focus
 		return true;
-	} else if(key == "Backspace") { // backspace key
+	} else if(key == "Backspace") {
 		if(selectedObj != null) {
 			if(control || selectedObj.text == "0."){
 				selectedObj.text = "";
@@ -193,7 +193,7 @@ document.onkeypress = function(e) {
 	var keyCode = key.charCodeAt(0);
     console.log(key);
     console.log(key.charCodeAt(0));
-	if(!canvasHasFocus()){ //TODO !canvasHasFocus()) {
+	if(!canvasHasFocus()){
 		return true;
 	} else if (key == "Enter"){
 		selectedObj = null;
@@ -277,7 +277,7 @@ refreshComponents = function() {
 	if (model instanceof HiddenMarkovModel){
 		for (i in model.emmisionStates){
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj) ? 'blue' : 'black';
+			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj || model.emmisionStates[i] === currentEmmision) ? 'blue' : 'black';
 			model.emmisionStates[i].draw(c,(model.emmisionStates[i] === selectedObj));	
 		}
 	}
@@ -289,7 +289,7 @@ refreshComponents = function() {
 	for (i in model.transitions){
 		for (j in model.transitions[i]){
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj) ? 'blue' : 'black';
+			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj || (model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision)) ? 'blue' : 'black';
 			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
 		}
 	}

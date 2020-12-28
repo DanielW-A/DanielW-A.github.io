@@ -4,6 +4,8 @@ class MarkovModel{
         this.states = {};
         this.transitions = {};
         this.initialProbabilityDistribution = {};
+        
+        this.emmisionStates = {};
 
         this.userStartState = null;
 
@@ -13,6 +15,7 @@ class MarkovModel{
             currentState: null,
             outPut: "",
             outPutLength: 0,
+            emmisionState: null,
             errors: [],
             warnings: []
         };
@@ -65,7 +68,13 @@ class MarkovModel{
     }
     saveState(state) {
         this.processor.currentState = state;
-        this.processor.outPut += this.states[state].getEmmision();
+        if (this instanceof HiddenMarkovModel){
+            var emState = this.states[state].getEmmision();
+            this.processor.outPut += emState.getEmmision();
+            this.processor.emmisionState = emState;
+        } else {
+            this.processor.outPut += this.states[state].getEmmision();
+        }
         this.processor.outPutLength++;
     }
     getStartState() {
