@@ -108,7 +108,7 @@ class MarkovChain extends MarkovModel{
         return this.processor.outPut;
     }
     delete(object) {
-        if (object instanceof LatentState){
+        if (object instanceof State){
             this.deleteState(object);
         } else if( object instanceof StationaryLink){
             this.deleteTrasition(object);
