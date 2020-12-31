@@ -62,6 +62,9 @@ var drawingLink;
 var canvas;
 var c;
 
+var movingObject;
+var offset;
+
 initCanvas = function() {
 
 	model = new MarkovChain();
@@ -80,6 +83,7 @@ initCanvas = function() {
 
 	canvas.onmousedown = function(e) {
 		var mousePos = getMousePos(canvas,e);
+
 		console.log(mousePos);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj != null){
@@ -87,6 +91,12 @@ initCanvas = function() {
 			if(shift && selectedObj instanceof State){
 				console.log("Shift and is state");
 				drawingLink = new TempLink(selectedObj,mousePos);
+			} else {
+				movingObject = true;
+				offset = {
+					x: selectedObj.x - mousePos.x,
+					y: selectedObj.y - mousePos.y
+				}
 			}
 		}
 		resetCaret();
@@ -114,10 +124,15 @@ initCanvas = function() {
 		if(drawingLink != null){
 			drawingLink.refresh(mousePos);
 			refresh();
+		} else if (movingObject){
+			selectedObj.x = mousePos.x + offset.x;
+			selectedObj.y = mousePos.y + offset.y;
 		}
+		refresh();
 	}
 
 	canvas.onmouseup = function(e) {
+		movingObject = false;
 		if(drawingLink != null){
 			var mousePos = getMousePos(canvas,e);
 			selectedObj = model.getElementAt(mousePos);
@@ -265,7 +280,9 @@ refresh = function() {
 
 refreshComponents = function() {
 
-    c = canvas.getContext("2d");
+	c = canvas.getContext("2d");
+	canvas.width = document.body.clientWidth;
+	canvas.height = window.innerHeight;
     c.clearRect(0, 0, canvas.width, canvas.height);
 
 

@@ -240,6 +240,8 @@ class StationaryLink extends Link {
 
     draw(c,isSelected){
         var angle = null;
+        this.x = (this.startNode.x + this.endNode.x)/2;
+        this.y = (this.startNode.y + this.endNode.y)/2;
         if (this.type === LinkType.SELF){
             var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
             var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
