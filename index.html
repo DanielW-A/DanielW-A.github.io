@@ -26,8 +26,8 @@
 		<div class="title">
 			<h1>
 				Markov Model Simulator
-				<button class="delegate" disabled="disabled" title="Markov Chain">Markov Chain</button>
-				<button class="delegate" title="Hidden Markov Model">Hidden Markov Model</button>
+				<button class="topButton" id="markovChainBtn" title="Markov Chain">Markov Chain</button>
+				<button class="topButton" id="hiddenMarkovModelBtn"title="Hidden Markov Model">Hidden Markov Model</button>
 			</h1>
 		</div>
 
@@ -39,11 +39,11 @@
 					<div style="text-align:center;">
 						
 						<button id="testbtn" title="Test" onclick="markovChain.runTests();">Test</button>
-						<button id="saveBtn" title="Save" onclick="pageController.save();">Save</button>
+						<button id="saveBtn" title="Save">Save</button>
 						<!-- TODO class, onclick, image -->
-						<button id="loadBtn" title="Load" onclick="pageController.load();">Load</button>
-						<button id="clearBtn" title="Clear" onclick="pageController.clear();">Clear</button>
-						<button id="runBtn" title="Run" onclick="run(20,1000);">Run</button>
+						<button id="loadBtn" title="Load">Load</button>
+						<button id="clearBtn" title="Clear">Clear</button>
+						<button id="runBtn" title="Run">Run</button>
 						<div id="outputString" type="text" placeholder="See if this fits">bbacba</div>
 						<!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
 					</div>
@@ -64,7 +64,7 @@
 							<input type="text" id="sTransitionProabilitysText" name="TransitionProabilitys"><br>
 						</form>
 						<button id="emmisionBtn" class="accordion">Emmission proabilitys</button>
-						<div id="statePanelInfo" class="panel">
+						<div id="statePanelEmmisionPanel" class="panel">
 						</div>
 					</div>
 
@@ -90,7 +90,6 @@
 				<div id="errorPanel" class="panelWrapper">
 					<button id="errorButton" class="accordion">Errors</button>
 					<div id="errorPanelInfo" class="panel">
-						<label>Errors : TODO</label>
 					</div>
 				</div>
 				<div id="InstructionsPanel" class="panelWrapper">

@@ -4,6 +4,8 @@ class MarkovModel{
         this.states = {};
         this.transitions = {};
         this.initialProbabilityDistribution = {};
+        
+        this.emmisionStates = {};
 
         this.userStartState = null;
 
@@ -13,6 +15,7 @@ class MarkovModel{
             currentState: null,
             outPut: "",
             outPutLength: 0,
+            emmisionState: null,
             errors: [],
             warnings: []
         };
@@ -65,7 +68,13 @@ class MarkovModel{
     }
     saveState(state) {
         this.processor.currentState = state;
-        this.processor.outPut += this.states[state].getEmmision();
+        if (this instanceof HiddenMarkovModel){
+            var emState = this.states[state].getEmmision();
+            this.processor.outPut += emState.getEmmision();
+            this.processor.emmisionState = emState;
+        } else {
+            this.processor.outPut += this.states[state].getEmmision();
+        }
         this.processor.outPutLength++;
     }
     getStartState() {
@@ -231,6 +240,8 @@ class StationaryLink extends Link {
 
     draw(c,isSelected){
         var angle = null;
+        this.x = (this.startNode.x + this.endNode.x)/2;
+        this.y = (this.startNode.y + this.endNode.y)/2;
         if (this.type === LinkType.SELF){
             var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
             var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
@@ -322,8 +333,33 @@ class StationaryLink extends Link {
 	        var dy = mouse.y - (this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle));
 	        var distance = Math.sqrt(dx*dx + dy*dy) - 0.75 * nodeRadius;
 	        return (Math.abs(distance) < mousePadding);
-        }else
-        if((mouse.x < Math.max(this.startNode.x,this.endNode.x) + nodeRadius) && 
+        }else if (this.type === LinkType.ARC){
+            var anchor = this.getAnchorPoint();
+            var circle = this.circleFromThreePoints(this.startNode.x, this.startNode.y, this.endNode.x, this.endNode.y, anchor.x, anchor.y);
+            var dx = mouse.x - circle.x;
+		    var dy = mouse.y - circle.y;
+            var distance = Math.sqrt(dx*dx + dy*dy) - circle.radius;
+            var reverseScale = (this.perpendicularPart > 0) ? 1 : -1;
+            var startAngle = Math.atan2(this.startNode.y - circle.y, this.startNode.x - circle.x) - reverseScale * nodeRadius / circle.radius;
+            var endAngle = Math.atan2(this.endNode.y - circle.y, this.endNode.x - circle.x) + reverseScale * nodeRadius / circle.radius;
+		    if(Math.abs(distance) < mousePadding) {
+			    var angle = Math.atan2(dy, dx);
+			    if(this.perpendicularPart > 0) {
+				    var temp = startAngle;
+				    startAngle = endAngle;
+				    endAngle = temp;
+			    }
+			    if(endAngle < startAngle) {
+			    	endAngle += Math.PI * 2;
+			    }
+			    if(angle < startAngle) {
+				    angle += Math.PI * 2;
+			    } else if(angle > endAngle) {
+				    angle -= Math.PI * 2;
+			    }
+			    return (angle > startAngle && angle < endAngle);
+		    }
+        }else if((mouse.x < Math.max(this.startNode.x,this.endNode.x) + nodeRadius) && 
                 (mouse.x > Math.min(this.startNode.x,this.endNode.x) - nodeRadius) &&  
                 (mouse.y < Math.max(this.startNode.y,this.endNode.y) + nodeRadius) &&  
                 (mouse.y > Math.min(this.startNode.y,this.endNode.y) - nodeRadius)){

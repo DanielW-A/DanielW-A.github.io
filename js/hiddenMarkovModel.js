@@ -12,7 +12,7 @@ class LatentState extends State{
             if (model.transitions[this.id][i].endNode instanceof EmmisionState){
                 probSum += parseFloat(model.transitions[this.id][i].text);
                 if (probSum > check) {
-                    return model.emmisionStates[i].getEmmision();
+                    return model.emmisionStates[i];
                 }
             }
         }
@@ -73,7 +73,6 @@ class HMMTransition extends StationaryLink{
 class HiddenMarkovModel extends MarkovModel{
     constructor(){
         super();
-        this.emmisionStates = {};
         this.lastEmmisionId = 0;
     }
     /////////////////////////////////////////////////

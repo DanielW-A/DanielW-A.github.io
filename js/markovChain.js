@@ -108,7 +108,7 @@ class MarkovChain extends MarkovModel{
         return this.processor.outPut;
     }
     delete(object) {
-        if (object instanceof LatentState){
+        if (object instanceof State){
             this.deleteState(object);
         } else if( object instanceof StationaryLink){
             this.deleteTrasition(object);
@@ -134,35 +134,45 @@ class MarkovChain extends MarkovModel{
     /////////////////////////////////////////////////
     // testing / running
     /////////////////////////////////////////////////
-    validCheck() {
-        var errorMsg = "";
+    validCheck(){
         var i = "";
         var j = "";
 
+        this.processor.errors = [];
+        this.processor.warnings = [];
+
         var probSum = 0.0;
         var initProb = this.initialProbabilityDistribution;
-        for (i in initProb) {
+        for (i in this.states) {
+            if (initProb[i] < 0){
+                this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative Inital proabulity");
+            }
+            if (initProb[i] == null){initProb[i] = 0;}
             probSum += initProb[i];
         }
         if (probSum == 0) {
+            this.processor.warnings.push("There are no inital proabilitys, asining temporay ones");
             tempInitial = true;
             for (i in this.states) {
                 initProb[i] = 1/Object.keys(this.states).length;
             }
         }else if (probSum != 1) {
-            errorMsg += "ERROR : The initial probability distribution sums to : " + probSum + " (Should be 1) \n";
+            this.processor.errors.push("The initial probability distribution sums to : " + probSum + " (Should be 1)");
         }
 
-        console.log(this.initialProbabilityDistribution);
+
 
         var trans = this.transitions;
         for (i in trans) {
-            var probSum = 0.0;
+            var transSum = 0;
             for (j in trans[i]) {
-                probSum += parseFloat(trans[i][j].text);
+                if (parseFloat(trans[i][j].text) < 0){
+                    this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative trasition proabulity");
+                }
+                transSum += parseFloat(trans[i][j].text);
             }
-            if (probSum != 1) {
-                errorMsg += "ERROR : " + i + " state trasition sums to : " + probSum + " (Should be 1) \n";
+            if (transSum != 1) {
+                this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + ", trasitions sum to : " + transSum + " (Should be 1)");
             }
         }
 
@@ -175,7 +185,7 @@ class MarkovChain extends MarkovModel{
             }
         }
 
-        return errorMsg; // should objectify this later.
+        return (this.processor.errors.length == 0); // should objectify this later.
     }
     toString() {
         var i,j;

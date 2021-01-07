@@ -62,9 +62,12 @@ var drawingLink;
 var canvas;
 var c;
 
+var movingObject;
+var offset;
+
 initCanvas = function() {
 
-	model = new HiddenMarkovModel();
+	model = new MarkovChain();
 
     canvas = document.getElementById('markovCanvas');
 
@@ -80,6 +83,7 @@ initCanvas = function() {
 
 	canvas.onmousedown = function(e) {
 		var mousePos = getMousePos(canvas,e);
+
 		console.log(mousePos);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj != null){
@@ -87,6 +91,12 @@ initCanvas = function() {
 			if(shift && selectedObj instanceof State){
 				console.log("Shift and is state");
 				drawingLink = new TempLink(selectedObj,mousePos);
+			} else {
+				movingObject = true;
+				offset = {
+					x: selectedObj.x - mousePos.x,
+					y: selectedObj.y - mousePos.y
+				}
 			}
 		}
 		resetCaret();
@@ -114,10 +124,15 @@ initCanvas = function() {
 		if(drawingLink != null){
 			drawingLink.refresh(mousePos);
 			refresh();
+		} else if (movingObject){
+			selectedObj.x = mousePos.x + offset.x;
+			selectedObj.y = mousePos.y + offset.y;
 		}
+		refresh();
 	}
 
 	canvas.onmouseup = function(e) {
+		movingObject = false;
 		if(drawingLink != null){
 			var mousePos = getMousePos(canvas,e);
 			selectedObj = model.getElementAt(mousePos);
@@ -147,10 +162,10 @@ document.onkeydown = function(e) {
 		shift = true;
 	} else if(key == "Control"){
 		control = true;
-	}else if(!canvasHasFocus()){ //!canvasHasFocus()) {
+	}else if(!canvasHasFocus()){
 		// don't read keystrokes when other things have focus
 		return true;
-	} else if(key == "Backspace") { // backspace key
+	} else if(key == "Backspace") {
 		if(selectedObj != null) {
 			if(control || selectedObj.text == "0."){
 				selectedObj.text = "";
@@ -193,7 +208,7 @@ document.onkeypress = function(e) {
 	var keyCode = key.charCodeAt(0);
     console.log(key);
     console.log(key.charCodeAt(0));
-	if(!canvasHasFocus()){ //TODO !canvasHasFocus()) {
+	if(!canvasHasFocus()){
 		return true;
 	} else if (key == "Enter"){
 		selectedObj = null;
@@ -265,7 +280,9 @@ refresh = function() {
 
 refreshComponents = function() {
 
-    c = canvas.getContext("2d");
+	c = canvas.getContext("2d");
+	canvas.width = document.body.clientWidth;
+	canvas.height = window.innerHeight;
     c.clearRect(0, 0, canvas.width, canvas.height);
 
 
@@ -277,7 +294,7 @@ refreshComponents = function() {
 	if (model instanceof HiddenMarkovModel){
 		for (i in model.emmisionStates){
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj) ? 'blue' : 'black';
+			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj || model.emmisionStates[i] === currentEmmision) ? 'blue' : 'black';
 			model.emmisionStates[i].draw(c,(model.emmisionStates[i] === selectedObj));	
 		}
 	}
@@ -289,7 +306,7 @@ refreshComponents = function() {
 	for (i in model.transitions){
 		for (j in model.transitions[i]){
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj) ? 'blue' : 'black';
+			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj || (model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision)) ? 'blue' : 'black';
 			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
 		}
 	}

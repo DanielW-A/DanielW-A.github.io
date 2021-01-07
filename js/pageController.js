@@ -4,6 +4,16 @@ var running = false;
 var modelPanel;
 
 
+toggleAccordion = function(component){
+    component.classList.toggle("active");
+    var panel = component.nextElementSibling;
+    if (panel.style.maxHeight) {
+        panel.style.maxHeight = null;
+    } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+    }
+}
+
 
 window.onload = function() {
     initCanvas();
@@ -13,15 +23,35 @@ window.onload = function() {
 
     for (i = 0; i < acc.length; i++) {
         acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            } 
+            toggleAccordion(this);
         });
     }
+
+    // buttons
+    document.getElementById("saveBtn").addEventListener("click", function() {
+        save();
+    });
+    document.getElementById("loadBtn").addEventListener("click", function() {
+        load();
+    });
+    document.getElementById("clearBtn").addEventListener("click", function() {
+        clear();
+    });
+    document.getElementById("runBtn").addEventListener("click",  function() {
+        run(20,1000);
+    });
+
+    document.getElementById("markovChainBtn").disabled = true;
+    document.getElementById("markovChainBtn").addEventListener("click", function(){
+        model = new MarkovChain();
+        document.getElementById("markovChainBtn").disabled = true;
+        document.getElementById("hiddenMarkovModelBtn").disabled = false;
+    });
+    document.getElementById("hiddenMarkovModelBtn").addEventListener("click", function(){
+        model = new HiddenMarkovModel();
+        document.getElementById("markovChainBtn").disabled = false;
+        document.getElementById("hiddenMarkovModelBtn").disabled = true;
+    });
 
     // State details
     var stateName = document.getElementById("sNameText");
@@ -73,21 +103,76 @@ validateProability = function(text){
 
 }
 
+save = function(){
+    alert("TODO");
+}
+
+load = function(){
+    alert("TODO");
+}
+
+clear = function(){
+    if (model instanceof HiddenMarkovModel){
+        model = new HiddenMarkovModel();
+    } else if (model instanceof MarkovChain){
+        model = new MarkovChain();
+    }
+
+    model = new MarkovChain();
+}
+
+var runner = null;
 run = function(steps,time){
     var output = document.getElementById('outputString');
-    if (!model.validCheck()) { output.innerHTML = "There are unresolved errors";alert(model.validCheck()); return;}
+    if (!model.validCheck()) { 
+        output.innerHTML = "There are unresolved errors";
+        refresh();
+        var panel = document.getElementById("errorPanelInfo");
+        panel.style.maxHeight = panel.scrollHeight + "px";
+        document.getElementById("errorButton").classList.add("active");
+        return;
+    }
+
+
     if (steps < 1 || steps == null) { output.innerHTML = ""; return; }
     model.init();
-    while (model.processor.outPutLength < steps) {
-        sleep(time);
-        document.getElementById('outputString').innerHTML = model.step();
+    selectedObj = null;
+    clearInterval(caretTimer);
+    caretVisible = false;
+    runner = setInterval('step()',time/2);
 
-    }
 
     if (tempInitial){
         model.initialProbabilityDistribution = {};
         tempInitial = false;
     }
+}
+
+var currentEmmision = null;
+function step() {
+    if (selectedObj == null){
+        selectedObj = model.states[model.processor.currentState]; //init state
+        if (model instanceof HiddenMarkovModel) {currentEmmision = model.processor.emmisionState}
+    } else if (selectedObj instanceof State){
+        model.step();
+        selectedObj = model.transitions[selectedObj.id][model.processor.currentState];
+        currentEmmision = null;
+    } else if (selectedObj instanceof StationaryLink){
+        selectedObj = model.states[model.processor.currentState];
+        if (model instanceof HiddenMarkovModel) {currentEmmision = model.processor.emmisionState}
+        document.getElementById('outputString').innerHTML = model.processor.outPut;
+    }
+    refresh();
+    if (model.processor.outPutLength > 20){
+        selectedObj = null;
+        stopStep();
+        resetCaret();
+    }
+}
+
+function stopStep(){
+    clearInterval(runner);
+    runner = null;
 }
 
 refreshInfoPanels = function(){
@@ -100,6 +185,11 @@ refreshInfoPanels = function(){
             document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
         }
     }
+    var panel = document.getElementById("statePanelInfo");
+    if (panel.style.maxHeight){
+        panel.style.maxheight = panel.scrollHeight + "px";
+    }
+
     var stateStr = "{";
     for (i in model.states){ stateStr += model.states[i].text + ','; }
     stateStr = stateStr.substr(0, stateStr.length - 1);
@@ -137,6 +227,12 @@ refreshInfoPanels = function(){
     //mLatentStates
     //mEmmisionProbaility
 
+    
+    panel = document.getElementById("modelPanelInfo");
+    if (panel.style.maxHeight){
+        panel.style.maxHeight = panel.scrollHeight + "px";
+    }
+
     if (model instanceof MarkovChain){
         document.getElementById("instructionsPanelInfo").innerHTML = 
         "<ul> " + 
@@ -149,6 +245,16 @@ refreshInfoPanels = function(){
     } else if (model instanceof HiddenMarkovModel){
 
     }
+
+    var errors = "";
+    for (i in model.processor.errors){
+        errors += "ERROR : " + model.processor.errors[i] + "<br>";
+    }
+    for (i in model.processor.warnings){
+        errors += "WARNING : " + model.processor.warnings[i] + "<br>";
+    }
+
+    document.getElementById("errorPanelInfo").innerHTML = errors;
     
 }
 

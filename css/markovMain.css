@@ -32,7 +32,7 @@ canvas {
 .right {
     float: right;
     width: 300px;
-    border: 3px solid #73AD21;
+    /* border: 3px solid #73AD21; */
     padding: 10px;
 }
 
@@ -62,6 +62,14 @@ canvas {
 .active, .accordion:hover {
   background-color: #ccc;
 }
+
+/* .topButton{
+  color:blanchedalmond;
+}
+
+.active, .topButton {
+  disab
+} */
 
 .panel {
   padding: 0 18px;
