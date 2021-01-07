@@ -79,9 +79,15 @@ window.onload = function() {
     });
 
     var stateTrasitions = document.getElementById("sInitalProability");
-    stateTrasitions.addEventListener('input', function(e){
-       /// TODO
+    // stateTrasitions.addEventListener('input', function(e){
+    //    /// TODO
+    // });
+
+    var AlgButton = document.getElementById("algButton");
+    AlgButton.addEventListener("click", function() {
+        model.algStep(document.getElementById("algorithmDropdown").value);
     });
+
 }
 
 validateProability = function(text){
@@ -108,7 +114,46 @@ save = function(){
 }
 
 load = function(){
-    alert("TODO");
+    var w = canvas.width;
+    var h = canvas.height;
+
+    if (model instanceof HiddenMarkovModel){
+        var s1 = model.addState(w/3,h/3);
+        s1.text = "H";
+        model.initialProbabilityDistribution[s1.id] = "0.6";
+        var s2 = model.addState(2*w/3,h/3);
+        s2.text = "F";
+        model.initialProbabilityDistribution[s2.id] = "0.4";
+
+        var es1 =  model.addEmmisionState(w/4,2*h/3);
+        es1.text = "N";
+        es1.emmision = "N";
+        var es2 =  model.addEmmisionState(w/2,2*h/3);
+        es2.text = "C";
+        es2.emmision = "C";
+        var es3 =  model.addEmmisionState(3*w/4,2*h/3);
+        es3.text = "D";
+        es3.emmision = "D";
+
+
+        model.addTransistion(new TempLink(s1,{x : s2.x, y :s2.y})).text = "0.3";
+        model.addTransistion(new TempLink(s2,{x : s1.x, y :s1.y})).text = "0.4";
+        model.addTransistion(new TempLink(s2,{x : s2.x, y :s2.y})).text = "0.6";
+        model.addTransistion(new TempLink(s1,{x : s1.x-1, y :s1.y})).text = "0.7";
+
+        
+        var le1 =  model.addTransistion(new TempLink(s1,{x : es1.x, y :es1.y})).text = "0.5";
+        var le2 =  model.addTransistion(new TempLink(s1,{x : es2.x, y :es2.y})).text = "0.4";
+        var le3 =  model.addTransistion(new TempLink(s1,{x : es3.x, y :es3.y})).text = "0.1";
+
+        
+        var le4 =  model.addTransistion(new TempLink(s2,{x : es1.x, y :es1.y})).text = "0.1";
+        var le5 =  model.addTransistion(new TempLink(s2,{x : es2.x, y :es2.y})).text = "0.3";
+        var le6 =  model.addTransistion(new TempLink(s2,{x : es3.x, y :es3.y})).text = "0.6";
+
+    } 
+
+    refresh();
 }
 
 clear = function(){
