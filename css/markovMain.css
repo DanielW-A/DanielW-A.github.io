@@ -92,5 +92,26 @@ canvas {
 .algorithms {
   width: 100%;
   position: absolute;
-  bottom: 0;
+  bottom: 10%;
+}
+#tableWrapper {
+  position:relative;
+}
+#tableScroll {
+  overflow:auto;  
+}
+#tableWrapper table {
+  max-width:100%;
+}
+#tableWrapper table * {
+  background:yellow;
+  color:black;
+}
+#tableWrapper table thead th .text {
+  position:absolute;   
+  top:-20px;
+  z-index:2;
+  height:20px;
+  width:35%;
+  border:1px solid red;
 }

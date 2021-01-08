@@ -134,7 +134,7 @@ class HiddenMarkovModel extends MarkovModel{
     deleteEmmisionState(object){
         for (i in this.emmisionStates) {
             if (this.emmisionStates[i] === object) {
-                this.removeAllEmmisionTrasitions(i);
+                this.removeAllTrasitions(i);
                 delete this.emmisionStates[i];
             }
         }
@@ -229,11 +229,23 @@ class HiddenMarkovModel extends MarkovModel{
 
         return (this.processor.errors.length == 0)
     }
+
+    validateObS(str){
+        for (i in this.emmisionStates){
+            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1)){
+                return str;
+            }
+        }
+        return str.substr(0, str.length - 1);
+    }
     
     /////////////////////////////////////////////////
     // Editing the model
     /////////////////////////////////////////////////
 
+    getAlpha(){
+        return this.algProsessor.A;
+    }
     decodeEmmisions(str){
         //TODO THis is just a placeholder
         var emmisions = []
@@ -253,7 +265,8 @@ class HiddenMarkovModel extends MarkovModel{
         if (this.algProsessor.observedString == null){
             this.InitForward();
         } else if (this.algProsessor.observedString.length < this.algProsessor.t){
-
+            var comp = document.getElementById("algString");
+            comp.disabled = false;
         } else { // inductive step;
             this.algProsessor.t++
             var t = this.algProsessor.t;

@@ -86,6 +86,15 @@ window.onload = function() {
     var AlgButton = document.getElementById("algButton");
     AlgButton.addEventListener("click", function() {
         model.algStep(document.getElementById("algorithmDropdown").value);
+        refresh();
+    });
+
+    var obserevedString = document.getElementById("algString");
+    obserevedString.addEventListener('input', function(e){
+        var obsStr = model.validateObS(obserevedString.value);
+        obserevedString.value = obsStr;
+        refresh();
+
     });
 
 }
@@ -300,8 +309,34 @@ refreshInfoPanels = function(){
     }
 
     document.getElementById("errorPanelInfo").innerHTML = errors;
+
+
+    // table :
+    var str = document.getElementById("algString").value;
+    var table = "<tr>" +
+                "<th></th>";
+    var states = model.states;
+    var Alpha = model.getAlpha();
+    for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
+    table += "</tr>";
+
+    for (i in states){
+        table += "<tr>" +
+                th(states[i].text);
+        for (j = 1; j <= str.length; j++){
+            if(!Alpha[j]) {Alpha[j] = []};
+            table += td((Alpha[j][i]== null)? 0: Alpha[j][i]); 
+        }
+        table += "</tr>";
+
+    }
+
+    document.getElementById("algTable").innerHTML = table;
+
     
 }
+function th(str){return "<th>"+str+"</th>";}
+function td(str){return "<td>"+str+"</td>";}
 
 function li(string){
     return "<li>" + string + "</li>";
