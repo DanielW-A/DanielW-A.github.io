@@ -18,6 +18,9 @@ class LatentState extends State{
         }
     }
 
+    getEmmisionProbability(emmisionState){
+        return parseFloat(model.transitions[this.id][emmisionState.id].text);
+    }
 }
 
 class EmmisionState extends State{
@@ -74,6 +77,16 @@ class HiddenMarkovModel extends MarkovModel{
     constructor(){
         super();
         this.lastEmmisionId = 0;
+        this.algProsessor = {
+            observedString : null,
+            t : 0,
+            A : [], //alpha
+            B : [], //beta
+            G : [], //gamma
+            D : [], //delta
+            p : [], //psi
+            x : []  //xi
+        }
     }
     /////////////////////////////////////////////////
     // Editing the model
@@ -121,7 +134,7 @@ class HiddenMarkovModel extends MarkovModel{
     deleteEmmisionState(object){
         for (i in this.emmisionStates) {
             if (this.emmisionStates[i] === object) {
-                this.removeAllEmmisionTrasitions(i);
+                this.removeAllTrasitions(i);
                 delete this.emmisionStates[i];
             }
         }
@@ -137,6 +150,7 @@ class HiddenMarkovModel extends MarkovModel{
         return this;
     }
     getElementAt(mouse) {
+        var i;
         for (i in this.states) {
             var state = this.states[i];
             if(state.isNear(mouse)){
@@ -173,7 +187,7 @@ class HiddenMarkovModel extends MarkovModel{
                 this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative Inital proabulity");
             }
             if (initProb[i] == null){initProb[i] = 0;}
-            probSum += initProb[i];
+            probSum += parseFloat(initProb[i]);
         }
         if (probSum == 0) {
             this.processor.warnings.push("There are no inital proabilitys, asining temporay ones");
@@ -215,4 +229,86 @@ class HiddenMarkovModel extends MarkovModel{
 
         return (this.processor.errors.length == 0)
     }
+
+    validateObS(str){
+        for (i in this.emmisionStates){
+            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1)){
+                return str;
+            }
+        }
+        return str.substr(0, str.length - 1);
+    }
+    
+    /////////////////////////////////////////////////
+    // Editing the model
+    /////////////////////////////////////////////////
+
+    getAlpha(){
+        return this.algProsessor.A;
+    }
+    decodeEmmisions(str){
+        //TODO THis is just a placeholder
+        var emmisions = []
+        for (var i = 0; i < str.length; i++) {
+            emmisions[i] = str.charAt(i);
+        }
+        return emmisions;
+    }
+  
+    algStep(type){
+        this.currentAlg = type;
+        if (type == AlgType.FORWARD){this.forwardStep();}
+        else if (type === AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
+    }
+
+    forwardStep(){
+        if (this.algProsessor.observedString == null){
+            this.InitForward();
+        } else if (this.algProsessor.observedString.length < this.algProsessor.t){
+            var comp = document.getElementById("algString");
+            comp.disabled = false;
+        } else { // inductive step;
+            this.algProsessor.t++
+            var t = this.algProsessor.t;
+            this.algProsessor.A[t] = [];
+            var char = this.algProsessor.observedString[t-1];
+            for(i in this.states){
+                var tempSum = 0;
+                for(j in this.states){
+                    tempSum += this.algProsessor.A[t-1][j]*parseFloat(this.transitions[j][i].text); 
+                }
+                this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+            }
+        }
+    }
+    InitForward(){
+        //get the string
+        //stop string being edited 
+        var comp = document.getElementById("algString");
+        comp.disabled = true;
+        this.algProsessor.observedString = this.decodeEmmisions(comp.value);
+        this.algProsessor.t = 1;
+        this.algProsessor.A[this.algProsessor.t] = [];
+        for (var i in this.states){
+            var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
+            this.algProsessor.A[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmmisionProbability(emmisionState);
+        }
+    }
+
+    getStateFromEmmision(string){
+        for (i in this.emmisionStates){
+            if (string === this.emmisionStates[i].getEmmision()){return this.emmisionStates[i];}
+        }
+        return null;
+    }
+
+    forwardBackwardStep(){
+        //TODO
+    }
+}  
+const AlgType = {
+    FORWARD: 'Forward',
+    FORWARDBACKWARD: 'Forward-Backward',
+    VITERBI: 'Viterbi',
+    BAUMWELCH: 'Baum-Welch'
 }

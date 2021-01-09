@@ -3,6 +3,7 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 	constructor(startNode,mousePos){
 		super(startNode,mousePos.x,mousePos.y);
 		this.mousePos = mousePos;
+		this.refresh(mousePos);
 	}
 
 	refresh(mousePos){
