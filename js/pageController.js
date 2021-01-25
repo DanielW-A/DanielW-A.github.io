@@ -17,6 +17,7 @@ toggleAccordion = function(component){
 
 window.onload = function() {
     initCanvas();
+    initModelUI();
 
     var acc = document.getElementsByClassName("accordion");
     var i;
@@ -46,11 +47,13 @@ window.onload = function() {
         model = new MarkovChain();
         document.getElementById("markovChainBtn").disabled = true;
         document.getElementById("hiddenMarkovModelBtn").disabled = false;
+        initModelUI();
     });
     document.getElementById("hiddenMarkovModelBtn").addEventListener("click", function(){
         model = new HiddenMarkovModel();
         document.getElementById("markovChainBtn").disabled = false;
         document.getElementById("hiddenMarkovModelBtn").disabled = true;
+        initModelUI();
     });
 
     // State details
@@ -96,6 +99,11 @@ window.onload = function() {
         refresh();
 
     });
+
+    var dropdown = document.getElementById("algorithmDropdown");
+    dropdown.onchange = function() {
+        model.clearAlgProsessor();
+    };
 
 }
 
@@ -327,7 +335,7 @@ refreshInfoPanels = function(){
                     th(states[i].text);
             for (j = 1; j <= str.length; j++){
                 if(!Alpha[j]) {Alpha[j] = []};
-                table += td((Alpha[j][i]== null)? 0: Alpha[j][i]); 
+                table += td((Alpha[j][i]== null)? 0: Math.round( Alpha[j][i] * 10000000000 + Number.EPSILON ) / 10000000000); 
             }
             table += "</tr>";
 
@@ -340,9 +348,16 @@ refreshInfoPanels = function(){
 }
 function th(str){return "<th>"+str+"</th>";}
 function td(str){return "<td>"+str+"</td>";}
+function li(str){return "<li>"+str+"</li>";}
 
-function li(string){
-    return "<li>" + string + "</li>";
+
+function initModelUI(){
+    var dropdown = document.getElementById("algorithmDropdown");
+    dropdownText = "";
+    for (i in model.AlgType){
+        dropdownText += "<option value=\""+model.AlgType[i] + "\">"+model.AlgType[i]+"</option>"
+    }
+    dropdown.innerHTML = dropdownText;
 }
 
 

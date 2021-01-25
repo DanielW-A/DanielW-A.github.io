@@ -264,7 +264,18 @@ class HiddenMarkovModel extends MarkovModel{
     /////////////////////////////////////////////////
     // Editing the model
     /////////////////////////////////////////////////
-
+    clearAlgProsessor(){
+        this.algProsessor.observedString = null;
+        this.algProsessor.t = 0;
+        this.algProsessor.A = [];
+        this.algProsessor.B = [];
+        this.algProsessor.G = [];
+        this.algProsessor.D = [];
+        this.algProsessor.p = [];
+        this.algProsessor.x = [];
+        document.getElementById("algString").disabled = false;
+    
+    }
     getAlpha(){
         return this.algProsessor.A;
     }
@@ -279,17 +290,24 @@ class HiddenMarkovModel extends MarkovModel{
   
     algStep(type){
         this.currentAlg = type;
-        if (type == AlgType.FORWARD){this.forwardStep();}
-        else if (type === AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
+        if (type == this.AlgType.FORWARD){this.forwardStep();}
+        else if (type === this.AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
+        else if (type === this.AlgType.VITERBI){}//TODO;
+        else if (type === this.AlgType.BAUMWELCH){}//TODO;
     }
 
+
+    /////////////////////////////////////////////////
+    // Forward
+    /////////////////////////////////////////////////
     forwardStep(){
         if (this.algProsessor.observedString == null){
             this.InitForward();
-        } else if (this.algProsessor.observedString.length < this.algProsessor.t){
+        } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
             comp.value = "";
+            // this.clearAlgProsessor();
         } else { // inductive step;
             this.algProsessor.t++
             var t = this.algProsessor.t;
@@ -326,14 +344,49 @@ class HiddenMarkovModel extends MarkovModel{
         }
         return null;
     }
-
+    /////////////////////////////////////////////////
+    // Forward-Backward
+    /////////////////////////////////////////////////
     forwardBackwardStep(){
-        //TODO
+        if (this.algProsessor.observedString == null){
+            this.InitForwardBackward();
+        } else if (this.algProsessor.t <= 1){
+            var comp = document.getElementById("algString");
+            comp.disabled = false;
+            comp.value = "";
+        } else { // inductive step;
+            this.algProsessor.t--;
+            var t = this.algProsessor.t;
+            this.algProsessor.A[t] = [];
+            var char = this.algProsessor.observedString[t-1];
+            for(i in this.states){
+                var tempSum = 0;
+                for(j in this.states){
+                    tempSum += this.algProsessor.A[t+1][j]*parseFloat(this.transitions[i][j].text); 
+                }
+                this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+            }
+        }
+    }
+
+    InitForwardBackward(){
+        //get the string
+        //stop string being edited 
+        var comp = document.getElementById("algString");
+        comp.disabled = true;
+        this.algProsessor.observedString = this.decodeEmmisions(comp.value);
+        this.algProsessor.t = this.algProsessor.observedString.length;
+        this.algProsessor.A[this.algProsessor.t] = [];
+        for (var i in this.states){
+            var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
+            this.algProsessor.A[this.algProsessor.t][i] = this.states[i].getEmmisionProbability(emmisionState);
+        }
+    }
+
+    AlgType = {
+        FORWARD: 'Forward',
+        FORWARDBACKWARD: 'Forward-Backward',
+        VITERBI: 'Viterbi',
+        BAUMWELCH: 'Baum-Welch'
     }
 }  
-const AlgType = {
-    FORWARD: 'Forward',
-    FORWARDBACKWARD: 'Forward-Backward',
-    VITERBI: 'Viterbi',
-    BAUMWELCH: 'Baum-Welch'
-}
