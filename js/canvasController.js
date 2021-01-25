@@ -306,9 +306,19 @@ refreshComponents = function() {
 	}
 	for (i in model.transitions){
 		for (j in model.transitions[i]){
+			c.globalAlpha = 1;
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj || (model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision)) ? 'blue' : 'black';
+			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj ) ? 'blue' : 'black';
+			if(j.charAt(0) == 'e'){
+				c.fillStyle = c.strokeStyle = model.states[i].colour;
+				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || (runner == null))){
+					c.globalAlpha = 0.1;
+				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emmisionStates[j] == selectedObj)){
+					c.globalAlpha = 0.4;
+				}
+			}
 			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
+			
 		}
 	}
 }

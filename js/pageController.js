@@ -313,25 +313,28 @@ refreshInfoPanels = function(){
 
     // table :
     var str = document.getElementById("algString").value;
-    var table = "<tr>" +
-                "<th></th>";
-    var states = model.states;
-    var Alpha = model.getAlpha();
-    for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
-    table += "</tr>";
-
-    for (i in states){
-        table += "<tr>" +
-                th(states[i].text);
-        for (j = 1; j <= str.length; j++){
-            if(!Alpha[j]) {Alpha[j] = []};
-            table += td((Alpha[j][i]== null)? 0: Alpha[j][i]); 
-        }
+    if(str.length > 0){
+        
+        var table = "<tr>" +
+                    "<th></th>";
+        var states = model.states;
+        var Alpha = model.getAlpha(); // todo 
+        for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
         table += "</tr>";
 
-    }
+        for (i in states){
+            table += "<tr>" +
+                    th(states[i].text);
+            for (j = 1; j <= str.length; j++){
+                if(!Alpha[j]) {Alpha[j] = []};
+                table += td((Alpha[j][i]== null)? 0: Alpha[j][i]); 
+            }
+            table += "</tr>";
 
-    document.getElementById("algTable").innerHTML = table;
+        }
+
+        document.getElementById("algTable").innerHTML = table;
+    }
 
     
 }

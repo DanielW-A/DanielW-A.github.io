@@ -83,7 +83,7 @@ class MarkovModel{
         var check = Math.random();
         var initProb = this.initialProbabilityDistribution;
         for (i in initProb) {
-            probSum += initProb[i];
+            probSum += parseFloat(initProb[i]);
             if (probSum > check) {
                 this.saveState(i);
                 return;
@@ -115,6 +115,8 @@ const LinkType = {
     ARC: 'arc',
     SELF: 'self'
 }
+
+const colours = ["#0000FF","#FF0000","#FFA500","#9932CC","#A0522D","#008000","#B22222"]; //TODO
 const nodeRadius = 30; 
 const mousePadding = 5;
 

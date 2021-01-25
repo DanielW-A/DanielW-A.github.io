@@ -3,6 +3,7 @@ class LatentState extends State{
     constructor(x,y,id){
         super(x,y,id);
         this.emmisionProabilities = {};  //[State] = value
+        this.colour = model.nextColour();
     }
 
     getEmmision(){
@@ -97,6 +98,27 @@ class HiddenMarkovModel extends MarkovModel{
         this.initialProbabilityDistribution[id] = 0;
         this.transitions[id] = {};
         return this.states[id];
+    }
+    nextColour() {
+        var used = 0;
+        var usedThreshold = 0;
+        var i;
+        var j;
+        do {
+            for (i in colours){
+                used = 0;
+                for (j in this.states){
+                    if (this.states[j].colour === colours[i]){
+                        used ++;
+                    }
+                }
+                if(used <= usedThreshold){
+                    return colours[i];
+                }
+            }
+            usedThreshold ++;
+        } while(true);
+        
     }
     addEmmisionState(x,y) {
         var id = 'e' +  this.lastEmmisionId++;
@@ -267,6 +289,7 @@ class HiddenMarkovModel extends MarkovModel{
         } else if (this.algProsessor.observedString.length < this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
+            comp.value = "";
         } else { // inductive step;
             this.algProsessor.t++
             var t = this.algProsessor.t;
@@ -278,6 +301,7 @@ class HiddenMarkovModel extends MarkovModel{
                     tempSum += this.algProsessor.A[t-1][j]*parseFloat(this.transitions[j][i].text); 
                 }
                 this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+                this.algProsessor.A[t][i] = Math.round( this.algProsessor.A[t][i] * 10000 + Number.EPSILON ) / 10000;
             }
         }
     }
@@ -292,6 +316,7 @@ class HiddenMarkovModel extends MarkovModel{
         for (var i in this.states){
             var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
             this.algProsessor.A[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmmisionProbability(emmisionState);
+            this.algProsessor.A[this.algProsessor.t][i] = Math.round( this.algProsessor.A[this.algProsessor.t][i] * 10000 + Number.EPSILON ) / 10000;
         }
     }
 
