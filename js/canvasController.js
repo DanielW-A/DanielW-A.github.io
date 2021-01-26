@@ -85,12 +85,11 @@ initCanvas = function() {
 	canvas.onmousedown = function(e) {
 		var mousePos = getMousePos(canvas,e);
 
-		console.log(mousePos);
+        console.log(mousePos);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj instanceof State){
-			openAccordion(document.getElementById("stateButton"));
-		} else {
-			closeAccordion(document.getElementById("stateButton"));
+            openAccordion(document.getElementById("stateButton"));
+            document.getElementById("sNameText").focus();
 		}
 		if (selectedObj != null){
 			console.log(shift);
@@ -118,9 +117,9 @@ initCanvas = function() {
 				selectedObj = model.addEmmisionState(mousePos.x,mousePos.y);
 			} else {
             	selectedObj = model.addState(mousePos.x,mousePos.y);
-
 			}
-			openAccordion(document.getElementById("stateButton"));
+            openAccordion(document.getElementById("stateButton"));
+            document.getElementById("sNameText").focus();
         }
 
 		resetCaret();
@@ -135,8 +134,10 @@ initCanvas = function() {
 		} else if (movingObject){
 			selectedObj.x = mousePos.x + offset.x;
 			selectedObj.y = mousePos.y + offset.y;
+			refresh();
 		}
-		refresh();
+		
+        document.getElementById("hoverInfo").style.display = "none";
 	}
 
 	canvas.onmouseup = function(e) {
@@ -151,16 +152,21 @@ initCanvas = function() {
 			} else {
 				drawingLink = null;
             }
-            if (!(selectedObj instanceof State)){
-			    closeAccordion(document.getElementById("stateButton"));
-            }
-			refresh();
+            refresh();
+            closeAccordion(document.getElementById("stateButton"));
 			
+        } else if(selectedObj instanceof State){
+            document.getElementById("sNameText").focus();
+        } else if(canvasHasFocus()){
+			closeAccordion(document.getElementById("stateButton"));
+            
         }
         
 	}
 
 }
+
+
 
 function canvasHasFocus() {
 	return (document.activeElement || document.body) == document.body;
@@ -196,6 +202,7 @@ document.onkeydown = function(e) {
 			model.delete(selectedObj);
 			selectedObj = null;
 			refresh();
+            closeAccordion(document.getElementById("stateButton"));
 		}
     } else if(key == "Escape") { 
 		selectedObj = null;
@@ -215,6 +222,7 @@ document.onkeyup = function(e) {
 		control = false;
 	}
 }
+
 
 document.onkeypress = function(e) {
 	var key = e.key;
@@ -240,7 +248,10 @@ document.onkeypress = function(e) {
 				resetCaret();
 				refresh();
 				return false;
-			}
+            }
+            if (selectedObj.text == "0"){
+                return false;
+            }
 		}
 		selectedObj.text += key;
 		resetCaret();
@@ -248,7 +259,7 @@ document.onkeypress = function(e) {
 
 		// don't let keys do their actions (like space scrolls down the page)
 		return false;
-	} else if(key == 8) {
+	} else if(keyCode == 8) {
 		// backspace is a shortcut for the back button, but do NOT want to change pages
 		return false;
 	}
@@ -342,7 +353,7 @@ var caretVisible = true;
 
 function resetCaret() {
 	clearInterval(caretTimer);
-	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 500);
+	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 530); // 530 is the defult time
 	caretVisible = true;
 }
 

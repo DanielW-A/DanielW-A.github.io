@@ -16,7 +16,7 @@ canvas {
 	/* border-radius: 20px; */
 	/* -moz-border-radius: 20px; */
 	/* margin: 10px auto; */
-    /* border: 3px solid #000000; */  /* id i want a border it needs to be drawn on the canvas*/
+    /* border: 3px solid #000000; */  /* if i want a border it needs to be drawn on the canvas*/
     /* outline-width: 2px; */
     /* min-height: 100%; */
 }
@@ -86,32 +86,60 @@ canvas {
 }
 
 .title {
-  float: left;;
+  float: left;
+  pointer-events: none;
 }
 
 .algorithms {
-  width: 100%;
-  position: absolute;
-  bottom: 10%;
+    pointer-events: none;
+    width: 94%;
+    position: absolute;
+    /* bottom: 10%; */
+    top: 80%;
+    /* padding: 5%; */
+    /* margin: 2%; */
+    margin-left: 2%;
+    margin-right: 2%;
 }
 #tableWrapper {
   position:relative;
 }
 #tableScroll {
   overflow:auto;  
+  pointer-events: all;
 }
 #tableWrapper table {
   max-width:100%;
+  border-collapse: collapse;
 }
 #tableWrapper table * {
-  background:yellow;
-  color:black;
+  border: 1px solid#000000;
+  background-color:rgba(200,200,200,0.2);
 }
-#tableWrapper table thead th .text {
+#tableWrapper table th {
+    background-color: rgba(80,80,80,0.2);;
+}
+#tableWrapper td th {
+    width: 10%;
+}
+/* #tableWrapper table thead th {
   position:absolute;   
   top:-20px;
   z-index:2;
   height:20px;
   width:35%;
   border:1px solid red;
+} */
+
+.hoverInfo{
+    pointer-events: none;
+    position: fixed;
+    background-color: green;
+    border: 1px solid;
+    display: none;
+}
+
+.usable{
+    
+  pointer-events: all;
 }

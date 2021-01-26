@@ -155,13 +155,13 @@ load = function(){
         s2.text = "F";
         model.initialProbabilityDistribution[s2.id] = "0.4";
 
-        var es1 =  model.addEmmisionState(w/4,2*h/3);
+        var es1 =  model.addEmmisionState(w/4,11*h/18);
         es1.text = "N";
         es1.emmision = "N";
-        var es2 =  model.addEmmisionState(w/2,2*h/3);
+        var es2 =  model.addEmmisionState(w/2,13*h/18);
         es2.text = "C";
         es2.emmision = "C";
-        var es3 =  model.addEmmisionState(3*w/4,2*h/3);
+        var es3 =  model.addEmmisionState(3*w/4,11*h/18);
         es3.text = "D";
         es3.emmision = "D";
 
@@ -354,7 +354,7 @@ refreshInfoPanels = function(){
                     th(states[i].text);
             for (j = 1; j <= str.length; j++){
                 if(!Alpha[j]) {Alpha[j] = []};
-                table += td((Alpha[j][i]== null)? 0: Math.round( Alpha[j][i] * 10000000000 + Number.EPSILON ) / 10000000000); 
+                table += td((Alpha[j][i]== null)? 0: Math.round( Alpha[j][i] * 10000000000 + Number.EPSILON ) / 10000000000,j,i); 
             }
             table += "</tr>";
 
@@ -366,9 +366,36 @@ refreshInfoPanels = function(){
     
 }
 function th(str){return "<th>"+str+"</th>";}
-function td(str){return "<td>"+str+"</td>";}
+function td(str,j,i){return "<td onmouseover=\"tableCellMouseOver(event,this,"+j+","+i+")\">"+str+"</td>";}
 function li(str){return "<li>"+str+"</li>";}
 
+function tableCellMouseOver(e,comp,j,i){
+    var panel = document.getElementById("hoverInfo");
+
+
+    panel.style.display = "inline";
+    
+    var str = "<p>&alpha;<sub>"+j+"</sub>("+i+") = (";
+    for (var k in model.states){
+        str += "&alpha;<sub>"+(j-1)+"</sub>("+k+")M<sub>"+k+","+i+"</sub> + "
+    }
+    str = str.substr(0, str.length - 3);
+    str += ")e<sub>"+j+"</sub>(ouput) </p>";
+
+    panel.innerHTML = str;
+
+    var width = panel.clientWidth;
+    var height = panel.clientHeight;
+
+    var x = e.clientX;
+    var y = e.clientY;
+
+    panel.style.left = ((x > width)? x - width: x )+ "px" ;
+    panel.style.top = y - height - 10 + "px";
+
+    
+
+}
 
 function initModelUI(){
     var dropdown = document.getElementById("algorithmDropdown");

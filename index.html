@@ -8,7 +8,6 @@
 	<meta name="author" content="Daniel Walker-Arnott" />
 	<title>Markov Model Simulator</title>
 	<link rel="stylesheet" type="text/css" href="css/markovMain.css" />
-	<!-- TODO Link style sheets -->
 	<!-- TODO favicon -->
 </head>
 
@@ -26,8 +25,8 @@
 		<div class="title">
 			<h1>
 				Markov Model Simulator
-				<button class="topButton" id="markovChainBtn" title="Markov Chain">Markov Chain</button>
-				<button class="topButton" id="hiddenMarkovModelBtn"title="Hidden Markov Model">Hidden Markov Model</button>
+				<button class="usable" id="markovChainBtn" title="Markov Chain">Markov Chain</button>
+				<button class="usable" id="hiddenMarkovModelBtn"title="Hidden Markov Model">Hidden Markov Model</button>
 			</h1>
 		</div>
 
@@ -115,17 +114,24 @@
 			</div>
 		</div>
 		<div class="algorithms">
-			<select name="algorithmDropdown" id="algorithmDropdown">
+			<select class="usable" name="algorithmDropdown" id="algorithmDropdown">
 			</select>
-			<input id="algString" ></input>
-			<button id="algButton" title="Run/Step">Run/Step</button>
+			<input id="algString" class="usable"></input>
+			<button id="algButton" class="usable" title="Run/Step">Run/Step</button>
 			<div id="tableWrapper">
 				<div id="tableScroll">
-					<table id="algTable" class="algTable"></table>
+					<table class="usable" id="algTable" class="algTable"></table>
 				</div>
 			</div>
 			
-		</div>
+        </div>
+        <div id="hoverInfo" class="hoverInfo">
+            <panel>
+                <p>
+                    &alpha;_5(H) = (&alpha;_4(H) * M(H)(H) + &alpha;_4(F) * M(F)(H)) * e(H)(N)             
+                </p>
+            </panel>
+        </div>
 
 </body>
 
