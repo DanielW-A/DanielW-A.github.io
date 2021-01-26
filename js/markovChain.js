@@ -148,7 +148,7 @@ class MarkovChain extends MarkovModel{
                 this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative Inital proabulity");
             }
             if (initProb[i] == null){initProb[i] = 0;}
-            probSum += initProb[i];
+            probSum += parseFloat(initProb[i]);
         }
         if (probSum == 0) {
             this.processor.warnings.push("There are no inital proabilitys, asining temporay ones");

@@ -14,6 +14,20 @@ toggleAccordion = function(component){
     }
 }
 
+//pass the button that controles the accordion
+openAccordion = function(component){
+    if (component.nextElementSibling.style.maxHeight == ''){
+        component.click();
+    }
+}
+
+closeAccordion = function(component){
+    if (component.nextElementSibling.style.maxHeight != ''){
+        component.click();
+    }
+}
+
+
 
 window.onload = function() {
     initCanvas();
@@ -97,7 +111,6 @@ window.onload = function() {
         var obsStr = model.validateObS(obserevedString.value);
         obserevedString.value = obsStr;
         refresh();
-
     });
 
     var dropdown = document.getElementById("algorithmDropdown");
@@ -238,15 +251,21 @@ function stopStep(){
 }
 
 refreshInfoPanels = function(){
-    if (!(selectedObj == null)){
-        if (selectedObj instanceof State){
-            document.getElementById("sIDText").value = selectedObj.id;
-            document.getElementById("sNameText").value = selectedObj.text;
-            document.getElementById("sEmmisionText").value = selectedObj.emmision;
-            document.getElementById("sInitalProability").value = model.initialProbabilityDistribution[selectedObj.id];
-            document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
-        }
+
+    if (selectedObj instanceof State && runner == null){
+        document.getElementById("sIDText").value = selectedObj.id;
+        document.getElementById("sNameText").value = selectedObj.text;
+        document.getElementById("sEmmisionText").value = selectedObj.emmision;
+        document.getElementById("sInitalProability").value = model.initialProbabilityDistribution[selectedObj.id];
+        document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
+    } else {
+        document.getElementById("sIDText").value = null;
+        document.getElementById("sNameText").value = null;
+        document.getElementById("sEmmisionText").value = null;
+        document.getElementById("sInitalProability").value = null;
+        document.getElementById("sTransitionProabilitysText").value = null;
     }
+    
     var panel = document.getElementById("statePanelInfo");
     if (panel.style.maxHeight){
         panel.style.maxheight = panel.scrollHeight + "px";

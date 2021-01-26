@@ -32,7 +32,7 @@ class EmmisionState extends State{
     }
 
     getEmmision(){
-        return (this.emmision == null)? "("  + this.text + ")" : this.emmision;
+        return (this.emmision == null)? this.text : this.emmision;
     }
 
     closestPointOnCircle(x,y) { // not a circle but should keep the name the same.
@@ -247,6 +247,30 @@ class HiddenMarkovModel extends MarkovModel{
 
         var sts = this.states;
         for (i in sts) {
+
+        }
+
+        var connection;
+        var eStates = this.emmisionStates;
+        var emmissions = [];
+        for (i in eStates){
+            for (j in eStates){
+                if (eStates[i].getEmmision() == eStates[j].getEmmision() && eStates[i] != eStates[j] && !emmissions.includes(i)){
+                    emmissions.push(j);
+                    this.processor.errors.push("State id: " + i + ", name: " + eStates[i].text + " and state id: " + j + ", name: " + eStates[j].text + " have the same emmision");
+                }
+            }
+
+            connection= false;
+            for (j in trans) {
+                if (trans[j][i]){
+                    connection = true;
+                    continue;
+                }
+            }
+            if (!connection){
+                this.processor.warnings.push("State id: " + i + ", name: " + eStates[i].text + " is not used, concider removing.");
+            }
         }
 
         return (this.processor.errors.length == 0)
@@ -254,8 +278,11 @@ class HiddenMarkovModel extends MarkovModel{
 
     validateObS(str){
         for (i in this.emmisionStates){
-            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1)){
-                return str;
+            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1).toLowerCase()){
+                return str.substr(0, str.length - 1) + str.charAt(str.length-1).toLowerCase();
+            }
+            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1).toUpperCase()){
+                return str.substr(0, str.length - 1) + str.charAt(str.length-1).toUpperCase();
             }
         }
         return str.substr(0, str.length - 1);
@@ -382,7 +409,9 @@ class HiddenMarkovModel extends MarkovModel{
             this.algProsessor.A[this.algProsessor.t][i] = this.states[i].getEmmisionProbability(emmisionState);
         }
     }
-
+    /////////////////////////////////////////////////
+    // Viterbi 
+    /////////////////////////////////////////////////
     AlgType = {
         FORWARD: 'Forward',
         FORWARDBACKWARD: 'Forward-Backward',
