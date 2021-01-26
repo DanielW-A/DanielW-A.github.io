@@ -87,8 +87,14 @@ initCanvas = function() {
 
 		console.log(mousePos);
 		selectedObj = model.getElementAt(mousePos);
+		if (selectedObj instanceof State){
+			openAccordion(document.getElementById("stateButton"));
+		} else {
+			closeAccordion(document.getElementById("stateButton"));
+		}
 		if (selectedObj != null){
 			console.log(shift);
+			
 			if(shift && selectedObj instanceof State){
 				console.log("Shift and is state");
 				drawingLink = new TempLink(selectedObj,mousePos);
@@ -114,6 +120,7 @@ initCanvas = function() {
             	selectedObj = model.addState(mousePos.x,mousePos.y);
 
 			}
+			openAccordion(document.getElementById("stateButton"));
         }
 
 		resetCaret();
@@ -133,7 +140,8 @@ initCanvas = function() {
 	}
 
 	canvas.onmouseup = function(e) {
-		movingObject = false;
+        movingObject = false;
+        
 		if(drawingLink != null){
 			var mousePos = getMousePos(canvas,e);
 			selectedObj = model.getElementAt(mousePos);
@@ -142,10 +150,14 @@ initCanvas = function() {
 				drawingLink = null;
 			} else {
 				drawingLink = null;
-			}
+            }
+            if (!(selectedObj instanceof State)){
+			    closeAccordion(document.getElementById("stateButton"));
+            }
 			refresh();
 			
-		}
+        }
+        
 	}
 
 }
@@ -208,12 +220,14 @@ document.onkeypress = function(e) {
 	var key = e.key;
 	var keyCode = key.charCodeAt(0);
     console.log(key);
-    console.log(key.charCodeAt(0));
-	if(!canvasHasFocus()){
-		return true;
-	} else if (key == "Enter"){
+	console.log(key.charCodeAt(0));
+	if (key == "Enter"){
 		selectedObj = null;
 		refresh();
+		closeAccordion(document.getElementById("stateButton"));
+	}
+	if(!canvasHasFocus()){
+		return true;
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
 		if (selectedObj instanceof StationaryLink){
 			if((!(keyCode >= 48 && keyCode <= 57))
@@ -306,9 +320,19 @@ refreshComponents = function() {
 	}
 	for (i in model.transitions){
 		for (j in model.transitions[i]){
+			c.globalAlpha = 1;
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj || (model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision)) ? 'blue' : 'black';
+			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj ) ? 'blue' : 'black';
+			if(j.charAt(0) == 'e'){
+				c.fillStyle = c.strokeStyle = model.states[i].colour;
+				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || (runner == null))){
+					c.globalAlpha = 0.1;
+				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emmisionStates[j] == selectedObj)){
+					c.globalAlpha = 0.4;
+				}
+			}
 			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
+			
 		}
 	}
 }

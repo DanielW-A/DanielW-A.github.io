@@ -3,6 +3,7 @@ class LatentState extends State{
     constructor(x,y,id){
         super(x,y,id);
         this.emmisionProabilities = {};  //[State] = value
+        this.colour = model.nextColour();
     }
 
     getEmmision(){
@@ -31,7 +32,7 @@ class EmmisionState extends State{
     }
 
     getEmmision(){
-        return (this.emmision == null)? "("  + this.text + ")" : this.emmision;
+        return (this.emmision == null)? this.text : this.emmision;
     }
 
     closestPointOnCircle(x,y) { // not a circle but should keep the name the same.
@@ -97,6 +98,27 @@ class HiddenMarkovModel extends MarkovModel{
         this.initialProbabilityDistribution[id] = 0;
         this.transitions[id] = {};
         return this.states[id];
+    }
+    nextColour() {
+        var used = 0;
+        var usedThreshold = 0;
+        var i;
+        var j;
+        do {
+            for (i in colours){
+                used = 0;
+                for (j in this.states){
+                    if (this.states[j].colour === colours[i]){
+                        used ++;
+                    }
+                }
+                if(used <= usedThreshold){
+                    return colours[i];
+                }
+            }
+            usedThreshold ++;
+        } while(true);
+        
     }
     addEmmisionState(x,y) {
         var id = 'e' +  this.lastEmmisionId++;
@@ -225,6 +247,30 @@ class HiddenMarkovModel extends MarkovModel{
 
         var sts = this.states;
         for (i in sts) {
+
+        }
+
+        var connection;
+        var eStates = this.emmisionStates;
+        var emmissions = [];
+        for (i in eStates){
+            for (j in eStates){
+                if (eStates[i].getEmmision() == eStates[j].getEmmision() && eStates[i] != eStates[j] && !emmissions.includes(i)){
+                    emmissions.push(j);
+                    this.processor.errors.push("State id: " + i + ", name: " + eStates[i].text + " and state id: " + j + ", name: " + eStates[j].text + " have the same emmision");
+                }
+            }
+
+            connection= false;
+            for (j in trans) {
+                if (trans[j][i]){
+                    connection = true;
+                    continue;
+                }
+            }
+            if (!connection){
+                this.processor.warnings.push("State id: " + i + ", name: " + eStates[i].text + " is not used, concider removing.");
+            }
         }
 
         return (this.processor.errors.length == 0)
@@ -232,8 +278,11 @@ class HiddenMarkovModel extends MarkovModel{
 
     validateObS(str){
         for (i in this.emmisionStates){
-            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1)){
-                return str;
+            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1).toLowerCase()){
+                return str.substr(0, str.length - 1) + str.charAt(str.length-1).toLowerCase();
+            }
+            if (this.emmisionStates[i].getEmmision() == str.charAt(str.length-1).toUpperCase()){
+                return str.substr(0, str.length - 1) + str.charAt(str.length-1).toUpperCase();
             }
         }
         return str.substr(0, str.length - 1);
@@ -242,7 +291,18 @@ class HiddenMarkovModel extends MarkovModel{
     /////////////////////////////////////////////////
     // Editing the model
     /////////////////////////////////////////////////
-
+    clearAlgProsessor(){
+        this.algProsessor.observedString = null;
+        this.algProsessor.t = 0;
+        this.algProsessor.A = [];
+        this.algProsessor.B = [];
+        this.algProsessor.G = [];
+        this.algProsessor.D = [];
+        this.algProsessor.p = [];
+        this.algProsessor.x = [];
+        document.getElementById("algString").disabled = false;
+    
+    }
     getAlpha(){
         return this.algProsessor.A;
     }
@@ -257,16 +317,24 @@ class HiddenMarkovModel extends MarkovModel{
   
     algStep(type){
         this.currentAlg = type;
-        if (type == AlgType.FORWARD){this.forwardStep();}
-        else if (type === AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
+        if (type == this.AlgType.FORWARD){this.forwardStep();}
+        else if (type === this.AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
+        else if (type === this.AlgType.VITERBI){}//TODO;
+        else if (type === this.AlgType.BAUMWELCH){}//TODO;
     }
 
+
+    /////////////////////////////////////////////////
+    // Forward
+    /////////////////////////////////////////////////
     forwardStep(){
         if (this.algProsessor.observedString == null){
             this.InitForward();
-        } else if (this.algProsessor.observedString.length < this.algProsessor.t){
+        } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
+            comp.value = "";
+            // this.clearAlgProsessor();
         } else { // inductive step;
             this.algProsessor.t++
             var t = this.algProsessor.t;
@@ -278,6 +346,7 @@ class HiddenMarkovModel extends MarkovModel{
                     tempSum += this.algProsessor.A[t-1][j]*parseFloat(this.transitions[j][i].text); 
                 }
                 this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+                this.algProsessor.A[t][i] = Math.round( this.algProsessor.A[t][i] * 10000 + Number.EPSILON ) / 10000;
             }
         }
     }
@@ -292,6 +361,7 @@ class HiddenMarkovModel extends MarkovModel{
         for (var i in this.states){
             var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
             this.algProsessor.A[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmmisionProbability(emmisionState);
+            this.algProsessor.A[this.algProsessor.t][i] = Math.round( this.algProsessor.A[this.algProsessor.t][i] * 10000 + Number.EPSILON ) / 10000;
         }
     }
 
@@ -301,14 +371,51 @@ class HiddenMarkovModel extends MarkovModel{
         }
         return null;
     }
-
+    /////////////////////////////////////////////////
+    // Forward-Backward
+    /////////////////////////////////////////////////
     forwardBackwardStep(){
-        //TODO
+        if (this.algProsessor.observedString == null){
+            this.InitForwardBackward();
+        } else if (this.algProsessor.t <= 1){
+            var comp = document.getElementById("algString");
+            comp.disabled = false;
+            comp.value = "";
+        } else { // inductive step;
+            this.algProsessor.t--;
+            var t = this.algProsessor.t;
+            this.algProsessor.A[t] = [];
+            var char = this.algProsessor.observedString[t-1];
+            for(i in this.states){
+                var tempSum = 0;
+                for(j in this.states){
+                    tempSum += this.algProsessor.A[t+1][j]*parseFloat(this.transitions[i][j].text); 
+                }
+                this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+            }
+        }
+    }
+
+    InitForwardBackward(){
+        //get the string
+        //stop string being edited 
+        var comp = document.getElementById("algString");
+        comp.disabled = true;
+        this.algProsessor.observedString = this.decodeEmmisions(comp.value);
+        this.algProsessor.t = this.algProsessor.observedString.length;
+        this.algProsessor.A[this.algProsessor.t] = [];
+        for (var i in this.states){
+            var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
+            this.algProsessor.A[this.algProsessor.t][i] = this.states[i].getEmmisionProbability(emmisionState);
+        }
+    }
+    /////////////////////////////////////////////////
+    // Viterbi 
+    /////////////////////////////////////////////////
+    AlgType = {
+        FORWARD: 'Forward',
+        FORWARDBACKWARD: 'Forward-Backward',
+        VITERBI: 'Viterbi',
+        BAUMWELCH: 'Baum-Welch'
     }
 }  
-const AlgType = {
-    FORWARD: 'Forward',
-    FORWARDBACKWARD: 'Forward-Backward',
-    VITERBI: 'Viterbi',
-    BAUMWELCH: 'Baum-Welch'
-}

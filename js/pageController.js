@@ -14,9 +14,24 @@ toggleAccordion = function(component){
     }
 }
 
+//pass the button that controles the accordion
+openAccordion = function(component){
+    if (component.nextElementSibling.style.maxHeight == ''){
+        component.click();
+    }
+}
+
+closeAccordion = function(component){
+    if (component.nextElementSibling.style.maxHeight != ''){
+        component.click();
+    }
+}
+
+
 
 window.onload = function() {
     initCanvas();
+    initModelUI();
 
     var acc = document.getElementsByClassName("accordion");
     var i;
@@ -46,11 +61,13 @@ window.onload = function() {
         model = new MarkovChain();
         document.getElementById("markovChainBtn").disabled = true;
         document.getElementById("hiddenMarkovModelBtn").disabled = false;
+        initModelUI();
     });
     document.getElementById("hiddenMarkovModelBtn").addEventListener("click", function(){
         model = new HiddenMarkovModel();
         document.getElementById("markovChainBtn").disabled = false;
         document.getElementById("hiddenMarkovModelBtn").disabled = true;
+        initModelUI();
     });
 
     // State details
@@ -94,8 +111,12 @@ window.onload = function() {
         var obsStr = model.validateObS(obserevedString.value);
         obserevedString.value = obsStr;
         refresh();
-
     });
+
+    var dropdown = document.getElementById("algorithmDropdown");
+    dropdown.onchange = function() {
+        model.clearAlgProsessor();
+    };
 
 }
 
@@ -230,15 +251,21 @@ function stopStep(){
 }
 
 refreshInfoPanels = function(){
-    if (!(selectedObj == null)){
-        if (selectedObj instanceof State){
-            document.getElementById("sIDText").value = selectedObj.id;
-            document.getElementById("sNameText").value = selectedObj.text;
-            document.getElementById("sEmmisionText").value = selectedObj.emmision;
-            document.getElementById("sInitalProability").value = model.initialProbabilityDistribution[selectedObj.id];
-            document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
-        }
+
+    if (selectedObj instanceof State && runner == null){
+        document.getElementById("sIDText").value = selectedObj.id;
+        document.getElementById("sNameText").value = selectedObj.text;
+        document.getElementById("sEmmisionText").value = selectedObj.emmision;
+        document.getElementById("sInitalProability").value = model.initialProbabilityDistribution[selectedObj.id];
+        document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
+    } else {
+        document.getElementById("sIDText").value = null;
+        document.getElementById("sNameText").value = null;
+        document.getElementById("sEmmisionText").value = null;
+        document.getElementById("sInitalProability").value = null;
+        document.getElementById("sTransitionProabilitysText").value = null;
     }
+    
     var panel = document.getElementById("statePanelInfo");
     if (panel.style.maxHeight){
         panel.style.maxheight = panel.scrollHeight + "px";
@@ -313,33 +340,43 @@ refreshInfoPanels = function(){
 
     // table :
     var str = document.getElementById("algString").value;
-    var table = "<tr>" +
-                "<th></th>";
-    var states = model.states;
-    var Alpha = model.getAlpha();
-    for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
-    table += "</tr>";
-
-    for (i in states){
-        table += "<tr>" +
-                th(states[i].text);
-        for (j = 1; j <= str.length; j++){
-            if(!Alpha[j]) {Alpha[j] = []};
-            table += td((Alpha[j][i]== null)? 0: Alpha[j][i]); 
-        }
+    if(str.length > 0){
+        
+        var table = "<tr>" +
+                    "<th></th>";
+        var states = model.states;
+        var Alpha = model.getAlpha(); // todo 
+        for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
         table += "</tr>";
 
-    }
+        for (i in states){
+            table += "<tr>" +
+                    th(states[i].text);
+            for (j = 1; j <= str.length; j++){
+                if(!Alpha[j]) {Alpha[j] = []};
+                table += td((Alpha[j][i]== null)? 0: Math.round( Alpha[j][i] * 10000000000 + Number.EPSILON ) / 10000000000); 
+            }
+            table += "</tr>";
 
-    document.getElementById("algTable").innerHTML = table;
+        }
+
+        document.getElementById("algTable").innerHTML = table;
+    }
 
     
 }
 function th(str){return "<th>"+str+"</th>";}
 function td(str){return "<td>"+str+"</td>";}
+function li(str){return "<li>"+str+"</li>";}
 
-function li(string){
-    return "<li>" + string + "</li>";
+
+function initModelUI(){
+    var dropdown = document.getElementById("algorithmDropdown");
+    dropdownText = "";
+    for (i in model.AlgType){
+        dropdownText += "<option value=\""+model.AlgType[i] + "\">"+model.AlgType[i]+"</option>"
+    }
+    dropdown.innerHTML = dropdownText;
 }
 
 
