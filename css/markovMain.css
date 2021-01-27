@@ -143,3 +143,8 @@ canvas {
     
   pointer-events: all;
 }
+
+.algInput{
+    text-align: left;
+    padding-left: 5%;
+}

@@ -32,6 +32,7 @@ closeAccordion = function(component){
 window.onload = function() {
     initCanvas();
     initModelUI();
+    MathJax.ready();
 
     var acc = document.getElementsByClassName("accordion");
     var i;
@@ -193,11 +194,22 @@ clear = function(){
         model = new MarkovChain();
     }
 
-    model = new MarkovChain();
+    refresh();
+    var algStr = document.getElementById("algString");
+    algStr.disabled = false;
+    algStr.value = "";
 }
 
+var runnerSelectedObject = null; //TODO
 var runner = null;
 run = function(steps,time){
+    if (runner != null){
+        selectedObj = null;
+        currentEmmision = null;
+        stopStep();
+        resetCaret();
+        return;
+    }
     var output = document.getElementById('outputString');
     if (!model.validCheck()) { 
         output.innerHTML = "There are unresolved errors";
@@ -240,6 +252,7 @@ function step() {
     refresh();
     if (model.processor.outPutLength > 20){
         selectedObj = null;
+        currentEmmision = null;
         stopStep();
         resetCaret();
     }
@@ -359,14 +372,20 @@ refreshInfoPanels = function(){
             table += "</tr>";
 
         }
-
         document.getElementById("algTable").innerHTML = table;
+
+        var tablecomp = document.getElementById("algDiv");
+        tablecomp.clientHeight;
+        tablecomp.style.top;
+        height = window.innerHeight * 0.20;
+        
+
     }
 
     
 }
 function th(str){return "<th>"+str+"</th>";}
-function td(str,j,i){return "<td onmouseover=\"tableCellMouseOver(event,this,"+j+","+i+")\">"+str+"</td>";}
+function td(str,j,i){return "<td onclick=\"tableCellMouseOver(event,this,"+j+","+i+")\">"+str+"</td>";}
 function li(str){return "<li>"+str+"</li>";}
 
 function tableCellMouseOver(e,comp,j,i){
@@ -374,15 +393,25 @@ function tableCellMouseOver(e,comp,j,i){
 
 
     panel.style.display = "inline";
-    
-    var str = "<p>&alpha;<sub>"+j+"</sub>("+i+") = (";
-    for (var k in model.states){
-        str += "&alpha;<sub>"+(j-1)+"</sub>("+k+")M<sub>"+k+","+i+"</sub> + "
+
+    var str;
+    if (true){ //TODO if forward
+        str = "<p>&alpha;<sub>"+j+"</sub>("+i+") = (";
+        for (var k in model.states){
+            str += "&alpha;<sub>"+(j-1)+"</sub>("+k+")M<sub>"+k+","+i+"</sub> + "
+        }
+        str = str.substr(0, str.length - 3);
+        str += ")e<sub>"+j+"</sub>(ouput) </p>";
+
+        str = "\\(\\alpha_t (j) = (\\Sigma^{|S|}_{i=1} \\alpha_{t-1} (i)m_{i,j} )e_j (o_t) , 1 < t <= T , 1 <= j <= |S|\\)";
+        str = '\\frac{1}{\\sqrt{x^2 + 1}}';
     }
-    str = str.substr(0, str.length - 3);
-    str += ")e<sub>"+j+"</sub>(ouput) </p>";
+    
+    
 
     panel.innerHTML = str;
+
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
     var width = panel.clientWidth;
     var height = panel.clientHeight;

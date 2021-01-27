@@ -107,6 +107,8 @@ initCanvas = function() {
 		}
 		resetCaret();
         refresh();
+        
+        document.getElementById("hoverInfo").style.display = "none";
     };
 
     canvas.ondblclick = function(e) {
@@ -137,7 +139,6 @@ initCanvas = function() {
 			refresh();
 		}
 		
-        document.getElementById("hoverInfo").style.display = "none";
 	}
 
 	canvas.onmouseup = function(e) {
@@ -181,9 +182,9 @@ document.onkeydown = function(e) {
 		shift = true;
 	} else if(key == "Control"){
 		control = true;
-	}else if(!canvasHasFocus()){
+	//}else if(!canvasHasFocus()){
 		// don't read keystrokes when other things have focus
-		return true;
+		//return true;
 	} else if(key == "Backspace") {
 		if(selectedObj != null) {
 			if(control || selectedObj.text == "0."){

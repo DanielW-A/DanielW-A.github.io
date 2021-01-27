@@ -177,6 +177,9 @@ class MarkovChain extends MarkovModel{
         }
 
         var sts = this.states;
+        if (sts == null || sts == []){
+            this.processor.errors.push("There are no states");
+        }
         for (i in sts) {
             if (i === sts[i]) {
                 errorMsg += "WARNING : " + i + " state has defult emmision string \n";
@@ -284,5 +287,9 @@ class MarkovChain extends MarkovModel{
         console.log(myMC.run(20));
 
         console.log(myMC.toString());
+    }
+
+    AlgType = {
+        LIKELIHOOD: 'likelihood'
     }
 }

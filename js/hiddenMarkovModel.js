@@ -246,12 +246,18 @@ class HiddenMarkovModel extends MarkovModel{
         }
 
         var sts = this.states;
+        if (sts == null || sts == []){
+            this.processor.errors.push("There are no latent states");
+        }
         for (i in sts) {
 
         }
 
         var connection;
         var eStates = this.emmisionStates;
+        if (eStates == null || eStates == []){
+            this.processor.errors.push("There are no emmission states");
+        }
         var emmissions = [];
         for (i in eStates){
             for (j in eStates){

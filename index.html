@@ -2,136 +2,151 @@
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<meta name="description" content="A Designer and Interpreter for Markov
+    <meta charset="utf-8">
+    <meta name="description" content="A Designer and Interpreter for Markov
 			Models (Markov Chains and Hidden Markov Models)" />
-	<meta name="author" content="Daniel Walker-Arnott" />
-	<title>Markov Model Simulator</title>
-	<link rel="stylesheet" type="text/css" href="css/markovMain.css" />
-	<!-- TODO favicon -->
+    <meta name="author" content="Daniel Walker-Arnott" />
+    <title>Markov Model Simulator</title>
+    <link rel="stylesheet" type="text/css" href="css/markovMain.css" />
+    <!-- TODO favicon -->
 </head>
 
 <body>
-	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script> -->
-	<script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
-	<script src="js/components.js"></script>
-	<script src="js/markovChain.js"></script>
-	<script src="js/hiddenMarkovModel.js"></script>
-	<script src="js/pageController.js"></script>
-	<script src="js/canvasController.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script> -->
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/markovChain.js"></script>
+    <script src="js/hiddenMarkovModel.js"></script>
+    <script src="js/pageController.js"></script>
+    <script src="js/canvasController.js"></script>
 
 
-	<div id="main">
-		<div class="title">
-			<h1>
-				Markov Model Simulator
-				<button class="usable" id="markovChainBtn" title="Markov Chain">Markov Chain</button>
-				<button class="usable" id="hiddenMarkovModelBtn"title="Hidden Markov Model">Hidden Markov Model</button>
-			</h1>
-		</div>
+    <div id="main">
+        <div class="title">
+            <h1>
+                Markov Model Simulator
+                <button class="usable" id="markovChainBtn" title="Markov Chain">Markov Chain</button>
+                <button class="usable" id="hiddenMarkovModelBtn" title="Hidden Markov Model">Hidden Markov
+                    Model</button>
+            </h1>
+        </div>
 
-		<div id="information" class=>
-			<!-- The model detals panel -->
-			<!-- The the outputs/ description panel -->
-			<div id="informationPanel" class="right">
-				<div id="tools">
-					<div style="text-align:center;">
-						
-						<button id="testbtn" title="Test" onclick="markovChain.runTests();">Test</button>
-						<button id="saveBtn" title="Save">Save</button>
-						<!-- TODO class, onclick, image -->
-						<button id="loadBtn" title="Load">Load</button>
-						<button id="clearBtn" title="Clear">Clear</button>
-						<button id="runBtn" title="Run">Run</button>
-						<div id="outputString" type="text" placeholder="See if this fits">bbacba</div>
-						<!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
-					</div>
-				</div>
-				<div id="statePanel" class="panelWrapper">
-					<button id="stateButton" class="accordion">State details</button>
-					<div id="statePanelInfo" class="panel">
-						<form>
-							<label for="sID">id:</label>
-							<input type="text" id="sIDText" name="id" readonly="true"><br>
-							<label for="sName">Name:</label>
-							<input type="text" id="sNameText" name="StateName"><br>
-							<label for="sEmmision">Emmision:</label>
-							<input type="text" id="sEmmisionText" name="Emmision"><br>
-							<label for="InitalProability">InitalProability:</label>
-							<input type="text" id="sInitalProability" name="InitalProability"><br>
-							<label for="sTransitionProabilitys">TransitionProabilitys:</label>
-							<input type="text" id="sTransitionProabilitysText" name="TransitionProabilitys"><br>
-						</form>
-						<button id="emmisionBtn" class="accordion">Emmission proabilitys</button>
-						<div id="statePanelEmmisionPanel" class="panel">
-						</div>
-					</div>
+        <div id="information" class=>
+            <!-- The model detals panel -->
+            <!-- The the outputs/ description panel -->
+            <div id="informationPanel" class="right">
+                <div id="tools">
+                    <div style="text-align:center;">
 
-				</div>
-				<div id="modelPanel" class="panelWrapper">
-					<button id="modelBtn" class="accordion">Model Details</button>
-					<div id="modelPanelInfo" class="panel">
-						<div>The tuple of the current model.</div>
-						<form> <!-- https://www.w3schools.com/html/html_tables.asp -->
-							<label>S =</label>
-							<label id="mStatesText" name="States"></label><br>
-							<label>T/M =:</label>
-							<label id="mTransitions" name="mTransitions"></label><br>
-							<label>\pi =</label>
-							<label id="mInitalProability" name="mInitalProability"></label><br>
-							<label>\Sigma =</label>
-							<input type="text" id="mLatentStates" name="mLatentStates"><br>
-							<label>E =</label>
-							<input type="text" id="mEmmisionProbaility" name="mEmmisionProbaility"><br>
-						</form>
-					</div>
-				</div>
-				<div id="errorPanel" class="panelWrapper">
-					<button id="errorButton" class="accordion">Errors</button>
-					<div id="errorPanelInfo" class="panel">
-					</div>
-				</div>
-				<div id="InstructionsPanel" class="panelWrapper">
-					<button id="instructionsButton" class="accordion">Instructions</button>
-					<div id="instructionsPanelInfo" class="panel">
-						<label id="instructionsPanelText">Instructions : TODO</label>
-					</div>
-				</div>
-				<div id="AlgorithmVarPanel" class="panelWrapper">
-					<button id="AlgorithmVarButton" class="accordion">Algorithm Info</button>
-					<div id="AlgorithmVarPanelInfo" class="panel">
-						<label id="AlgorithmVarPanelText">&alpha; = todo;</label>
-					</div>
-				</div>
-			</div>
-			<div id="markovCanvasDiv" class="markovCanvasDiv">
-				<canvas id="markovCanvas" width="1800" height="1000">
-					<span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
-				</canvas>
-				<div id="results">
+                        <button id="testbtn" title="Test" onclick="markovChain.runTests();">Test</button>
+                        <button id="saveBtn" title="Save">Save</button>
+                        <!-- TODO class, onclick, image -->
+                        <button id="loadBtn" title="Load">Load</button>
+                        <button id="clearBtn" title="Clear">Clear</button>
+                        <button id="runBtn" title="Run">Run</button>
+                        <div id="outputString" type="text" placeholder="See if this fits">bbacba</div>
+                        <!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
+                    </div>
+                </div>
+                <div id="statePanel" class="panelWrapper">
+                    <button id="stateButton" class="accordion">State details</button>
+                    <div id="statePanelInfo" class="panel">
+                        <form>
+                            <label for="sID">id:</label>
+                            <input type="text" id="sIDText" name="id" readonly="true"><br>
+                            <label for="sName">Name:</label>
+                            <input type="text" id="sNameText" name="StateName"><br>
+                            <label for="sEmmision">Emmision:</label>
+                            <input type="text" id="sEmmisionText" name="Emmision"><br>
+                            <label for="InitalProability">InitalProability:</label>
+                            <input type="text" id="sInitalProability" name="InitalProability"><br>
+                            <label for="sTransitionProabilitys">TransitionProabilitys:</label>
+                            <input type="text" id="sTransitionProabilitysText" name="TransitionProabilitys"><br>
+                        </form>
+                        <button id="emmisionBtn" class="accordion">Emmission proabilitys</button>
+                        <div id="statePanelEmmisionPanel" class="panel">
+                        </div>
+                    </div>
 
-				</div>
-			</div>
-		</div>
-		<div class="algorithms">
-			<select class="usable" name="algorithmDropdown" id="algorithmDropdown">
-			</select>
-			<input id="algString" class="usable"></input>
-			<button id="algButton" class="usable" title="Run/Step">Run/Step</button>
-			<div id="tableWrapper">
-				<div id="tableScroll">
-					<table class="usable" id="algTable" class="algTable"></table>
-				</div>
-			</div>
-			
+                </div>
+                <div id="modelPanel" class="panelWrapper">
+                    <button id="modelBtn" class="accordion">Model Details</button>
+                    <div id="modelPanelInfo" class="panel">
+                        <div>The tuple of the current model.</div>
+                        <form>
+                            <!-- https://www.w3schools.com/html/html_tables.asp -->
+                            <label>S =</label>
+                            <label id="mStatesText" name="States"></label><br>
+                            <label>T/M =:</label>
+                            <label id="mTransitions" name="mTransitions"></label><br>
+                            <label>\pi =</label>
+                            <label id="mInitalProability" name="mInitalProability"></label><br>
+                            <label>\Sigma =</label>
+                            <input type="text" id="mLatentStates" name="mLatentStates"><br>
+                            <label>E =</label>
+                            <input type="text" id="mEmmisionProbaility" name="mEmmisionProbaility"><br>
+                        </form>
+                    </div>
+                </div>
+                <div id="errorPanel" class="panelWrapper">
+                    <button id="errorButton" class="accordion">Errors</button>
+                    <div id="errorPanelInfo" class="panel">
+                    </div>
+                </div>
+                <div id="InstructionsPanel" class="panelWrapper">
+                    <button id="instructionsButton" class="accordion">Instructions</button>
+                    <div id="instructionsPanelInfo" class="panel">
+                        <label id="instructionsPanelText">Instructions : TODO</label>
+                    </div>
+                </div>
+                <div id="AlgorithmVarPanel" class="panelWrapper">
+                    <button id="AlgorithmVarButton" class="accordion">Algorithm Info</button>
+                    <div id="AlgorithmVarPanelInfo" class="panel">
+                        <label id="AlgorithmVarPanelText">
+                            The Forward Algorithm: 
+                            Its goal is to compute the proability of observing a sequence od states given a model (P(O|λ))
+                            this is done by caculationg and caching a value for each interal state at each time frame.
+                            this ic called &alpha; and is defined by :
+                             &alpha; = P(o1, o2, ... , ot, qt = si|λ);
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="markovCanvasDiv" class="markovCanvasDiv">
+                <canvas id="markovCanvas" width="1800" height="1000">
+                    <span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
+                </canvas>
+                <div id="results">
+
+                </div>
+            </div>
+        </div>
+        <div class="algorithms" id="algDiv">
+            <div class="algInput">
+                <select class="usable" name="algorithmDropdown" id="algorithmDropdown">
+                </select>
+                <input id="algString" class="usable"></input>
+                <button id="algButton" class="usable" title="Run/Step">Run/Step</button>
+            </div>
+            <div id="tableWrapper">
+                <div id="tableScroll">
+                    <table class="usable" id="algTable" class="algTable"></table>
+                </div>
+            </div>
+
         </div>
         <div id="hoverInfo" class="hoverInfo">
             <panel>
                 <p>
-                    &alpha;_5(H) = (&alpha;_4(H) * M(H)(H) + &alpha;_4(F) * M(F)(H)) * e(H)(N)             
+                    &alpha;_5(H) = (&alpha;_4(H) * M(H)(H) + &alpha;_4(F) * M(F)(H)) * e(H)(N)
                 </p>
             </panel>
         </div>
+
+        When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+$$\alpha_t (j) = (\Sigma^{|S|}_{i=1} \alpha_{t-1} (i)m_{i,j} )e_j (o_t) , 1 < t <= T , 1 <= j <= |S|$$
 
 </body>
 
