@@ -12,8 +12,11 @@
 </head>
 
 <body>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="js/mathjax-config.js" defer></script>
+<script type="text/javascript" id="MathJax-script" defer
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+
     <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script> -->
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
     <script src="js/components.js"></script>
@@ -40,7 +43,7 @@
                 <div id="tools">
                     <div style="text-align:center;">
 
-                        <button id="testbtn" title="Test" onclick="markovChain.runTests();">Test</button>
+                        <button id="testBtn" title="Test">Test</button>
                         <button id="saveBtn" title="Save">Save</button>
                         <!-- TODO class, onclick, image -->
                         <button id="loadBtn" title="Load">Load</button>
@@ -54,19 +57,20 @@
                     <button id="stateButton" class="accordion">State details</button>
                     <div id="statePanelInfo" class="panel">
                         <form>
-                            <label for="sID">id:</label>
-                            <input type="text" id="sIDText" name="id" readonly="true"><br>
-                            <label for="sName">Name:</label>
-                            <input type="text" id="sNameText" name="StateName"><br>
-                            <label for="sEmmision">Emmision:</label>
-                            <input type="text" id="sEmmisionText" name="Emmision"><br>
-                            <label for="InitalProability">InitalProability:</label>
-                            <input type="text" id="sInitalProability" name="InitalProability"><br>
-                            <label for="sTransitionProabilitys">TransitionProabilitys:</label>
-                            <input type="text" id="sTransitionProabilitysText" name="TransitionProabilitys"><br>
+                            <p><label for="sID">id:</label>
+                            <input type="text" id="sIDText" name="id" readonly="true"></p>
+                            <p><label for="sName">Name:</label>
+                            <input type="text" id="sNameText" name="StateName"></p>
+                            <p id="sEmmision"><label for="sEmmision">Emmision:</label>
+                            <input type="text" id="sEmmisionText" name="Emmision"></p>
+                            <p><label for="InitalProability">InitalProability:</label>
+                            <input type="text" id="sInitalProability" name="InitalProability"></p>
                         </form>
-                        <button id="emmisionBtn" class="accordion">Emmission proabilitys</button>
-                        <div id="statePanelEmmisionPanel" class="panel">
+                        <button id="sTransitionBtn" class="accordion">Transition probabilities</button>
+                        <div id="sTransitionPanel" class="panel">
+                        </div>
+                        <button id="sEmmisionBtn" class="accordion">Emmission probabilities</button>
+                        <div id="sEmmisionPanel" class="panel">
                         </div>
                     </div>
 
@@ -144,9 +148,6 @@
                 </p>
             </panel>
         </div>
-
-        When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
-$$\alpha_t (j) = (\Sigma^{|S|}_{i=1} \alpha_{t-1} (i)m_{i,j} )e_j (o_t) , 1 < t <= T , 1 <= j <= |S|$$
 
 </body>
 

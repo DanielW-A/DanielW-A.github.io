@@ -32,7 +32,6 @@ closeAccordion = function(component){
 window.onload = function() {
     initCanvas();
     initModelUI();
-    MathJax.ready();
 
     var acc = document.getElementsByClassName("accordion");
     var i;
@@ -55,6 +54,9 @@ window.onload = function() {
     });
     document.getElementById("runBtn").addEventListener("click",  function() {
         run(20,1000);
+    });
+    document.getElementById("testBtn").addEventListener("click",  function() {
+        test();
     });
 
     document.getElementById("markovChainBtn").disabled = true;
@@ -117,6 +119,8 @@ window.onload = function() {
     var dropdown = document.getElementById("algorithmDropdown");
     dropdown.onchange = function() {
         model.clearAlgProsessor();
+        model.algProsessor.type = dropdown.value;
+
     };
 
 }
@@ -144,7 +148,7 @@ save = function(){
     alert("TODO");
 }
 
-load = function(){
+test = function(){
     var w = canvas.width;
     var h = canvas.height;
 
@@ -270,13 +274,11 @@ refreshInfoPanels = function(){
         document.getElementById("sNameText").value = selectedObj.text;
         document.getElementById("sEmmisionText").value = selectedObj.emmision;
         document.getElementById("sInitalProability").value = model.initialProbabilityDistribution[selectedObj.id];
-        document.getElementById("sTransitionProabilitysText").value = model.transitions[selectedObj.id];
     } else {
         document.getElementById("sIDText").value = null;
         document.getElementById("sNameText").value = null;
         document.getElementById("sEmmisionText").value = null;
         document.getElementById("sInitalProability").value = null;
-        document.getElementById("sTransitionProabilitysText").value = null;
     }
     
     var panel = document.getElementById("statePanelInfo");
@@ -385,9 +387,58 @@ refreshInfoPanels = function(){
     
 }
 function th(str){return "<th>"+str+"</th>";}
-function td(str,j,i){return "<td onclick=\"tableCellMouseOver(event,this,"+j+","+i+")\">"+str+"</td>";}
+function td(str,j,i){return "<td id=\"td_"+j+""+i+"\" onclick=\"tableCellMouseOver(event,this,"+j+","+i+")\">"+str+"</td>";}
 function li(str){return "<li>"+str+"</li>";}
 
+function spanNH(str,id){return "<span id=\"equ0_"+id+"\">" + str + "</span>"}
+// function span(str,id,t,nodeA,nodeB,equ){return "<span id=\"equ"+equ+"_"+id+"\" onmouseover=\"spotlight('"+id+"',"+t+","+nodeA+","+nodeB+")\" onmouseout=\"unspotlight('"+id+"',"+t+","+nodeA+","+nodeB+")\" >" + str + "</span>"}
+function span(equ,id,t,nodeA,nodeB,str){return "<span id=\"equ"+equ+"_"+id+"\" onmouseover=\"spotlight('"+id+"',"+t+",'"+nodeA+"','"+nodeB+"')\" onmouseout=\"unspotlight('"+id+"',"+t+",'"+nodeA+"','"+nodeB+"')\" >" + str + "</span>"}
+
+var graphSpotlight = false;
+function spotlight(id,t,nodeA,nodeB){
+    console.log("focus",id,t,nodeA,nodeB);
+
+    for (var i = 0; i< 3;i++){
+        var point =  (i == 0)? id.charAt(0): id
+        var equStr = "equ" + i + "_" + point;
+        var element = document.getElementById(equStr);
+        element.style.color = "blue";
+    }
+    if (id.charAt(0) == 1 || id.charAt(0) == 2){
+        graphSpotlight = true;
+        selectedObj = model.states[nodeA];
+        currentEmmision = model.emmisionStates[nodeB];
+        document.getElementById("td_"+t+""+nodeA).style.color = "blue";
+
+    } else if (id.charAt(0) == 3 || id.charAt(0) == 4){
+        selectedObj = model.transitions[nodeA][nodeB];
+        graphSpotlight = true;
+
+    }
+    refreshComponents();
+}
+function unspotlight(id,t,nodeA,nodeB){
+    console.log("unfocus",id,t,nodeA,nodeB);
+
+    for (var i = 0; i< 3;i++){
+        var point =  (i == 0)? id.charAt(0): id
+        var equStr = "equ" + i + "_" + point;
+        var element = document.getElementById(equStr);
+        element.style.color = "";
+    }
+    if (id.charAt(0) == 1 || id.charAt(0) == 2){
+        graphSpotlight = false;
+        selectedObj = null;
+        currentEmmision = null;
+        document.getElementById("td_"+t+""+nodeA).style.color = (id.charAt(0) != 1)? "" : "red";
+
+    } else if (id.charAt(0) == 3 || id.charAt(0) == 4){
+        selectedObj = null;
+        graphSpotlight = false;
+
+    }
+    refreshComponents();
+}
 function tableCellMouseOver(e,comp,j,i){
     var panel = document.getElementById("hoverInfo");
 
@@ -395,24 +446,40 @@ function tableCellMouseOver(e,comp,j,i){
     panel.style.display = "inline";
 
     var str;
-    if (true){ //TODO if forward
-        str = "<p>&alpha;<sub>"+j+"</sub>("+i+") = (";
+    if (model.algProsessor.type == model.AlgType.forward){ //TODO if forward
+
+        var t = j;
+        var S = 0;
+        for (var k in model.states){S++;}
+        var s = model.states[i];
+        var output = document.getElementById("algString").value;
+        var A = model.getAlpha();
+        
+
+        str = "<div id=\"equ1\">" + span(1,1,t,i,model.getEmmisionState(output.charAt(t)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = (";
         for (var k in model.states){
-            str += "&alpha;<sub>"+(j-1)+"</sub>("+k+")M<sub>"+k+","+i+"</sub> + "
+            str += span(1,2+""+k,t-1,k,model.getEmmisionState(output.charAt(t-1)),"\\(\\alpha_{"+(t-1)+"} ("+model.states[k].text+")\\)");
+            str += span(1,3+""+k,t-1,k,i,"\\(m_{"+model.states[k].text+","+s.text+"} \\)");
+            str += " + ";
+        } 
+        str = str.substr(0, str.length - 3);
+        str +=  ")" + span(1,4,t,i,model.getEmmisionState(output.charAt(t)),"\\(e_{"+s.text+"} ("+output.charAt(t)+")\\)") + "</div>";
+        
+        str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmmisionState(output.charAt(t)),"\\("+A[t][i]+"\\)") + " = (";
+        for (var k in model.states){
+            str += span(2,2+""+k,t-1,k,model.getEmmisionState(output.charAt(t-1)),"\\("+A[t-1][k]+"\\)");
+            str += span(2,3+""+k,t-1,k,i,"\\("+model.transitions[k][i].text+"\\)");
+            str += " + ";
         }
         str = str.substr(0, str.length - 3);
-        str += ")e<sub>"+j+"</sub>(ouput) </p>";
-
-        str = "\\(\\alpha_t (j) = (\\Sigma^{|S|}_{i=1} \\alpha_{t-1} (i)m_{i,j} )e_j (o_t) , 1 < t <= T , 1 <= j <= |S|\\)";
-        str = '\\frac{1}{\\sqrt{x^2 + 1}}';
+        str +=  ")" + span(2,4,t,i,model.getEmmisionState(output.charAt(t)),"\\("+ s.getEmmisionProbability(output.charAt(t))+"\\)") + "</div>";
     }
-    
     
 
     panel.innerHTML = str;
+    MathJax.typeset();
 
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-
+    var rect = document.getElementById("algTable").getBoundingClientRect();
     var width = panel.clientWidth;
     var height = panel.clientHeight;
 
@@ -420,7 +487,13 @@ function tableCellMouseOver(e,comp,j,i){
     var y = e.clientY;
 
     panel.style.left = ((x > width)? x - width: x )+ "px" ;
-    panel.style.top = y - height - 10 + "px";
+    panel.style.top = rect.top - height + "px";
+
+    
+    document.getElementById("td_"+j+""+i).style.color = "Red";
+    document.getElementById("algTable").style.color = "white";
+
+    // MathJax.typesetPromise();
 
     
 
@@ -433,6 +506,34 @@ function initModelUI(){
         dropdownText += "<option value=\""+model.AlgType[i] + "\">"+model.AlgType[i]+"</option>"
     }
     dropdown.innerHTML = dropdownText;
+
+    setAlgDescription(model.AlgType[0]);
+
+    if (model instanceof HiddenMarkovModel){
+        document.getElementById("sEmmision").style.display = "none";
+        document.getElementById("sEmmisionBtn").style.display = "";
+    } else {
+        document.getElementById("sEmmision").style.display = "";
+        document.getElementById("sEmmisionBtn").style.display = "none";
+    }
+    sEmmisionBtn
+    sEmmision
+}
+
+function setAlgDescription(type){
+    if (type == model.AlgType.forward){
+        var info = document.getElementById("AlgorithmVarPanelText");
+        var str = "<div id=\"equ0\">";
+        str += spanNH("\\(\\alpha_t (j)\\)",1) + " = ";
+        str += spanNH("\\((\\Sigma^{|S|}_{i=1}\\)",0);
+        str += spanNH("\\(\\alpha_{t-1} (i)\\)",2);
+        str += spanNH("\\(m_{i,j}\\)",3);
+        str += spanNH("\\(e_j (o_t)\\)",4);
+        str += spanNH("\\(, 1 < t <= T , 1 <= j <= |S|)\\)",5);
+        str += "</div>";
+        info.innerHTML = str;
+    }
+
 }
 
 

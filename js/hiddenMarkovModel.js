@@ -20,7 +20,15 @@ class LatentState extends State{
     }
 
     getEmmisionProbability(emmisionState){
-        return parseFloat(model.transitions[this.id][emmisionState.id].text);
+        if (emmisionState instanceof EmmisionState) {return parseFloat(model.transitions[this.id][emmisionState.id].text);}
+        for (i in model.transitions[this.id]) {
+            if (model.transitions[this.id][i].endNode instanceof EmmisionState){
+                if (model.transitions[this.id][i].endNode.getEmmision() == emmisionState){
+                    return parseFloat(model.transitions[this.id][i].text);
+                }
+            }
+        }
+        return 0;
     }
 }
 
@@ -79,6 +87,7 @@ class HiddenMarkovModel extends MarkovModel{
         super();
         this.lastEmmisionId = 0;
         this.algProsessor = {
+            type : null,
             observedString : null,
             t : 0,
             A : [], //alpha
@@ -292,6 +301,14 @@ class HiddenMarkovModel extends MarkovModel{
             }
         }
         return str.substr(0, str.length - 1);
+    }
+
+    getEmmisionState(emmisionStr){
+        for (var i in this.emmisionStates){
+            if (this.emmisionStates[i].getEmmision() == emmisionStr){
+                return i;
+            }
+        }
     }
     
     /////////////////////////////////////////////////

@@ -132,11 +132,12 @@ canvas {
 } */
 
 .hoverInfo{
-    pointer-events: none;
+    pointer-events: all;
     position: fixed;
     background-color: green;
     border: 1px solid;
     display: none;
+    text-align: center;
 }
 
 .usable{
@@ -147,4 +148,18 @@ canvas {
 .algInput{
     text-align: left;
     padding-left: 5%;
+}
+
+#information form{
+  display: table;
+  text-align: left;
+}
+#information p{
+  display: table-row;
+}
+#information label{
+  display: table-cell;
+}
+#information input{
+  display: table-cell;
 }
