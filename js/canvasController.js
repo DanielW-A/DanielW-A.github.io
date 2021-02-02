@@ -193,7 +193,7 @@ document.onkeydown = function(e) {
 		shift = true;
 	} else if(key == "Control"){
 		control = true;
-	}else if(!canvasHasFocus()){ // changed hoe this works a bit , now less imprtant
+	}else if(!canvasHasFocus() || runner != null){ // changed hoe this works a bit , now less imprtant
 		//don't read keystrokes when other things have focus
 		return true;
 	} else if(key == "Delete") { // delete key
@@ -248,7 +248,7 @@ document.onkeypress = function(e) {
 		closeAccordion(document.getElementById("stateButton"));
 		return false;
 	}
-	if(!canvasHasFocus()){
+	if(!canvasHasFocus() || runner != null){
 		return true;
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
 		if (selectedObj instanceof StationaryLink){

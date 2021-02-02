@@ -326,6 +326,9 @@ class HiddenMarkovModel extends MarkovModel{
         document.getElementById("algString").disabled = false;
     
     }
+    getState(str){
+        return (this.states[str] != null)? this.states[str] : this.emmisionStates[str];
+    }
     getAlpha(){
         return this.algProsessor.A;
     }
