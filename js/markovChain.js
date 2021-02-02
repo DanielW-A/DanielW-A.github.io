@@ -131,6 +131,9 @@ class MarkovChain extends MarkovModel{
         }
         return null;
     }
+    getState(str){
+        return this.states[str]; // used for campatibility with HMM
+    }
     /////////////////////////////////////////////////
     // testing / running
     /////////////////////////////////////////////////

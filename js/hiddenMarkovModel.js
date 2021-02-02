@@ -332,6 +332,9 @@ class HiddenMarkovModel extends MarkovModel{
     getAlpha(){
         return this.algProsessor.A;
     }
+    getBeta(){
+        return this.algProsessor.B;
+    }
     decodeEmmisions(str){
         //TODO THis is just a placeholder
         var emmisions = []
@@ -410,14 +413,14 @@ class HiddenMarkovModel extends MarkovModel{
         } else { // inductive step;
             this.algProsessor.t--;
             var t = this.algProsessor.t;
-            this.algProsessor.A[t] = [];
+            this.algProsessor.B[t] = [];
             var char = this.algProsessor.observedString[t-1];
             for(i in this.states){
                 var tempSum = 0;
                 for(j in this.states){
-                    tempSum += this.algProsessor.A[t+1][j]*parseFloat(this.transitions[i][j].text); 
+                    tempSum += this.algProsessor.B[t+1][j]*parseFloat(this.transitions[i][j].text); 
                 }
-                this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+                this.algProsessor.B[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
             }
         }
     }
@@ -429,10 +432,10 @@ class HiddenMarkovModel extends MarkovModel{
         comp.disabled = true;
         this.algProsessor.observedString = this.decodeEmmisions(comp.value);
         this.algProsessor.t = this.algProsessor.observedString.length;
-        this.algProsessor.A[this.algProsessor.t] = [];
+        this.algProsessor.B[this.algProsessor.t] = [];
         for (var i in this.states){
             var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
-            this.algProsessor.A[this.algProsessor.t][i] = this.states[i].getEmmisionProbability(emmisionState);
+            this.algProsessor.B[this.algProsessor.t][i] = this.states[i].getEmmisionProbability(emmisionState);
         }
     }
     /////////////////////////////////////////////////

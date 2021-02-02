@@ -224,7 +224,7 @@ class StationaryLink extends Link {
         this.parallelPart = 0.5;
         this.anchorAngle = anchorAngle;
 
-        if (this.type === LinkType.SELF){ //TODO
+        if (this.type === LinkType.SELF){
             this.x = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
             this.y = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
         }
@@ -350,7 +350,7 @@ class StationaryLink extends Link {
         }
     }
 
-    isNear(mouse){ //TODO for arcs maybe just increase the box for time being
+    isNear(mouse){
         if (this.type === LinkType.SELF){
 	        var dx = mouse.x - (this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle));
 	        var dy = mouse.y - (this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle));
