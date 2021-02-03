@@ -21,17 +21,26 @@ function span(equ,id,t,nodeA,nodeB,str){return "<span id=\""+equType+""+equ+"_"+
 // alg descriptions
 ///////////////////////////////////////////////////////
 
-const forwardDescription = [p("This is used to calculate the chances of the model being in internal state I at time t given the observation sequence from 0 to t."+
-        " this is done by a set of cached variables called ALPHA. This is calculated by these 2 equations: ")+
+const forwardDescription = [p("This is used to calculate the chances of the model being in internal state \\(i\\) at time \\(t\\) given the observation sequence from \\(0\\) to \\(t\\)."+
+        " this is done by a set of cached variables called Alpha (\\(\\alpha\\)). This is calculated by these 2 equations: ")+
         p("Base case:"),
-        p("When t=1 Alpha is calculated by multiplying the probability of the model starting in the state i and the probability of this state emitting the observed value e_i(o_t).") + 
+        p("When \\(t=1\\) Alpha is calculated by multiplying the probability of the model starting in the state \\(i\\) and the probability of this state emitting the observed value \\(e_i(o_t)\\).") + 
         p("Inductive step:"),
-        p("When t>1 Alpha is calculated by summing the products of all previous alphas (A_t-1(i)) by the transition from the previous internal state to the next current state M_i,j," +
-        "this is then multiplied by the probability of the state emitting the observed value e_i(o_t). ")];
+        p("When \\(t>1\\) Alpha is calculated by summing the products of all previous alphas \\(\\alpha_{t-1}(i)\\) by the transition from the previous internal state to the next current state \\(M_i,j\\)," +
+        "this is then multiplied by the probability of the state emitting the observed value \\(e_i(o_t)\\). ")];
 
 const forwardEquations = ["<div id=\"init0\">" + spanNH("init","\\(\\alpha_t (j)\\)",1) + " = " + spanNH("init","\\(\\pi(e_i)\\)",2) + spanNH("init","\\(e_j (o_t)\\)",4) + spanNH("equ","\\(, t = 1 , 1 <= j <= |S|)\\)",5)+"</div>",
         "<div id=\"equ0\">" + spanNH("equ","\\(\\alpha_t (j)\\)",1) + " = " + spanNH("equ","\\((\\Sigma^{|S|}_{i=1}\\)",0) + spanNH("equ","\\(\\alpha_{t-1} (i)\\)",2) + spanNH("equ","\\(m_{i,j}\\)",3) +
         spanNH("equ","\\(e_j (o_t)\\)",4) + spanNH("equ","\\(, 1 < t <= T , 1 <= j <= |S|)\\)",5) +"</div>"]
+
+const backwardDescription = [p("This is used to calculate the chances of the model being in internal state \\(i\\) at time \\(t\\) given the observation sequence from \\(t\\) to \\(T\\)."  +
+        " this is done by a set of cached variables called Beta \\(\\beta\\). This is calculated by these 2 equations: ")+
+        p("Base case:"),
+        p("When \\(t=T\\) Beta is 1, this is as there is no observed sequence past \\(T\\)") + 
+        p("Inductive step:"),
+        p("When \\(t<T\\) Beta is calculated by summing the products of all subsequent Betas \\((B_t+1(i))\\) by the transition from the current internal state to the next state \\(M_j,i\\) ," + 
+        "this is then multiplied by the probability of the state emitting the observed value \\(e_j(o_t)\\). ")];
+
 
 ///////////////////////////////////////////////////////
 // algTable descriptions
