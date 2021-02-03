@@ -23,6 +23,9 @@ class Transition extends StationaryLink{
 class MarkovChain extends MarkovModel{
     constructor() {
         super();
+        this.algProsessor = {
+            type : null
+        }
     }
     /////////////////////////////////////////////////
     // Editing the model

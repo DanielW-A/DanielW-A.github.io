@@ -435,7 +435,7 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.B[this.algProsessor.t] = [];
         for (var i in this.states){
             var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
-            this.algProsessor.B[this.algProsessor.t][i] = this.states[i].getEmmisionProbability(emmisionState);
+            this.algProsessor.B[this.algProsessor.t][i] = 1;
         }
     }
     /////////////////////////////////////////////////

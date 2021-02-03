@@ -193,9 +193,7 @@ document.onkeydown = function(e) {
 		shift = true;
 	} else if(key == "Control"){
 		control = true;
-	}else if(!canvasHasFocus() || runner != null){ // changed hoe this works a bit , now less imprtant
-		//don't read keystrokes when other things have focus
-		return true;
+	
 	} else if(key == "Delete") { // delete key
 		if(selectedObj != null) {
 			model.delete(selectedObj);
@@ -203,6 +201,9 @@ document.onkeydown = function(e) {
 			refresh();
             closeAccordion(document.getElementById("stateButton"));
 		}
+	}else if(!canvasHasFocus() || runner != null){ // changed hoe this works a bit , now less imprtant
+		//don't read keystrokes when other things have focus
+		return true;
     } else if(key == "Escape") { 
 		selectedObj = null;
 		refresh();
