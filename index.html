@@ -113,13 +113,7 @@
                 <div id="AlgorithmVarPanel" class="panelWrapper">
                     <button id="AlgorithmVarButton" class="accordion">Algorithm Info</button>
                     <div id="AlgorithmVarPanelInfo" class="panel">
-                        <label id="AlgorithmVarPanelText">
-                            The Forward Algorithm: 
-                            Its goal is to compute the proability of observing a sequence od states given a model (P(O|λ))
-                            this is done by caculationg and caching a value for each interal state at each time frame.
-                            this ic called &alpha; and is defined by :
-                             &alpha; = P(o1, o2, ... , ot, qt = si|λ);
-                        </label>
+                        <label id="AlgorithmVarPanelText"></label>
                     </div>
                 </div>
             </div>
@@ -144,13 +138,13 @@
                     <table class="usable" id="algTable" class="algTable"></table>
                 </div>
             </div>
+            <div id="description">
+
+            </div>
 
         </div>
         <div id="hoverInfo" class="hoverInfo">
             <panel>
-                <p>
-                    &alpha;_5(H) = (&alpha;_4(H) * M(H)(H) + &alpha;_4(F) * M(F)(H)) * e(H)(N)
-                </p>
             </panel>
         </div>
 

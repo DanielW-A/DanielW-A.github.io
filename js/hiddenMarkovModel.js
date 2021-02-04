@@ -359,11 +359,14 @@ class HiddenMarkovModel extends MarkovModel{
     forwardStep(){
         if (this.algProsessor.observedString == null){
             this.InitForward();
+            document.getElementById("description").innerHTML = forwardDesc[0];
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
             comp.value = "";
+            highlightTable();
             // this.clearAlgProsessor();
+            document.getElementById("description").innerHTML = forwardDesc[2];
         } else { // inductive step;
             this.algProsessor.t++
             var t = this.algProsessor.t;
@@ -377,6 +380,7 @@ class HiddenMarkovModel extends MarkovModel{
                 this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
                 this.algProsessor.A[t][i] = Math.round( this.algProsessor.A[t][i] * 10000 + Number.EPSILON ) / 10000;
             }
+            document.getElementById("description").innerHTML = forwardDesc[1];
         }
     }
     InitForward(){

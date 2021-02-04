@@ -31,7 +31,7 @@ canvas {
 
 .right {
     float: right;
-    width: 25%;
+    width: 20%;
     /* border: 3px solid #73AD21; */
     padding: 10px;
     text-align: left;
@@ -163,4 +163,10 @@ canvas {
 }
 #information input{
   display: table-cell;
+}
+#init0{
+  text-align: center;
+}
+#equ0{
+  text-align: center;
 }

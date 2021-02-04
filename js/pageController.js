@@ -421,10 +421,31 @@ refreshInfoPanels = function(){
         tablecomp.style.top;
         height = window.innerHeight * 0.20;
         
+    }
+}
 
+function highlightTable(){
+    var values = [];
+    if (model.algProsessor.type == model.AlgType.FORWARD){
+        values =  model.getAlpha();
+    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+        values =  model.getBeta();
     }
 
-    
+    var currentMax = 0;
+    var maxI = 0;
+    var maxJ = 0;
+
+    for (var i in values){
+        for (var j in values[i]){
+            if (values[i][j] > currentMax){
+                currentMax = values[i][j];
+                maxJ = j;
+            }
+        }
+    currentMax = 0;
+    document.getElementById("td_"+i+""+maxJ).style.color = "red";
+    }
 }
 
 var equType = "equ";
@@ -564,26 +585,17 @@ function setAlgDescription(type){
         str += forwardEquations[1];
         str += forwardDescription[2];
     } else if (type == model.AlgType.FORWARDBACKWARD){
-        str += "<div id=\"init0\">";
-        str += spanNH("init","\\(\\beta_T (j)\\)",1) + " =  1";
-        str += spanNH("equ","\\(, t = T , 1 <= j <= |S|)\\)",5);
-        str += "</div>";
-        str += "<div id=\"equ0\">";
-        str += spanNH("equ","\\(\\beta_t (i)\\)",1) + " = ";
-        str += spanNH("equ","\\((\\Sigma^{|S|}_{j=1}\\)",0);
-        str += spanNH("equ","\\(\\beta_{t+1} (j)\\)",2);
-        str += spanNH("equ","\\(m_{i,j}\\)",3);
-        str += spanNH("equ","\\(e_j (o_t)\\)",4);
-        str += spanNH("equ","\\(, 1 <= t < T , 1 <= j <= |S|)\\)",5);
-        str += "</div>";
+        str += backwardDescription[0];
+        str += backwardEquations[0];
+        str += backwardDescription[1];
+        str += backwardEquations[1];
+        str += backwardDescription[2];
     }
     
     info.innerHTML = str;
     MathJax.typeset();
 
 }
-
-
 
 function sleep(milliseconds) {
     const date = Date.now();
