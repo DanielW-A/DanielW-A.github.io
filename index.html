@@ -55,7 +55,7 @@
                         <button id="loadBtn" title="Load">Load</button>
                         <button id="clearBtn" title="Clear">Clear</button>
                         <button id="runBtn" title="Run">Run</button>
-                        <div id="outputString" type="text" placeholder="See if this fits">bbacba</div>
+                        <div id="outputString" type="text" placeholder="Output string"></div>
                         <!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
                     </div>
                 </div>
@@ -69,14 +69,15 @@
                             <input type="text" id="sNameText" name="StateName"></p>
                             <p id="sEmmision"><label for="sEmmision">Emmision:</label>
                             <input type="text" id="sEmmisionText" name="Emmision"></p>
-                            <p><label for="InitalProability">InitalProability:</label>
+                            <p id="sInital"><label for="InitalProability">InitalProability:</label>
                             <input type="text" id="sInitalProability" name="InitalProability"></p>
                         </form>
-                        <button id="sTransitionBtn" class="accordion">Transition probabilities</button>
+                        <div id="sTransition"><button id="sTransitionBtn" class="accordion">Transition probabilities</button>
                         <div id="sTransitionPanel" class="panel">
                             <form id="sTransitionForm">
                             </form>
-                        </div>
+                        </div></div>
+                        
                     </div>
 
                 </div>
@@ -85,17 +86,17 @@
                     <div id="modelPanelInfo" class="panel">
                         <div>The tuple of the current model.</div>
                         <form>
-                            <!-- https://www.w3schools.com/html/html_tables.asp -->
-                            <label>S =</label>
-                            <label id="mStatesText" name="States"></label><br>
-                            <label>T/M =:</label>
-                            <label id="mTransitions" name="mTransitions"></label><br>
-                            <label>\pi =</label>
-                            <label id="mInitalProability" name="mInitalProability"></label><br>
-                            <label>\Sigma =</label>
-                            <input type="text" id="mLatentStates" name="mLatentStates"><br>
-                            <label>E =</label>
-                            <input type="text" id="mEmmisionProbaility" name="mEmmisionProbaility"><br>
+                            <!-- Cant be bothered to make this edtable i dont think its worth it -->
+                            <p><label>\(S\) =</label>
+                            <label id="mStatesText" name="States"></label></p>
+                            <p><label>\(\pi\) =</label>
+                            <label id="mInitalProability" name="mInitalProability"></label></p>
+                            <p><label>\(\Sigma\) =</label>
+                            <label id="mEmissionStates" name="mEmissionStates"></p>
+                            <p><label>\(T/M\) =:</label>
+                            <label id="mTransitions" name="mTransitions"></label></p>
+                            <p><label>\(E\) =</label>
+                            <label id="mEmissionProbaility" name="mEmissionProbaility"></p>
                         </form>
                     </div>
                 </div>

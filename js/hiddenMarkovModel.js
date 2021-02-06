@@ -233,7 +233,7 @@ class HiddenMarkovModel extends MarkovModel{
 
 
         var trans = this.transitions;
-        for (i in trans) {
+        for (i in this.states) {
             var transSum = 0;
             var emmisionSum = 0;
             for (j in trans[i]) {
@@ -247,10 +247,10 @@ class HiddenMarkovModel extends MarkovModel{
                 }
             }
             if (transSum != 1) {
-                this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + ", trasitions sum to : " + transSum + " (Should be 1)");
+                this.processor.errors.push("State id: " + i + ", name: " + this.getState(i).text + ", trasitions sum to : " + transSum + " (Should be 1)");
             }
             if (emmisionSum != 1) {
-                this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + ", emmisions sum to : " + emmisionSum + " (Should be 1)");
+                this.processor.errors.push("State id: " + i + ", name: " + this.getState(i).text + ", emmisions sum to : " + emmisionSum + " (Should be 1)");
             }
         }
 

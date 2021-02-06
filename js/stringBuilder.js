@@ -22,7 +22,7 @@ function span(equ,id,t,nodeA,nodeB,str){return "<span id=\""+equType+""+equ+"_"+
 ///////////////////////////////////////////////////////
 
 const forwardDescription = [p("This is used to calculate the chances of the model being in internal state \\(i\\) at time \\(t\\) given the observation sequence from \\(0\\) to \\(t\\)."+
-        " this is done by a set of cached variables called Alpha (\\(\\alpha\\)). This is calculated by these 2 equations: ")+
+        " this is done by a set of cached variables called Alpha (\\(\\alpha\\)). This is calculated by these two equations: ")+
         p("Base case:"),
         p("When \\(t=1\\) Alpha is calculated by multiplying the probability of the model starting in the state \\(i\\) and the probability of this state emitting the observed value \\(e_i(o_t)\\).") + 
         p("Inductive step:"),

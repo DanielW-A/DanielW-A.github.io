@@ -207,6 +207,12 @@ clear = function(){
     var algStr = document.getElementById("algString");
     algStr.disabled = false;
     algStr.value = "";
+    model.clearAlgProsessor();
+    model.algProsessor.type = document.getElementById("algorithmDropdown").value;
+
+    selectedObj = null;
+    currentEmmision = null;
+    stopStep();
 }
 
 var runner = null;
@@ -221,7 +227,7 @@ run = function(steps,time){
     var output = document.getElementById('outputString');
     if (!model.validCheck()) { 
         output.innerHTML = "There are unresolved errors";
-        refresh();
+        refreshInfoPanels();
         var panel = document.getElementById("errorPanelInfo");
         panel.style.maxHeight = panel.scrollHeight + "px";
         document.getElementById("errorButton").classList.add("active");
@@ -294,41 +300,61 @@ function trasitionChange(stateB,comp){
     
 }
 
-refreshInfoPanels = function(){
+function refreshInfoPanels(){
+
+    var sIDText = document.getElementById("sIDText");
+    var sNameText = document.getElementById("sNameText");
+    var sEmmisionText = document.getElementById("sEmmisionText");
+    var sInitalProability = document.getElementById("sInitalProability");
+    var sTransitionForm = document.getElementById("sTransitionForm");
+
+    if (selectedObj instanceof LatentState){
+        document.getElementById("sEmmision").style.display = "none";
+    } else { document.getElementById("sEmmision").style.display = "";}
+
+    document.getElementById("sEmmision").style.display = (selectedObj instanceof LatentState)? "none" : "";
+    document.getElementById("sInital").style.display = (selectedObj instanceof EmmisionState)? "none" : "";
+    document.getElementById("sTransition").style.display = (selectedObj instanceof EmmisionState)? "none" : "";
 
     if (selectedObj instanceof State && runner == null){
-        document.getElementById("sIDText").value = selectedObj.id;
-        document.getElementById("sNameText").value = selectedObj.text;
-        document.getElementById("sEmmisionText").value = selectedObj.emmision;
-        document.getElementById("sInitalProability").value = model.initialProbabilityDistribution[selectedObj.id];
-        var transitionsForm = document.getElementById("sTransitionForm");
+        sIDText.value = selectedObj.id;
+        sNameText.value = selectedObj.text;
+        sEmmisionText.value = selectedObj.emmision;
+        sInitalProability.value = model.initialProbabilityDistribution[selectedObj.id];
+       
         var transStr = "";
         for (var i in model.states){
+            if(!model.transitions[selectedObj.id]){model.transitions[selectedObj.id] = []};
             transStr += p(label(i) + input((model.transitions[selectedObj.id][i] == null)? "" :model.transitions[selectedObj.id][i].text,i));
         }
         if (model instanceof HiddenMarkovModel){
+            if(!model.transitions[selectedObj.id]){model.transitions[selectedObj.id] = []};
             for (var i in model.emmisionStates){
                 transStr += p(label(i) + input((model.transitions[selectedObj.id][i] == null)? "" :model.transitions[selectedObj.id][i].text,i));
             }
         }
-        transitionsForm.innerHTML = transStr;
+        sTransitionForm.innerHTML = transStr;
     } else {
-        document.getElementById("sIDText").value = null;
-        document.getElementById("sNameText").value = null;
-        document.getElementById("sEmmisionText").value = null;
-        document.getElementById("sInitalProability").value = null;
-        document.getElementById("sTransitionForm").innerHTML = "";
+        sIDText.value = null;
+        sNameText.value = null;
+        sEmmisionText.value = null;
+        sInitalProability.value = null;
+        sTransitionForm.innerHTML = "";
     }
     
+
+    // model panel
+
     var stateStr = "{";
     for (i in model.states){ stateStr += model.states[i].text + ','; }
-    stateStr = stateStr.substr(0, stateStr.length - 1);
+    stateStr = (stateStr == "{")? stateStr : stateStr.substr(0, stateStr.length - 1);
     stateStr += "}";
     document.getElementById("mStatesText").innerHTML = stateStr;
 
     
     var transStr = "{";
     for (i in model.states){
+        transStr += "{";
         for (j in model.states){
             if (model.transitions[i][j] == null || model.transitions[i][j].text == ''){
                 transStr += '0';
@@ -337,8 +363,10 @@ refreshInfoPanels = function(){
             }
             transStr += ',';
         }
-        transStr += "},<br>{"; //TODO not what i want but good enough for rn.
+        transStr += "},<br>"; //TODO not what i want but good enough for rn.
     }
+    transStr = (transStr == "{")? transStr : transStr.substr(0, transStr.length-5);
+    transStr += "}";
     document.getElementById("mTransitions").innerHTML = transStr;
 
     var initStr = "{";
@@ -350,30 +378,41 @@ refreshInfoPanels = function(){
         }
         initStr += ','
     }
-    initStr = initStr.substr(0, initStr.length - 1);
+    initStr = (initStr == "{")? initStr : initStr.substr(0, initStr.length - 1);
     initStr += "}";
     document.getElementById("mInitalProability").innerHTML = initStr;
 
-    //mLatentStates
-    //mEmmisionProbaility
+    //mEmissionStates
+    if (model instanceof HiddenMarkovModel){
+        var emStateStr = "{";
+        for (i in model.emmisionStates){ emStateStr += model.emmisionStates[i].text + ','; }
+        emStateStr = (emStateStr == "{")? emStateStr : emStateStr.substr(0, emStateStr.length - 1);
+        emStateStr += "}";
+        document.getElementById("mEmissionStates").innerHTML = emStateStr;
+    
+        var emissionString = "{";
+        for (i in model.states){
+            emissionString += "{";
+            for (j in model.emmisionStates){
+                if (model.transitions[i][j] == null || model.transitions[i][j].text == ''){
+                    emissionString += '0';
+                } else {
+                    emissionString += model.transitions[i][j].text;
+                }
+                emissionString += ',';
+            }
+            emissionString += "},<br>"; //TODO not what i want but good enough for rn.
+        }
+        emissionString = (emissionString == "{")? emissionString : emissionString.substr(0, emissionString.length-5);
+        emissionString += "}";
+        document.getElementById("mEmissionProbaility").innerHTML = emissionString;
+    }
+    
 
     
     panel = document.getElementById("modelPanelInfo");
     if (panel.style.maxHeight){
         panel.style.maxHeight = panel.scrollHeight + "px";
-    }
-
-    if (model instanceof MarkovChain){
-        document.getElementById("instructionsPanelInfo").innerHTML = 
-        "<ul> " + 
-        li("<b>Add a state:</b> double-click anywhere.")+
-        li("<b>Add a transition:</b> Shift-drag on the canvas.")+
-        li("<b>Move Something:</b> TODO.")+
-        li("<b>Delete Something:</b> click on it and press the delete key")+
-        li("")+
-        "</ul>";
-    } else if (model instanceof HiddenMarkovModel){
-
     }
 
     var errors = "";
@@ -571,6 +610,12 @@ function initModelUI(){
         document.getElementById("sEmmision").style.display = "none";
     } else {
         document.getElementById("sEmmision").style.display = "";
+    }
+
+    if (model instanceof MarkovChain){
+        document.getElementById("instructionsPanelInfo").innerHTML = markovChainInstructions;
+    } else if (model instanceof HiddenMarkovModel){
+        document.getElementById("instructionsPanelInfo").innerHTML = HiddenMarkovModelInstructions;
     }
 }
 
