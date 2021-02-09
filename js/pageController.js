@@ -14,8 +14,8 @@ toggleAccordion = function(component){
         closeAccordion(document.getElementById("sTransitionBtn"));
         panel.style.maxHeight = panel.scrollHeight + "px";
     }
-    if (component.parentElement.previousElementSibling.className.includes('accordion')){
-        component.parentElement.style.maxHeight = component.parentElement.scrollHeight +  panel.scrollHeight + "px";
+    if (component.parentElement.parentElement.previousElementSibling.className.includes('accordion')){
+        component.parentElement.parentElement.style.maxHeight = component.parentElement.parentElement.scrollHeight +  panel.scrollHeight + "px";
     }
 }
 
@@ -191,7 +191,22 @@ test = function(){
         var le5 =  model.addTransistion(new TempLink(s2,{x : es2.x, y :es2.y})).text = "0.3";
         var le6 =  model.addTransistion(new TempLink(s2,{x : es3.x, y :es3.y})).text = "0.6";
 
-    } 
+    } else {
+        var s1 = model.addState(w/3,h/3);
+        s1.text = "H";
+        s1.emmision = "H";
+        model.initialProbabilityDistribution[s1.id] = "0.6";
+        var s2 = model.addState(2*w/3,h/3);
+        s2.text = "F";
+        s2.emmision = "F";
+        model.initialProbabilityDistribution[s2.id] = "0.4";
+
+        model.addTransistion(new TempLink(s1,{x : s2.x, y :s2.y})).text = "0.3";
+        model.addTransistion(new TempLink(s2,{x : s1.x, y :s1.y})).text = "0.4";
+        model.addTransistion(new TempLink(s2,{x : s2.x, y :s2.y})).text = "0.6";
+        model.addTransistion(new TempLink(s1,{x : s1.x-1, y :s1.y})).text = "0.7";
+
+    }
 
     refresh();
 }
@@ -596,6 +611,11 @@ function tableCellMouseOver(e,comp,j,i){
 }
 
 function initModelUI(){
+
+    selectedObj = null;
+    currentEmmision = null;
+    stopStep();
+
     var dropdown = document.getElementById("algorithmDropdown");
     dropdownText = "";
     for (i in model.AlgType){

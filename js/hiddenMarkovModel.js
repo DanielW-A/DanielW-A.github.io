@@ -246,6 +246,8 @@ class HiddenMarkovModel extends MarkovModel{
                     transSum += parseFloat(trans[i][j].text);
                 }
             }
+            transSum = Math.round( transSum * 10000 + Number.EPSILON ) / 10000;
+            emmisionSum = Math.round( emmisionSum * 10000 + Number.EPSILON ) / 10000;
             if (transSum != 1) {
                 this.processor.errors.push("State id: " + i + ", name: " + this.getState(i).text + ", trasitions sum to : " + transSum + " (Should be 1)");
             }

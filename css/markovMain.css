@@ -159,9 +159,11 @@ canvas {
   display: table-row;
 }
 #information label{
+  width: 30%;
   display: table-cell;
 }
 #information input{
+  width: 70%;
   display: table-cell;
 }
 #init0{
