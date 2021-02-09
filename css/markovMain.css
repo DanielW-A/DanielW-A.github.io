@@ -16,7 +16,7 @@ canvas {
 	/* border-radius: 20px; */
 	/* -moz-border-radius: 20px; */
 	/* margin: 10px auto; */
-    /* border: 3px solid #000000; */  /* id i want a border it needs to be drawn on the canvas*/
+    /* border: 3px solid #000000; */  /* if i want a border it needs to be drawn on the canvas*/
     /* outline-width: 2px; */
     /* min-height: 100%; */
 }
@@ -31,9 +31,10 @@ canvas {
 
 .right {
     float: right;
-    width: 300px;
+    width: 20%;
     /* border: 3px solid #73AD21; */
     padding: 10px;
+    text-align: left;
 }
 
 .statePanel {
@@ -86,32 +87,88 @@ canvas {
 }
 
 .title {
-  float: left;;
+  float: left;
+  pointer-events: none;
 }
 
 .algorithms {
-  width: 100%;
-  position: absolute;
-  bottom: 10%;
+    pointer-events: none;
+    width: 94%;
+    position: absolute;
+    /* bottom: 10%; */
+    top: 80%;
+    /* padding: 5%; */
+    /* margin: 2%; */
+    margin-left: 2%;
+    margin-right: 2%;
 }
 #tableWrapper {
   position:relative;
 }
 #tableScroll {
   overflow:auto;  
+  pointer-events: all;
 }
 #tableWrapper table {
   max-width:100%;
+  border-collapse: collapse;
 }
 #tableWrapper table * {
-  background:yellow;
-  color:black;
+  border: 1px solid#000000;
+  background-color:rgba(200,200,200,0.2);
 }
-#tableWrapper table thead th .text {
+#tableWrapper table th {
+    background-color: rgba(80,80,80,0.2);;
+}
+#tableWrapper td th {
+    width: 10%;
+}
+/* #tableWrapper table thead th {
   position:absolute;   
   top:-20px;
   z-index:2;
   height:20px;
   width:35%;
   border:1px solid red;
+} */
+
+.hoverInfo{
+    pointer-events: all;
+    position: fixed;
+    background-color: green;
+    border: 1px solid;
+    display: none;
+    text-align: center;
+}
+
+.usable{
+    
+  pointer-events: all;
+}
+
+.algInput{
+    text-align: left;
+    padding-left: 5%;
+}
+
+#information form{
+  display: table;
+  text-align: left;
+}
+#information p{
+  display: table-row;
+}
+#information label{
+  width: 30%;
+  display: table-cell;
+}
+#information input{
+  width: 70%;
+  display: table-cell;
+}
+#init0{
+  text-align: center;
+}
+#equ0{
+  text-align: center;
 }

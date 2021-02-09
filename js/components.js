@@ -224,7 +224,7 @@ class StationaryLink extends Link {
         this.parallelPart = 0.5;
         this.anchorAngle = anchorAngle;
 
-        if (this.type === LinkType.SELF){ //TODO
+        if (this.type === LinkType.SELF){
             this.x = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
             this.y = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
         }
@@ -240,7 +240,7 @@ class StationaryLink extends Link {
         };
     }
 
-    draw(c,isSelected){
+    draw(c,isSelected){ //TODO make more consitant and less redundant.
         var angle = null;
         this.x = (this.startNode.x + this.endNode.x)/2;
         this.y = (this.startNode.y + this.endNode.y)/2;
@@ -261,8 +261,12 @@ class StationaryLink extends Link {
 
             this.drawArrow(c, this.endPos.x, this.endPos.y, endAngle + Math.PI * 0.4);
 
-            // angle = (startAngle + endAngle) / 2 + Math.PI;
-            angle = null;
+            if(endAngle < startAngle) {
+                endAngle += Math.PI * 2;
+            }
+            var textAngle = (startAngle + endAngle) / 2 +  Math.PI;
+            var textX = circleX - circleRadius * Math.cos(textAngle);
+            var textY = circleY - circleRadius * Math.sin(textAngle);
         
         } else if(this.type === LinkType.DIRECT){
             this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
@@ -273,6 +277,10 @@ class StationaryLink extends Link {
 		    c.lineTo(this.endPos.x, this.endPos.y);
             c.stroke();
             this.drawArrow(c, this.endPos.x, this.endPos.y, Math.atan2(this.endPos.y - this.startPos.y, this.endPos.x - this.startPos.x));
+            
+		    var textX = (this.startPos.x + this.endPos.x) / 2;
+		    var textY = (this.startPos.y + this.endPos.y) / 2;
+		    var textAngle = Math.atan2(this.endPos.x - this.startPos.x, this.startPos.y - this.endPos.y);
         } else {
             var anchor = this.getAnchorPoint();
             var circle = this.circleFromThreePoints(this.startNode.x, this.startNode.y, this.endNode.x, this.endNode.y, anchor.x, anchor.y);
@@ -289,10 +297,16 @@ class StationaryLink extends Link {
 		    c.arc(circle.x, circle.y, circle.radius, startAngle, endAngle, isReversed);
             c.stroke();
             this.drawArrow(c, this.endPos.x, this.endPos.y, endAngle - reverseScale * (Math.PI / 2));
-            angle = (startAngle + endAngle) / 2 + isReversed * Math.PI
+    
+            if(endAngle > startAngle) {
+                endAngle += Math.PI * 2;
+            }
+            var textAngle = (startAngle + endAngle) / 2 +  Math.PI;
+            var textX = circle.x - circle.radius * Math.cos(textAngle);
+            var textY = circle.y - circle.radius * Math.sin(textAngle);
         }
 
-        this.addText(c,this.text,this.x,this.y,angle,isSelected);
+        this.addText(c,this.text,textX,textY,textAngle,isSelected,this.type);
     }
 
     
@@ -306,7 +320,7 @@ class StationaryLink extends Link {
 	    c.fill();
     }
 
-    addText = function(c,text,x,y,angle,isSelected){
+    addText = function(c,text,x,y,angle,isSelected,type){
         c.font = font;
         var width = c.measureText(text).width;
         x -= Math.round(width / 2);
@@ -316,10 +330,17 @@ class StationaryLink extends Link {
             var cornerPointX = (width / 2 + 5) * (cos > 0 ? 1 : -1);
             var cornerPointY = (10 + 5) * (sin > 0 ? 1 : -1);
             var slide = sin * Math.pow(Math.abs(sin), 40) * cornerPointX - cos * Math.pow(Math.abs(cos), 10) * cornerPointY;
-            x += cornerPointX - sin * slide;
-            y += cornerPointY + cos * slide;
+            if (type === LinkType.DIRECT && angle < 0){
+                x += cornerPointX - sin * slide;
+                y += cornerPointY + cos * slide;
+            } else {
+                x -= cornerPointX - sin * slide;
+                y -= cornerPointY + cos * slide;
+            }
         }
         c.fillText(text, x, y + 6);
+
+
         if(isSelected && caretVisible && document.hasFocus()) {
             x += width;
             c.beginPath();
@@ -329,7 +350,7 @@ class StationaryLink extends Link {
         }
     }
 
-    isNear(mouse){ //TODO for arcs maybe just increase the box for time being
+    isNear(mouse){
         if (this.type === LinkType.SELF){
 	        var dx = mouse.x - (this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle));
 	        var dy = mouse.y - (this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle));

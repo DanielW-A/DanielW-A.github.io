@@ -83,14 +83,14 @@ initCanvas = function() {
 	document.documentElement.clientWidth;
 
 	canvas.onmousedown = function(e) {
+		if (runner != null){return;}
 		var mousePos = getMousePos(canvas,e);
 
-		console.log(mousePos);
+        console.log(mousePos);
 		selectedObj = model.getElementAt(mousePos);
 		if (selectedObj instanceof State){
-			openAccordion(document.getElementById("stateButton"));
-		} else {
-			closeAccordion(document.getElementById("stateButton"));
+            openAccordion(document.getElementById("stateButton"));
+            document.getElementById("sNameText").focus();
 		}
 		if (selectedObj != null){
 			console.log(shift);
@@ -108,9 +108,13 @@ initCanvas = function() {
 		}
 		resetCaret();
         refresh();
+        
+		document.getElementById("hoverInfo").style.display = "none";
+		document.getElementById("algTable").style.color = "";
     };
 
     canvas.ondblclick = function(e) {
+		if (runner != null){return;}
         var mousePos = getMousePos(canvas,e);
 		selectedObj = model.getElementAt(mousePos);
         if (selectedObj == null){
@@ -118,9 +122,9 @@ initCanvas = function() {
 				selectedObj = model.addEmmisionState(mousePos.x,mousePos.y);
 			} else {
             	selectedObj = model.addState(mousePos.x,mousePos.y);
-
 			}
-			openAccordion(document.getElementById("stateButton"));
+            openAccordion(document.getElementById("stateButton"));
+            document.getElementById("sNameText").focus();
         }
 
 		resetCaret();
@@ -128,6 +132,7 @@ initCanvas = function() {
 	};
 	
 	canvas.onmousemove = function(e) {
+		if (runner != null){return;}
 		var mousePos = getMousePos(canvas,e);
 		if(drawingLink != null){
 			drawingLink.refresh(mousePos);
@@ -135,11 +140,13 @@ initCanvas = function() {
 		} else if (movingObject){
 			selectedObj.x = mousePos.x + offset.x;
 			selectedObj.y = mousePos.y + offset.y;
+			refresh();
 		}
-		refresh();
+		
 	}
 
 	canvas.onmouseup = function(e) {
+		if (runner != null){return;}
         movingObject = false;
         
 		if(drawingLink != null){
@@ -151,19 +158,24 @@ initCanvas = function() {
 			} else {
 				drawingLink = null;
             }
-            if (!(selectedObj instanceof State)){
-			    closeAccordion(document.getElementById("stateButton"));
-            }
-			refresh();
+            refresh();
+            closeAccordion(document.getElementById("stateButton"));
 			
+        } else if(selectedObj instanceof State){
+            document.getElementById("sNameText").focus();
+        } else if(canvasHasFocus()){
+			closeAccordion(document.getElementById("stateButton"));
+            
         }
         
 	}
 
 }
 
+
+
 function canvasHasFocus() {
-	return (document.activeElement || document.body) == document.body;
+	return (document.activeElement.tagName != "INPUT");
 }
 
 var shift = false;
@@ -171,13 +183,31 @@ var control = false;
 document.onkeydown = function(e) {
 	var key = e.key;
 	console.log(key);
+	if (key == "Enter" && selectedObj != null){
+		selectedObj = null;
+		refresh();
+		closeAccordion(document.getElementById("stateButton"));
+		return false;
+	}
 	if(key == "Shift") {
 		shift = true;
 	} else if(key == "Control"){
 		control = true;
-	}else if(!canvasHasFocus()){
-		// don't read keystrokes when other things have focus
+	
+	} else if(key == "Delete") { // delete key
+		if(selectedObj != null) {
+			model.delete(selectedObj);
+			selectedObj = null;
+			refresh();
+            closeAccordion(document.getElementById("stateButton"));
+		}
+	}else if(!canvasHasFocus() || runner != null){ // changed hoe this works a bit , now less imprtant
+		//don't read keystrokes when other things have focus
 		return true;
+    } else if(key == "Escape") { 
+		selectedObj = null;
+		refresh();
+			
 	} else if(key == "Backspace") {
 		if(selectedObj != null) {
 			if(control || selectedObj.text == "0."){
@@ -191,17 +221,8 @@ document.onkeydown = function(e) {
 
 		// backspace is a shortcut for the back button, but do NOT want to change pages
 		return false;
-	} else if(key == "Delete") { // delete key
-		if(selectedObj != null) {
-			model.delete(selectedObj);
-			selectedObj = null;
-			refresh();
-		}
-    } else if(key == "Escape") { 
-		selectedObj = null;
-		refresh();
-			
-    }
+	}
+	
 }
 
 document.onkeyup = function(e) {
@@ -216,6 +237,7 @@ document.onkeyup = function(e) {
 	}
 }
 
+
 document.onkeypress = function(e) {
 	var key = e.key;
 	var keyCode = key.charCodeAt(0);
@@ -225,8 +247,9 @@ document.onkeypress = function(e) {
 		selectedObj = null;
 		refresh();
 		closeAccordion(document.getElementById("stateButton"));
+		return false;
 	}
-	if(!canvasHasFocus()){
+	if(!canvasHasFocus() || runner != null){
 		return true;
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
 		if (selectedObj instanceof StationaryLink){
@@ -240,7 +263,10 @@ document.onkeypress = function(e) {
 				resetCaret();
 				refresh();
 				return false;
-			}
+            }
+            if (selectedObj.text == "0"){
+                return false;
+            }
 		}
 		selectedObj.text += key;
 		resetCaret();
@@ -248,7 +274,7 @@ document.onkeypress = function(e) {
 
 		// don't let keys do their actions (like space scrolls down the page)
 		return false;
-	} else if(key == 8) {
+	} else if(keyCode == 8) {
 		// backspace is a shortcut for the back button, but do NOT want to change pages
 		return false;
 	}
@@ -300,17 +326,22 @@ refreshComponents = function() {
 	canvas.height = window.innerHeight;
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-
+	var alpha = 1;
+	if (graphSpotlight){c.globalAlpha = alpha = 0.2;}
 	for (i in model.states){
 		c.lineWidth = 1;
 		c.fillStyle = c.strokeStyle = (model.states[i] === selectedObj) ? 'blue' : 'black';
+		if (graphSpotlight && selectedObj === model.states[i]){c.globalAlpha = 1;}
 		model.states[i].draw(c,(model.states[i] === selectedObj));
+		c.globalAlpha = alpha;
 	}
 	if (model instanceof HiddenMarkovModel){
 		for (i in model.emmisionStates){
 			c.lineWidth = 1;
 			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj || model.emmisionStates[i] === currentEmmision) ? 'blue' : 'black';
+			if (graphSpotlight && currentEmmision === model.emmisionStates[i]){c.globalAlpha = 1;}
 			model.emmisionStates[i].draw(c,(model.emmisionStates[i] === selectedObj));	
+			c.globalAlpha = alpha;
 		}
 	}
 	if(drawingLink != null){
@@ -320,18 +351,21 @@ refreshComponents = function() {
 	}
 	for (i in model.transitions){
 		for (j in model.transitions[i]){
-			c.globalAlpha = 1;
 			c.lineWidth = 1;
 			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj ) ? 'blue' : 'black';
 			if(j.charAt(0) == 'e'){
 				c.fillStyle = c.strokeStyle = model.states[i].colour;
-				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || (runner == null))){
+				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || ((runner == null) && (!graphSpotlight)))){
 					c.globalAlpha = 0.1;
 				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emmisionStates[j] == selectedObj)){
 					c.globalAlpha = 0.4;
+				} else {
+					c.globalAlpha = 1;
 				}
 			}
+			if (graphSpotlight && selectedObj === model.transitions[i][j]){c.globalAlpha = 1;}
 			model.transitions[i][j].draw(c,(model.transitions[i][j] === selectedObj));
+			c.globalAlpha = alpha;
 			
 		}
 	}
@@ -342,7 +376,7 @@ var caretVisible = true;
 
 function resetCaret() {
 	clearInterval(caretTimer);
-	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 500);
+	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 530); // 530 is the defult time
 	caretVisible = true;
 }
 

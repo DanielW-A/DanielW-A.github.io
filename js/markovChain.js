@@ -23,6 +23,9 @@ class Transition extends StationaryLink{
 class MarkovChain extends MarkovModel{
     constructor() {
         super();
+        this.algProsessor = {
+            type : null
+        }
     }
     /////////////////////////////////////////////////
     // Editing the model
@@ -131,6 +134,9 @@ class MarkovChain extends MarkovModel{
         }
         return null;
     }
+    getState(str){
+        return this.states[str]; // used for campatibility with HMM
+    }
     /////////////////////////////////////////////////
     // testing / running
     /////////////////////////////////////////////////
@@ -177,6 +183,9 @@ class MarkovChain extends MarkovModel{
         }
 
         var sts = this.states;
+        if (sts == null || sts == []){
+            this.processor.errors.push("There are no states");
+        }
         for (i in sts) {
             if (i === sts[i]) {
                 errorMsg += "WARNING : " + i + " state has defult emmision string \n";
@@ -285,29 +294,8 @@ class MarkovChain extends MarkovModel{
 
         console.log(myMC.toString());
     }
+
+    AlgType = {
+        LIKELIHOOD: 'likelihood'
+    }
 }
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
