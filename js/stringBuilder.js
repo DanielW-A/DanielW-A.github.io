@@ -120,17 +120,17 @@ function backwardInduction(t,i,s,k,output,B){
 ///////////////////////////////////////////////////////
 
 const markovChainInstructions =  
-    p("<b>Add a state:</b> double-click anywhere.")+
+    p("<b>Add a state:</b> Double-click anywhere.")+
     p("<b>Add a transition:</b> Shift-drag on a state.")+
-    p("<b>Delete Something:</b> click on it and press the delete key")+
+    p("<b>Delete Something:</b> Click on it and press the delete key")+
     p("<b>Move Something:</b> Click on it and hold to drag")+
-    p("All of the elemrnts of a state can be edited inside the 'State Details' tab, and most can be edited on the model itself");
+    p("All of the elements of a state can be edited inside the 'State Details' tab, and most can be edited on the model itself");
 
 const HiddenMarkovModelInstructions = 
-    p("<b>Add a state:</b> double-click anywhere.")+
-    p("<b>Add an emmision state:</b> double-click anywhere while holding control.")+
+    p("<b>Add a state:</b> Double-click anywhere.")+
+    p("<b>Add an emission state:</b> Double-click anywhere while holding control.")+
     p("<b>Add a transition:</b> Shift-drag on a state.")+
-    p("<b>Delete Something:</b> click on it and press the delete key")+
+    p("<b>Delete Something:</b> Click on it and press the delete key")+
     p("<b>Move Something:</b> Click on it and hold to drag")+
-    p("All of the elemrnts of a state can be edited inside the 'State Details' tab, and most can be edited on the model itself");
+    p("All of the elements of a state can be edited inside the 'State Details' tab, and most can be edited on the model itself");
     
