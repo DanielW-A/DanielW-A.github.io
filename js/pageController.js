@@ -128,6 +128,11 @@ window.onload = function() {
         setAlgDescription(dropdown.value);
     };
 
+    var varDropdown = document.getElementById("algVarDropdown");
+    varDropdown.onchange = function() {
+        refreshInfoPanels();
+    };
+
 }
 
 validateProability = function(text){
@@ -443,12 +448,16 @@ function refreshInfoPanels(){
 
     // table :
     var str = document.getElementById("algString").value;
-
+    if (str == ""){ 
+        str = model.algProsessor.getObserevedString()}
     var values = [];
     if (model.algProsessor.type == model.AlgType.FORWARD){
         values =  model.getAlpha();
     } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
         values =  model.getBeta();
+    } else {
+        var type = document.getElementById("algVarDropdown").value;
+        values = model.getVar(type);
     }
         var states = model.states;
     if(str.length > 0){
@@ -463,7 +472,10 @@ function refreshInfoPanels(){
                     th(states[i].text);
             for (j = 1; j <= str.length; j++){
                 if(!values[j]) {values[j] = []};
-                table += td((values[j][i]== null)? 0: Math.round( values[j][i] * 10000000000 + Number.EPSILON ) / 10000000000,j,i); 
+                if(values[j][i]==null) {values[j][i] = 0;};
+                console.log((values[j][i]))
+                console.log(!isNaN(values[j][i]))
+                table += td((isNaN(values[j][i]))? values[j][i] : Math.round( values[j][i] * 10000000000 + Number.EPSILON ) / 10000000000,j,i); 
             }
             table += "</tr>";
 
@@ -513,7 +525,7 @@ function spotlight(id,t,nodeA,nodeB){
         var point =  (i == 0)? id.charAt(0): id
         var equStr = equType + i + "_" + point;
         var element = document.getElementById(equStr);
-        element.style.color = "blue";
+        if (element != null) {element.style.color = "blue";}
     }
     if (id.charAt(0) == 1 || id.charAt(0) == 2){
         graphSpotlight = true;
@@ -537,7 +549,7 @@ function unspotlight(id,t,nodeA,nodeB){
         var point =  (i == 0)? id.charAt(0): id
         var equStr = equType + i + "_" + point;
         var element = document.getElementById(equStr);
-        element.style.color = "";
+        if (element != null) {element.style.color = "";}
     }
     if (id.charAt(0) == 1 || id.charAt(0) == 2){
         graphSpotlight = false;
@@ -559,7 +571,7 @@ function tableCellMouseOver(e,comp,j,i){
     panel.style.display = "inline";
 
     var str;
-    if (model.algProsessor.type == model.AlgType.FORWARD){
+    if (model.algProsessor.type == model.AlgType.FORWARD || document.getElementById("algVarDropdown").value == model.AlgVars.A){
         var t = j;
         var S = 0;
         for (var k in model.states){S++;}
@@ -572,7 +584,7 @@ function tableCellMouseOver(e,comp,j,i){
         } else {
             str = forwardInduction(t,i,s,k,output,A);
         }
-    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.B){
         var t = j;
         var s = model.states[i];
         var output = document.getElementById("algString").value;
@@ -626,16 +638,12 @@ function initModelUI(){
     model.algProsessor.type = dropdown.value;
     setAlgDescription(dropdown.value);
 
-    if (model instanceof HiddenMarkovModel){
-        document.getElementById("sEmmision").style.display = "none";
-    } else {
-        document.getElementById("sEmmision").style.display = "";
-    }
-
     if (model instanceof MarkovChain){
         document.getElementById("instructionsPanelInfo").innerHTML = markovChainInstructions;
+        document.getElementById("sEmmision").style.display = "";
     } else if (model instanceof HiddenMarkovModel){
         document.getElementById("instructionsPanelInfo").innerHTML = HiddenMarkovModelInstructions;
+        document.getElementById("sEmmision").style.display = "none";
     }
 }
 
@@ -658,6 +666,22 @@ function setAlgDescription(type){
     }
     
     info.innerHTML = str;
+
+    
+    var dropdown = document.getElementById("algorithmDropdown");
+    var algVar = document.getElementById("algVarDropdown");
+    var dropdownText = "";
+    if (dropdown.value == model.AlgType.VITERBI){
+        for (i in model.ViterbiVars){
+            dropdownText += "<option value=\""+model.ViterbiVars[i] + "\">"+model.ViterbiVars[i]+"</option>"
+        }
+        algVar.innerHTML = dropdownText;
+        algVar.style.display = "";
+    } else {
+        algVar.style.display = "none";
+
+    }
+
     MathJax.typeset();
 
 }

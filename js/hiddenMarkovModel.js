@@ -92,10 +92,16 @@ class HiddenMarkovModel extends MarkovModel{
             t : 0,
             A : [], //alpha
             B : [], //beta
-            G : [], //gamma
+            Y : [], //gamma
             D : [], //delta
-            p : [], //psi
-            x : []  //xi
+            P : [], //psi
+            x : [],  //xi
+
+            getObserevedString(){
+                var str ="";
+                for (i in this.observedString) {str += this.observedString[i]}
+                return str;
+            }
         }
     }
     /////////////////////////////////////////////////
@@ -337,6 +343,13 @@ class HiddenMarkovModel extends MarkovModel{
     getBeta(){
         return this.algProsessor.B;
     }
+    getVar(type){
+        if (type == this.AlgVars.A) {return this.algProsessor.A;}
+        if (type == this.AlgVars.B) {return this.algProsessor.B;}
+        if (type == this.AlgVars.Y) {return this.algProsessor.Y;}
+        if (type == this.AlgVars.D) {return this.algProsessor.D;}
+        if (type == this.AlgVars.P) {return this.algProsessor.P;}
+    }
     decodeEmmisions(str){
         //TODO THis is just a placeholder
         var emmisions = []
@@ -350,7 +363,7 @@ class HiddenMarkovModel extends MarkovModel{
         this.currentAlg = type;
         if (type == this.AlgType.FORWARD){this.forwardStep();}
         else if (type === this.AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
-        else if (type === this.AlgType.VITERBI){}//TODO;
+        else if (type === this.AlgType.VITERBI){this.viterbiStep()}//TODO;
         else if (type === this.AlgType.BAUMWELCH){}//TODO;
     }
 
@@ -370,19 +383,22 @@ class HiddenMarkovModel extends MarkovModel{
             // this.clearAlgProsessor();
             document.getElementById("description").innerHTML = forwardDesc[2];
         } else { // inductive step;
-            this.algProsessor.t++
-            var t = this.algProsessor.t;
-            this.algProsessor.A[t] = [];
-            var char = this.algProsessor.observedString[t-1];
-            for(i in this.states){
-                var tempSum = 0;
-                for(j in this.states){
-                    tempSum += this.algProsessor.A[t-1][j]*parseFloat(this.transitions[j][i].text); 
-                }
-                this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
-                this.algProsessor.A[t][i] = Math.round( this.algProsessor.A[t][i] * 10000 + Number.EPSILON ) / 10000;
-            }
+            this.inductiveFoward();
             document.getElementById("description").innerHTML = forwardDesc[1];
+        }
+    }
+    inductiveFoward(){
+        this.algProsessor.t++
+        var t = this.algProsessor.t;
+        this.algProsessor.A[t] = [];
+        var char = this.algProsessor.observedString[t-1];
+        for(i in this.states){
+            var tempSum = 0;
+            for(j in this.states){
+                tempSum += this.algProsessor.A[t-1][j]*parseFloat(this.transitions[j][i].text); 
+            }
+            this.algProsessor.A[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+            this.algProsessor.A[t][i] = Math.round( this.algProsessor.A[t][i] * 10000 + Number.EPSILON ) / 10000;
         }
     }
     InitForward(){
@@ -417,17 +433,21 @@ class HiddenMarkovModel extends MarkovModel{
             comp.disabled = false;
             comp.value = "";
         } else { // inductive step;
-            this.algProsessor.t--;
-            var t = this.algProsessor.t;
-            this.algProsessor.B[t] = [];
-            var char = this.algProsessor.observedString[t-1];
-            for(i in this.states){
-                var tempSum = 0;
-                for(j in this.states){
-                    tempSum += this.algProsessor.B[t+1][j]*parseFloat(this.transitions[i][j].text); 
-                }
-                this.algProsessor.B[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
+            this.inductiveBackward();
+        }
+    }
+
+    inductiveBackward(){
+        this.algProsessor.t--;
+        var t = this.algProsessor.t;
+        this.algProsessor.B[t] = [];
+        var char = this.algProsessor.observedString[t-1];
+        for(i in this.states){
+            var tempSum = 0;
+            for(j in this.states){
+                tempSum += this.algProsessor.B[t+1][j]*parseFloat(this.transitions[i][j].text); 
             }
+            this.algProsessor.B[t][i] = tempSum*this.states[i].getEmmisionProbability(this.getStateFromEmmision(char));
         }
     }
 
@@ -447,10 +467,134 @@ class HiddenMarkovModel extends MarkovModel{
     /////////////////////////////////////////////////
     // Viterbi 
     /////////////////////////////////////////////////
+
+    viterbiStep(){
+        if (this.algProsessor.observedString == null){
+            this.initViterbi();
+        } else if (this.algProsessor.t < -1) {
+            this.viterbiRunForward();
+        } else if (this.algProsessor.t < 0){
+            this.viterbiRunBackward();
+        } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
+            if (deltastep){
+                var comp = document.getElementById("algString");
+                comp.disabled = false;
+                comp.value = "";
+            } else {
+                deltastep = true;
+                this.initDeltaViterbi();
+            }
+        } else if(deltastep){
+            this.viterbiDetaStep();
+        } else { // inductive step;
+            this.inductiveViterbi();
+        }
+    }
+
+    initDeltaViterbi(){
+        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
+        
+        this.algProsessor.t = 1;
+        this.algProsessor.D[this.algProsessor.t] = [];
+        for (var i in this.states){
+            var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
+            this.algProsessor.D[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmmisionProbability(emmisionState);
+            this.algProsessor.D[this.algProsessor.t][i] = Math.round( this.algProsessor.A[this.algProsessor.t][i] * 10000 + Number.EPSILON ) / 10000;
+        }
+    }
+
+    viterbiDetaStep(){
+        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
+        
+        this.algProsessor.t++;
+        var t = this.algProsessor.t;
+        this.algProsessor.D[t] = [];
+        this.algProsessor.P[t] = [];
+        var char = this.algProsessor.observedString[t-1];
+
+        var max = 0;
+        var argMax = "";
+        for (var j in this.states){
+            for (var i in this.states){
+                var temp = this.algProsessor.Y[this.algProsessor.t-1][i]*parseFloat(this.transitions[i][j].text);
+                if (temp > max){
+                    max = temp;
+                    argMax = i;
+                }
+            }
+
+            this.algProsessor.D[this.algProsessor.t][j] = max*this.states[j].getEmmisionProbability(this.getStateFromEmmision(char));
+            this.algProsessor.P[this.algProsessor.t][j] = "" + this.states[argMax].text;
+        }
+    }
+
+    inductiveViterbi(){
+        document.getElementById("algVarDropdown").value = this.ViterbiVars.Y;
+        
+        this.algProsessor.t++;
+        var t = this.algProsessor.t;
+        this.algProsessor.Y[t] = [];
+        var char = this.algProsessor.observedString[t-1];
+        
+        var tempSum = 0;
+        for(i in this.states){
+            tempSum += this.algProsessor.A[t][i] * this.algProsessor.B[t][i];
+        }
+        for(i in this.states){
+            this.algProsessor.Y[t][i] = (this.algProsessor.A[t][i] * this.algProsessor.B[t][i]) / tempSum;
+        }
+    }
+
+    viterbiRunForward(){
+        document.getElementById("algVarDropdown").value = this.ViterbiVars.A;
+        this.InitForward();
+        for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
+            this.inductiveFoward();
+        }
+        this.algProsessor.t = -1;
+    }
+
+    viterbiRunBackward(){
+        document.getElementById("algVarDropdown").value = this.ViterbiVars.B;
+        this.InitForwardBackward();
+        for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
+            this.inductiveBackward();
+        }
+        this.algProsessor.t = 0;
+    }
+
+    initViterbi(){
+        //get the string
+        //stop string being edited 
+        deltastep = false;
+        var comp = document.getElementById("algString");
+        comp.disabled = true;
+        this.algProsessor.observedString = this.decodeEmmisions(comp.value);
+        this.algProsessor.t = -2;
+    }
+
     AlgType = {
         FORWARD: 'Forward',
         FORWARDBACKWARD: 'Forward-Backward',
         VITERBI: 'Viterbi',
         BAUMWELCH: 'Baum-Welch'
     }
+
+    ViterbiVars = {
+        A: 'alpha',
+        B: 'beta',
+        Y: 'gamma',
+        D: 'delta',
+        P: 'psi'
+    }
+
+    AlgVars = {
+        A: 'alpha',
+        B: 'beta',
+        Y: 'gamma',
+        D: 'delta',
+        P: 'psi'
+    }
 }  
+
+var deltastep = false;
