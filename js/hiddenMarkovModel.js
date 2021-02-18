@@ -363,8 +363,9 @@ class HiddenMarkovModel extends MarkovModel{
         this.currentAlg = type;
         if (type == this.AlgType.FORWARD){this.forwardStep();}
         else if (type === this.AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
-        else if (type === this.AlgType.VITERBI){this.viterbiStep()}//TODO;
-        else if (type === this.AlgType.BAUMWELCH){}//TODO;
+        else if (type === this.AlgType.VITERBI){this.viterbiStep();}
+        else if (type === this.AlgType.MOSTLIKELY){this.gammaStep();}
+        else if (type === this.AlgType.BAUMWELCH){this.baumWelchStep();}//TODO;
     }
 
 
@@ -464,72 +465,56 @@ class HiddenMarkovModel extends MarkovModel{
             this.algProsessor.B[this.algProsessor.t][i] = 1;
         }
     }
+
     /////////////////////////////////////////////////
-    // Viterbi 
+    // most likely 
     /////////////////////////////////////////////////
 
-    viterbiStep(){
+    gammaStep(){
         if (this.algProsessor.observedString == null){
-            this.initViterbi();
+            this.initGamma();
         } else if (this.algProsessor.t < -1) {
-            this.viterbiRunForward();
+            this.runForward();
+            this.algProsessor.t = -1;
         } else if (this.algProsessor.t < 0){
-            this.viterbiRunBackward();
+            this.runBackward();
+            this.algProsessor.t = 0;
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
-            if (deltastep){
-                var comp = document.getElementById("algString");
-                comp.disabled = false;
-                comp.value = "";
-            } else {
-                deltastep = true;
-                this.initDeltaViterbi();
-            }
-        } else if(deltastep){
-            this.viterbiDetaStep();
+            var comp = document.getElementById("algString");
+            comp.disabled = false;
+            comp.value = "";
         } else { // inductive step;
-            this.inductiveViterbi();
+            this.inductiveGamma();
         }
     }
 
-    initDeltaViterbi(){
-        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
-        
-        this.algProsessor.t = 1;
-        this.algProsessor.D[this.algProsessor.t] = [];
-        for (var i in this.states){
-            var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
-            this.algProsessor.D[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmmisionProbability(emmisionState);
-            this.algProsessor.D[this.algProsessor.t][i] = Math.round( this.algProsessor.A[this.algProsessor.t][i] * 10000 + Number.EPSILON ) / 10000;
+    initGamma(){
+        //get the string
+        //stop string being edited 
+        var comp = document.getElementById("algString");
+        comp.disabled = true;
+        this.algProsessor.observedString = this.decodeEmmisions(comp.value);
+        this.algProsessor.t = -2;
+    }
+
+    runForward(){
+        document.getElementById("algVarDropdown").value = this.AlgVars.A;
+        this.InitForward();
+        for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
+            this.inductiveFoward();
         }
     }
 
-    viterbiDetaStep(){
-        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
-        
-        this.algProsessor.t++;
-        var t = this.algProsessor.t;
-        this.algProsessor.D[t] = [];
-        this.algProsessor.P[t] = [];
-        var char = this.algProsessor.observedString[t-1];
-
-        var max = 0;
-        var argMax = "";
-        for (var j in this.states){
-            for (var i in this.states){
-                var temp = this.algProsessor.Y[this.algProsessor.t-1][i]*parseFloat(this.transitions[i][j].text);
-                if (temp > max){
-                    max = temp;
-                    argMax = i;
-                }
-            }
-
-            this.algProsessor.D[this.algProsessor.t][j] = max*this.states[j].getEmmisionProbability(this.getStateFromEmmision(char));
-            this.algProsessor.P[this.algProsessor.t][j] = "" + this.states[argMax].text;
+    runBackward(){
+        document.getElementById("algVarDropdown").value = this.AlgVars.B;
+        this.InitForwardBackward();
+        for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
+            this.inductiveBackward();
         }
     }
 
-    inductiveViterbi(){
-        document.getElementById("algVarDropdown").value = this.ViterbiVars.Y;
+    inductiveGamma(){
+        document.getElementById("algVarDropdown").value = this.AlgVars.Y;
         
         this.algProsessor.t++;
         var t = this.algProsessor.t;
@@ -545,56 +530,163 @@ class HiddenMarkovModel extends MarkovModel{
         }
     }
 
-    viterbiRunForward(){
-        document.getElementById("algVarDropdown").value = this.ViterbiVars.A;
-        this.InitForward();
-        for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
-            this.inductiveFoward();
+    /////////////////////////////////////////////////
+    // Viterbi 
+    /////////////////////////////////////////////////
+
+    viterbiStep(){
+        if (this.algProsessor.observedString == null){
+            this.initViterbi();
+        } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
+            var comp = document.getElementById("algString");
+            comp.disabled = false;
+            comp.value = "";
+        } else { // inductive step;
+            this.inductiveViterbi();
         }
-        this.algProsessor.t = -1;
     }
 
-    viterbiRunBackward(){
-        document.getElementById("algVarDropdown").value = this.ViterbiVars.B;
-        this.InitForwardBackward();
-        for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
-            this.inductiveBackward();
+    initViterbi(){
+        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
+    
+        var comp = document.getElementById("algString");
+        comp.disabled = true;
+        this.algProsessor.observedString = this.decodeEmmisions(comp.value);
+
+        this.algProsessor.t = 1;
+        this.algProsessor.D[this.algProsessor.t] = [];
+        for (var i in this.states){
+            var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
+            this.algProsessor.D[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmmisionProbability(emmisionState);
+            this.algProsessor.D[this.algProsessor.t][i] = Math.round( this.algProsessor.D[this.algProsessor.t][i] * 10000 + Number.EPSILON ) / 10000;
+        }
+    }
+
+    inductiveViterbi(){
+        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
+        
+        this.algProsessor.t++;
+        var t = this.algProsessor.t;
+        this.algProsessor.D[t] = [];
+        this.algProsessor.P[t] = [];
+        var char = this.algProsessor.observedString[t-1];
+
+        var max = 0;
+        var argMax = "";
+        for (var j in this.states){
+            for (var i in this.states){
+                var temp = this.algProsessor.D[this.algProsessor.t-1][i]*parseFloat(this.transitions[i][j].text);
+                if (temp > max){
+                    max = temp;
+                    argMax = i;
+                }
+            }
+
+            this.algProsessor.D[this.algProsessor.t][j] = max*this.states[j].getEmmisionProbability(this.getStateFromEmmision(char));
+            this.algProsessor.P[this.algProsessor.t][j] = "" + this.states[argMax].text;
+        }
+    }
+
+
+    /////////////////////////////////////////////////
+    // Baum-Welch 
+    /////////////////////////////////////////////////
+
+    baumWelchStep(){
+        if (this.algProsessor.observedString == null){
+            this.initBaumWelch();
+        } else if (this.algProsessor.t < -2) {
+            this.runForward();
+            this.algProsessor.t = -2;
+        } else if (this.algProsessor.t < -1){
+            this.runBackward();
+            this.algProsessor.t = -1;
+        } else if (this.algProsessor.t < 0){
+            this.runGamma();
+            this.algProsessor.t = 0;
+        } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
+            var comp = document.getElementById("algString");
+            comp.disabled = false;
+            comp.value = "";
+        } else { // inductive step;
+            this.inductiveBaumWelch();
+        }
+    }
+
+    runGamma(){
+        this.algProsessor.t = 0;
+        document.getElementById("algVarDropdown").value = this.AlgVars.Y;
+        for (var i = 0; i < this.algProsessor.observedString.length; i++){
+            this.inductiveGamma();
         }
         this.algProsessor.t = 0;
     }
 
-    initViterbi(){
-        //get the string
-        //stop string being edited 
-        deltastep = false;
+    initBaumWelch(){
         var comp = document.getElementById("algString");
         comp.disabled = true;
         this.algProsessor.observedString = this.decodeEmmisions(comp.value);
-        this.algProsessor.t = -2;
+        this.algProsessor.t = -3;
     }
+
+    inductiveBaumWelch(){
+        
+        document.getElementById("algVarDropdown").value = this.AlgVars.Y;
+
+        this.algProsessor.t++
+        var t = this.algProsessor.t;
+        this.algProsessor.A[t] = [];
+        var char = this.algProsessor.observedString[t-1];
+
+        var sum = 0;
+        for (var i in this.states){
+            for (var j in this.states){
+                sum += this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmmisionProbability(this.getStateFromEmmision(char))*this.algProsessor.B[t+1][j];
+            }
+        }
+        for (var i in this.states){
+            if (!this.algProsessor.X[t][i]){this.algProsessor.X[t][i] = [];}
+            for (var j in this.states){
+                this.algProsessor.X[t][i][j] = (this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmmisionProbability(this.getStateFromEmmision(char))*this.algProsessor.B[t+1][j])/sum;
+            }
+        }
+    }
+
 
     AlgType = {
         FORWARD: 'Forward',
         FORWARDBACKWARD: 'Forward-Backward',
+        MOSTLIKELY: 'mostLikely',
         VITERBI: 'Viterbi',
         BAUMWELCH: 'Baum-Welch'
     }
-
-    ViterbiVars = {
-        A: 'alpha',
-        B: 'beta',
-        Y: 'gamma',
-        D: 'delta',
-        P: 'psi'
-    }
-
+    
     AlgVars = {
         A: 'alpha',
         B: 'beta',
         Y: 'gamma',
         D: 'delta',
-        P: 'psi'
+        P: 'psi',
+        X: 'Xi'
     }
-}  
 
-var deltastep = false;
+    mostLikelyVars = {
+        A: this.AlgVars.A,
+        B: this.AlgVars.B,
+        Y: this.AlgVars.Y
+    }
+
+    ViterbiVars = {
+        D: this.AlgVars.D,
+        P: this.AlgVars.P
+    }
+
+    baumWelchvars = {
+        A: this.AlgVars.A,
+        B: this.AlgVars.B,
+        Y: this.AlgVars.Y,
+        X: this.AlgVars.X
+    }
+
+    
+} 

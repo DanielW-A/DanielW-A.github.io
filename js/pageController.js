@@ -595,7 +595,8 @@ function tableCellMouseOver(e,comp,j,i){
         } else {
             str = backwardInduction(t,i,s,k,output,B);
         }
-
+    } else if (document.getElementById("algVarDropdown").value == model.AlgVars.G){
+        
     }
     
 
@@ -663,8 +664,9 @@ function setAlgDescription(type){
         str += backwardDescription[1];
         str += backwardEquations[1];
         str += backwardDescription[2];
+    } else if (type == model.AlgType.VITERBI){
+        str = viterbiDesc;
     }
-    
     info.innerHTML = str;
 
     
@@ -674,6 +676,18 @@ function setAlgDescription(type){
     if (dropdown.value == model.AlgType.VITERBI){
         for (i in model.ViterbiVars){
             dropdownText += "<option value=\""+model.ViterbiVars[i] + "\">"+model.ViterbiVars[i]+"</option>"
+        }
+        algVar.innerHTML = dropdownText;
+        algVar.style.display = "";
+    } else if (dropdown.value == model.AlgType.MOSTLIKELY){
+        for (i in model.mostLikelyVars){
+            dropdownText += "<option value=\""+model.mostLikelyVars[i] + "\">"+model.mostLikelyVars[i]+"</option>"
+        }
+        algVar.innerHTML = dropdownText;
+        algVar.style.display = "";
+    } else if (dropdown.value == model.AlgType.BAUMWELCH){
+        for (i in model.baumWelchvars){
+            dropdownText += "<option value=\""+model.baumWelchvars[i] + "\">"+model.baumWelchvars[i]+"</option>"
         }
         algVar.innerHTML = dropdownText;
         algVar.style.display = "";
