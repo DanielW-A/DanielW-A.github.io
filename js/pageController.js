@@ -60,6 +60,9 @@ window.onload = function() {
     document.getElementById("loadBtn").addEventListener("click", function() {
         load();
     });
+    document.getElementById("loadInput").addEventListener("change" , function() {
+        loadfile();
+    });
     document.getElementById("clearBtn").addEventListener("click", function() {
         clear();
     });
@@ -158,10 +161,6 @@ validateProability = function(text){
 
 	return text;
 
-}
-
-save = function(){
-    alert("TODO");
 }
 
 test = function(){

@@ -138,8 +138,12 @@ initCanvas = function() {
 			drawingLink.refresh(mousePos);
 			refresh();
 		} else if (movingObject){
-			selectedObj.x = mousePos.x + offset.x;
-			selectedObj.y = mousePos.y + offset.y;
+			if (selectedObj instanceof State){	
+				selectedObj.x = mousePos.x + offset.x;
+				selectedObj.y = mousePos.y + offset.y;
+			} else if (selectedObj instanceof Link && selectedObj.type == LinkType.SELF){
+				selectedObj.setAnchorangle(mousePos); 
+			}
 			refresh();
 		}
 		
