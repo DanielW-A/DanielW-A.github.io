@@ -63,7 +63,9 @@ function decodeJSON(str){
     for (var i in obj.transitions){
         for (var j in obj.transitions[i]){
             var oldTrans = obj.transitions[i][j];
-            model.addTransistion(new TempLink(model.states[oldTrans.startNode.id],{x : oldTrans.endNode.x, y :oldTrans.endNode.y})).text = oldTrans.text;
+            var trans = model.addTransistion(new TempLink(model.states[oldTrans.startNode.id],{x : oldTrans.endNode.x, y :oldTrans.endNode.y}));
+            trans.text = oldTrans.text;
+            trans.anchorAngle = oldTrans.anchorAngle; 
         }
     }
 
