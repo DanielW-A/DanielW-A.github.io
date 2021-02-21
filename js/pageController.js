@@ -14,9 +14,15 @@ toggleAccordion = function(component){
         closeAccordion(document.getElementById("sTransitionBtn"));
         panel.style.maxHeight = panel.scrollHeight + "px";
     }
-    if (component.parentElement.parentElement.previousElementSibling.className.includes('accordion')){
-        component.parentElement.parentElement.style.maxHeight = component.parentElement.parentElement.scrollHeight +  panel.scrollHeight + "px";
+    try { // If there isnt an element in the position im checking then nothing needs to be done.
+        if (component.parentElement.parentElement.previousElementSibling.className.includes('accordion')){
+            component.parentElement.parentElement.style.maxHeight = component.parentElement.parentElement.scrollHeight +  panel.scrollHeight + "px";
+        }
+    } catch (err){
+        // will be a NPE 
+        console.log(err)
     }
+    
 }
 
 //pass the button that controles the accordion
@@ -58,7 +64,7 @@ window.onload = function() {
         clear();
     });
     document.getElementById("runBtn").addEventListener("click",  function() {
-        run(20,1000);
+        run(20,1000); //TODO
     });
     document.getElementById("testBtn").addEventListener("click",  function() {
         test();

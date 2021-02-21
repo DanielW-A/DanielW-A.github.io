@@ -1,5 +1,6 @@
 var tempInitial = false;
 // create a class for each visable component;
+// TODO needs cleaning.
 class ChainState extends State{
    
    
@@ -24,7 +25,14 @@ class MarkovChain extends MarkovModel{
     constructor() {
         super();
         this.algProsessor = {
-            type : null
+            type : null,
+            observedString : null,
+
+            getObserevedString(){
+                var str ="";
+                for (i in this.observedString) {str += this.observedString[i]}
+                return str;
+            }
         }
     }
     /////////////////////////////////////////////////
@@ -85,7 +93,7 @@ class MarkovChain extends MarkovModel{
         var check = Math.random();
         var initProb = this.initialProbabilityDistribution;
         for (i in initProb) {
-            probSum += initProb[i];
+            probSum += parseFloat(initProb[i]);
             if (probSum > check) {
                 this.saveState(i);
                 return;
@@ -136,6 +144,10 @@ class MarkovChain extends MarkovModel{
     }
     getState(str){
         return this.states[str]; // used for campatibility with HMM
+    }
+
+    getVar(type){ //TODO compatability with HMM
+        return [];
     }
     /////////////////////////////////////////////////
     // testing / running
@@ -234,6 +246,7 @@ class MarkovChain extends MarkovModel{
         }
         return this.processor.outPut;
     }
+
     static runTests() {
         // function assert(outcome, description) {window.console && console.log((outcome ? 'Pass:' : 'FAIL:'),  description);}
         var myMC = new markovChain;

@@ -95,7 +95,7 @@ class HiddenMarkovModel extends MarkovModel{
             Y : [], //gamma
             D : [], //delta
             P : [], //psi
-            x : [],  //xi
+            X : [],  //xi
 
             getObserevedString(){
                 var str ="";
@@ -349,6 +349,7 @@ class HiddenMarkovModel extends MarkovModel{
         if (type == this.AlgVars.Y) {return this.algProsessor.Y;}
         if (type == this.AlgVars.D) {return this.algProsessor.D;}
         if (type == this.AlgVars.P) {return this.algProsessor.P;}
+        if (type == this.AlgVars.X) {return this.algProsessor.X;}
     }
     decodeEmmisions(str){
         //TODO THis is just a placeholder
@@ -460,9 +461,11 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.observedString = this.decodeEmmisions(comp.value);
         this.algProsessor.t = this.algProsessor.observedString.length;
         this.algProsessor.B[this.algProsessor.t] = [];
+        var char = this.algProsessor.observedString[this.algProsessor.t-1];
         for (var i in this.states){
             var emmisionState = this.getStateFromEmmision(this.algProsessor.observedString[0]);
             this.algProsessor.B[this.algProsessor.t][i] = 1;
+            // this.algProsessor.B[this.algProsessor.t][i] = this.states[i].getEmmisionProbability(this.getStateFromEmmision(char))
         }
     }
 
@@ -547,7 +550,7 @@ class HiddenMarkovModel extends MarkovModel{
     }
 
     initViterbi(){
-        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
+        document.getElementById("algVarDropdown").value = this.AlgVars.D;
     
         var comp = document.getElementById("algString");
         comp.disabled = true;
@@ -563,7 +566,7 @@ class HiddenMarkovModel extends MarkovModel{
     }
 
     inductiveViterbi(){
-        document.getElementById("algVarDropdown").value = this.ViterbiVars.D;
+        document.getElementById("algVarDropdown").value = this.AlgVars.D;
         
         this.algProsessor.t++;
         var t = this.algProsessor.t;
@@ -604,12 +607,81 @@ class HiddenMarkovModel extends MarkovModel{
         } else if (this.algProsessor.t < 0){
             this.runGamma();
             this.algProsessor.t = 0;
-        } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
+        } else if (this.algProsessor.observedString.length <= this.algProsessor.t+1){
+            this.updateModel();
             var comp = document.getElementById("algString");
             comp.disabled = false;
             comp.value = "";
         } else { // inductive step;
             this.inductiveBaumWelch();
+        }
+    }
+
+    updateModel(){
+
+        var testXi = 0
+        for(var t = 0; t < this.algProsessor.observedString.length-1; t++){
+            for (var i in this.states){
+                testXi = 0;
+                for (var j in this.states){
+                    testXi += this.algProsessor.X[t+1][i][j];
+                }
+                var testY = this.algProsessor.Y[t+1][i];
+                if (testXi != testY){
+                    this.algProsessor.Y[t+1][i] = testXi; // TODO terrible solution 
+                    throw 'Xi and Gamma are not equal!'
+                } // TODO i think ill have to go over this by hand, there are many spaces i could have gone wrong.
+            }
+
+        }
+        // for (var i in this.algProsessor.Y){
+
+        // }
+
+        // rAi) = C (Ai, /I
+
+
+        // π0i = γ1(i)
+
+        for(var i in this.states){
+            this.initialProbabilityDistribution[i] = this.algProsessor.Y[1][i].toString();
+        }
+
+        //         m0i,j = ΣT−1t=1 ξt(i, j)/ΣT−1t γt(i)
+
+        var xiSum = 0;
+        var gammaSum = 0;
+        for (var i in this.states){
+            for (var j in this.states){
+                
+                xiSum = 0;
+                gammaSum = 0;
+                for(var t = 0; t < this.algProsessor.observedString.length-1; t++){
+                    xiSum += this.algProsessor.X[t+1][i][j];
+                    gammaSum += this.algProsessor.Y[t+1][i];
+                }
+                this.transitions[i][j].text = (xiSum/gammaSum).toString();
+            }
+        } // TODO check for epsilon errors and make more efficent.
+        
+
+        //         e0j(k) = ΣT−1t=1 γt(i)/ΣT−1t=1 γt(i)
+
+        gammaSum = 0;
+        var conditionalGammaSumm = 0;
+        for (var i in this.states){
+            for (var j in this.emmisionStates){
+
+                conditionalGammaSumm = 0;
+                gammaSum = 0;
+                for (var t = 0; t < this.algProsessor.observedString.length-1; t++){
+                    gammaSum += this.algProsessor.Y[t+1][i];
+                    if (this.algProsessor.observedString[t] == this.emmisionStates[j].getEmmision()){
+                        conditionalGammaSumm += this.algProsessor.Y[t+1][i];
+                    }
+                }
+                this.transitions[i][j].text = (conditionalGammaSumm/gammaSum).toString();
+            }
         }
     }
 
@@ -631,11 +703,11 @@ class HiddenMarkovModel extends MarkovModel{
 
     inductiveBaumWelch(){
         
-        document.getElementById("algVarDropdown").value = this.AlgVars.Y;
+        document.getElementById("algVarDropdown").value = this.AlgVars.X;
 
         this.algProsessor.t++
         var t = this.algProsessor.t;
-        this.algProsessor.A[t] = [];
+        this.algProsessor.X[t] = [];
         var char = this.algProsessor.observedString[t-1];
 
         var sum = 0;
