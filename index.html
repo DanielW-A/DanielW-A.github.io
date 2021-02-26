@@ -31,6 +31,7 @@
     <script src="js/pageController.js"></script>
     <script src="js/canvasController.js"></script>
     <script src="js/stringBuilder.js"></script>
+    <script src="js/JSONutils.js"></script>
 
 
     <div id="main">
@@ -52,7 +53,8 @@
 
                         <button id="testBtn" title="Test">Test</button>
                         <button id="saveBtn" title="Save">Save</button>
-                        <button id="loadBtn" title="Load">Load</button>
+                        <button id="loadBtn" title="Load" >Load</button>
+                        <input id="loadInput" title="Load" type="file" accept=".json" style="display: none;"></input>
                         <button id="clearBtn" title="Clear">Clear</button>
                         <button id="runBtn" title="Run">Run</button>
                         <div id="outputString" type="text" placeholder="Output string"></div>
@@ -130,6 +132,8 @@
         <div class="algorithms" id="algDiv">
             <div class="algInput">
                 <select class="usable" name="algorithmDropdown" id="algorithmDropdown">
+                </select>
+                <select class="usable" name="algVarDropdown" id="algVarDropdown">
                 </select>
                 <input id="algString" class="usable"></input>
                 <button id="algButton" class="usable" title="Run/Step">Run/Step</button>

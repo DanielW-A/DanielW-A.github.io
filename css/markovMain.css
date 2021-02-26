@@ -60,8 +60,16 @@ canvas {
   transition: 0.4s;
 }
 
-.active, .accordion:hover {
+.accordion:hover {
   background-color: #ccc;
+}
+
+.active {
+  background-color: #ccc;
+}
+
+.active.accordion:hover {
+  background-color: #aaa;
 }
 
 /* .topButton{

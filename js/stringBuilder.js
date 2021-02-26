@@ -49,6 +49,17 @@ const backwardEquations = ["<div id=\"init0\">" + spanNH("init","\\(\\beta_T (j)
         "<div id=\"equ0\">" + spanNH("equ","\\(\\beta_t (i)\\)",1) + " = " + spanNH("equ","\\((\\Sigma^{|S|}_{j=1}\\)",0) +spanNH("equ","\\(\\beta_{t+1} (j)\\)",2)+
         spanNH("equ","\\(m_{i,j}\\)",3) + spanNH("equ","\\(e_j (o_t)\\)",4) + spanNH("equ","\\(, 1 <= t < T , 1 <= j <= |S|)\\)",5)+"</div>"];
 
+const viterbiDesc = p("This is used to calculate the most likely sequence of  internal states the model took, this is the most important algorithm to solve the decoding problem and uses 2 variables. \\(\\delta\\) (defined as the most likely valid sequence of states that ends at the current state in the current timestep)" +
+ "and \\(\\phi\\) (\\(\\phi \\) is used to cache the most likely previous state so the chain can be traced backwards to find the most likely sequence of states).")
++ p("\\(\\delta\\) and \\(\\phi\\) at the base case:")
++ "<div id=\"init0\">" + spanNH("init","\\(\\delta_1(i) = \\pi_i e_i(o_1)\\)",1) + "<br>"
++ spanNH("init","\\(\\psi_1(i) = 0\\)",2) + "</div>" 
++ p("Inductive step:")
++ "<div id=\"equ0\">" + spanNH("equ","\\(\\delta_t(j) = e_j(o_t) max_i(\\delta_{t-1}(i)m_{i,j}\\)",1)
++ spanNH("equ","\\(\\psi_t(i) = argmax_i(\\delta_{t-1}(i)m_{i,j} )\\)",2) + "</div>"
++ p("When t > 1 then delta is the maximum of the previous values and the transition probability multiplied, multiplied by the chance that that state will emit the observed emission state.")
++ p("After this is we trace back through the (\\(\\phi \\) s starting at the (\\(\\phi \\) with the highest corresponding (\\(\\delta\\) at time T.");
+
 
 ///////////////////////////////////////////////////////
 // algTable descriptions
