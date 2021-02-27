@@ -67,7 +67,7 @@ window.onload = function() {
         clear();
     });
     document.getElementById("runBtn").addEventListener("click",  function() {
-        run(20,1000); //TODO
+        run(document.getElementById("stepSpeed").value,document.getElementById("stepCount").value); //TODO
     });
     document.getElementById("testBtn").addEventListener("click",  function() {
         test();
@@ -237,7 +237,6 @@ clear = function(){
 
     selectedObj = null;
     currentEmmision = null;
-    stopStep();
 }
 
 var runner = null;
@@ -245,7 +244,6 @@ run = function(steps,time){
     if (runner != null){
         selectedObj = null;
         currentEmmision = null;
-        stopStep();
         resetCaret();
         return;
     }
@@ -265,7 +263,8 @@ run = function(steps,time){
     selectedObj = null;
     clearInterval(caretTimer);
     caretVisible = false;
-    runner = setInterval('step()',time/2);
+
+    step();
 
 
     if (tempInitial){
@@ -276,6 +275,10 @@ run = function(steps,time){
 
 var currentEmmision = null;
 function step() {
+    running = true;
+    
+    var time = document.getElementById("stepSpeed").value;
+    var steps = document.getElementById("stepCount").value;
     if (selectedObj == null){
         selectedObj = model.states[model.processor.currentState]; //init state
         if (model instanceof HiddenMarkovModel) {currentEmmision = model.processor.emmisionState}
@@ -289,18 +292,17 @@ function step() {
         document.getElementById('outputString').innerHTML = model.processor.outPut;
     }
     refresh();
-    if (model.processor.outPutLength > 20){
+    if (model.processor.outPutLength > steps){
         selectedObj = null;
         currentEmmision = null;
-        stopStep();
         resetCaret();
+        
+        running = false;
+    } else {
+        setTimeout(step, (1/time)*10000);
     }
 }
 
-function stopStep(){
-    clearInterval(runner);
-    runner = null;
-}
 
 function p(str){return "<p>" + str + "</p>";}
 function label(str){return "<label>" + str + "</label>";}
@@ -632,7 +634,6 @@ function initModelUI(){
 
     selectedObj = null;
     currentEmmision = null;
-    stopStep();
 
     var dropdown = document.getElementById("algorithmDropdown");
     dropdownText = "";

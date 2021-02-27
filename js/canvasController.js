@@ -83,7 +83,7 @@ initCanvas = function() {
 	document.documentElement.clientWidth;
 
 	canvas.onmousedown = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
 		var mousePos = getMousePos(canvas,e);
 
         console.log(mousePos);
@@ -114,7 +114,7 @@ initCanvas = function() {
     };
 
     canvas.ondblclick = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
         var mousePos = getMousePos(canvas,e);
 		selectedObj = model.getElementAt(mousePos);
         if (selectedObj == null){
@@ -132,7 +132,7 @@ initCanvas = function() {
 	};
 	
 	canvas.onmousemove = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
 		var mousePos = getMousePos(canvas,e);
 		if(drawingLink != null){
 			drawingLink.refresh(mousePos);
@@ -150,7 +150,7 @@ initCanvas = function() {
 	}
 
 	canvas.onmouseup = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
         movingObject = false;
         
 		if(drawingLink != null){
@@ -205,7 +205,7 @@ document.onkeydown = function(e) {
 			refresh();
             closeAccordion(document.getElementById("stateButton"));
 		}
-	}else if(!canvasHasFocus() || runner != null){ // changed hoe this works a bit , now less imprtant
+	}else if(!canvasHasFocus() || running == true){ // changed hoe this works a bit , now less imprtant
 		//don't read keystrokes when other things have focus
 		return true;
     } else if(key == "Escape") { 
@@ -253,7 +253,7 @@ document.onkeypress = function(e) {
 		closeAccordion(document.getElementById("stateButton"));
 		return false;
 	}
-	if(!canvasHasFocus() || runner != null){
+	if(!canvasHasFocus() || running != true){
 		return true;
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
 		if (selectedObj instanceof StationaryLink){
@@ -359,7 +359,7 @@ refreshComponents = function() {
 			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj ) ? 'blue' : 'black';
 			if(j.charAt(0) == 'e'){
 				c.fillStyle = c.strokeStyle = model.states[i].colour;
-				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || ((runner == null) && (!graphSpotlight)))){
+				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || ((running == false) && (!graphSpotlight)))){
 					c.globalAlpha = 0.1;
 				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emmisionStates[j] == selectedObj)){
 					c.globalAlpha = 0.4;
