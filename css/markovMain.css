@@ -159,6 +159,10 @@ canvas {
     padding-left: 5%;
 }
 
+.stepSpeed{
+  background: black;
+}
+
 #information form{
   display: table;
   text-align: left;
