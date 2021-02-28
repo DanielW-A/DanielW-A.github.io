@@ -21,7 +21,7 @@ class TempLink extends Link{ // this will be the more adaptive link when being d
 	}
 
 	draw(c){
-		if(this.type === LinkType.DIRECT || this.startNode instanceof EmmisionState){
+		if(this.type === LinkType.DIRECT || this.startNode instanceof EmissionState){
 			if (this.endNode == null){
 				this.endPos.x = this.x;
 				this.endPos.y = this.y;
@@ -119,7 +119,7 @@ initCanvas = function() {
 		selectedObj = model.getElementAt(mousePos);
         if (selectedObj == null){
 			if (control && model instanceof HiddenMarkovModel){
-				selectedObj = model.addEmmisionState(mousePos.x,mousePos.y);
+				selectedObj = model.addEmissionState(mousePos.x,mousePos.y);
 			} else {
             	selectedObj = model.addState(mousePos.x,mousePos.y);
 			}
@@ -340,11 +340,11 @@ refreshComponents = function() {
 		c.globalAlpha = alpha;
 	}
 	if (model instanceof HiddenMarkovModel){
-		for (i in model.emmisionStates){
+		for (i in model.emissionStates){
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj || model.emmisionStates[i] === currentEmmision) ? 'blue' : 'black';
-			if (graphSpotlight && currentEmmision === model.emmisionStates[i]){c.globalAlpha = 1;}
-			model.emmisionStates[i].draw(c,(model.emmisionStates[i] === selectedObj));	
+			c.fillStyle = c.strokeStyle = (model.emissionStates[i] === selectedObj || model.emissionStates[i] === currentEmission) ? 'blue' : 'black';
+			if (graphSpotlight && currentEmission === model.emissionStates[i]){c.globalAlpha = 1;}
+			model.emissionStates[i].draw(c,(model.emissionStates[i] === selectedObj));	
 			c.globalAlpha = alpha;
 		}
 	}
@@ -359,9 +359,9 @@ refreshComponents = function() {
 			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj ) ? 'blue' : 'black';
 			if(j.charAt(0) == 'e'){
 				c.fillStyle = c.strokeStyle = model.states[i].colour;
-				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || ((running == false) && (!graphSpotlight)))){
+				if (!((model.states[i] === selectedObj && model.emissionStates[j] === currentEmission) || ((running == false) && (!graphSpotlight)))){
 					c.globalAlpha = 0.1;
-				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emmisionStates[j] == selectedObj)){
+				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emissionStates[j] == selectedObj)){
 					c.globalAlpha = 0.4;
 				} else {
 					c.globalAlpha = 1;

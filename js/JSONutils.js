@@ -5,7 +5,7 @@ function save(){
         states: model.states,
         transitions: model.transitions,
         initialProbabilityDistribution : model.initialProbabilityDistribution, 
-        emmisionStates: (model instanceof HiddenMarkovModel)? model.emmisionStates : null
+        emissionStates: (model instanceof HiddenMarkovModel)? model.emissionStates : null
     }
 
     var test = JSON.stringify(myObj,null, "\t");
@@ -52,11 +52,11 @@ function decodeJSON(str){
     }
     
     if (model instanceof HiddenMarkovModel){
-        for ( var i in obj.emmisionStates){
-            var oldEmmisisonState = obj.emmisionStates[i];
-            var emmisionState = model.addEmmisionState(oldEmmisisonState.x,oldEmmisisonState.y);
-            emmisionState.text = oldEmmisisonState.text;
-            emmisionState.emmision = oldEmmisisonState.emmision;
+        for ( var i in obj.emissionStates){
+            var oldEmmisisonState = obj.emissionStates[i];
+            var emissionState = model.addEmissionState(oldEmmisisonState.x,oldEmmisisonState.y);
+            emissionState.text = oldEmmisisonState.text;
+            emissionState.emission = oldEmmisisonState.emission;
         }
     }
     
