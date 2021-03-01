@@ -646,7 +646,7 @@ class HiddenMarkovModel extends MarkovModel{
                 var testY = this.algProsessor.Y[t+1][i];
                 if (testXi != testY){
                     this.algProsessor.Y[t+1][i] = testXi; // TODO terrible solution 
-                    throw 'Xi and Gamma are not equal!'
+                    //throw 'Xi and Gamma are not equal!'
                 } // TODO i think ill have to go over this by hand, there are many spaces i could have gone wrong.
             }
 

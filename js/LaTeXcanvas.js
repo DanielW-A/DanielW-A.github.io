@@ -12,7 +12,7 @@ function ExportAsLaTeX() {
 			'\\begin{document}\n' +
 			'\n' +
 			'\\begin{center}\n' +
-			'\\begin{tikzpicture}[scale=0.2]\n' +
+			'\\begin{tikzpicture}[scale=0.25, every node/.style={scale=0.8}]\n' +
 			'\\tikzstyle{every node}+=[inner sep=0pt]\n' +
 			this._texData +
 			'\\end{tikzpicture}\n' +
@@ -98,8 +98,8 @@ function ExportAsLaTeX() {
 			var nodeParams = '';
 			x *= this._scale;
 			y *= this._scale;
-            x += 0.9;
-            y -= 0.1;
+            x += text.length/9; // i dont know why this is here, can't work out a better solution.
+            y -= 0.3; // guess that latex and canvas start text at a deffernent pos.
 			this._texData += '\\draw [' + this.strokeStyle + '] (' + fixed(x, 2) + ',' + fixed(-y, 2) + ') node ' + nodeParams + '{$' + originalText.replace(/ /g, '\\mbox{ }') + '$};\n';
 		}
 	};
