@@ -323,12 +323,16 @@ refresh = function() {
 }
 
 
-refreshComponents = function() {
+refreshComponents = function(latexCanvas) {
 
-	c = canvas.getContext("2d");
-	canvas.width = document.body.clientWidth;
-	canvas.height = window.innerHeight;
-    c.clearRect(0, 0, canvas.width, canvas.height);
+	if (latexCanvas == null){
+		c = canvas.getContext("2d");
+		canvas.width = document.body.clientWidth;
+		canvas.height = window.innerHeight;
+    	c.clearRect(0, 0, canvas.width, canvas.height);
+	} else {
+		c = latexCanvas;
+	}
 
 	var alpha = 1;
 	if (graphSpotlight){c.globalAlpha = alpha = 0.2;}

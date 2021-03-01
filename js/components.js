@@ -116,7 +116,7 @@ const LinkType = {
     SELF: 'self'
 }
 
-const colours = ["#0000FF","#FF0000","#FFA500","#9932CC","#A0522D","#008000","#B22222"]; //TODO
+const colours = ["#0000FF","#FF0000","#FFA500","#9932CC","#A0522D","#008000"]; //TODO (make it a multiple of 6)
 const nodeRadius = 30; 
 const mousePadding = 5;
 

@@ -3,6 +3,16 @@ const font ='20px "Times New Roman", serif';
 var running = false;
 var modelPanel;
 
+function exportLatex(){
+	var exporter = new ExportAsLaTeX();
+	var oldSelectedObject = selectedObj;
+	selectedObj = null;
+	refreshComponents(exporter);
+	selectedObj = oldSelectedObject;
+	var texData = exporter.toLaTeX();
+	download("Model.tex",texData);
+}
+
 
 toggleAccordion = function(component){
     refreshInfoPanels();
@@ -81,6 +91,9 @@ window.onload = function() {
     });
     document.getElementById("testBtn").addEventListener("click",  function() {
         test();
+    });
+    document.getElementById("exportBtn").addEventListener("click", function() {
+        exportLatex();
     });
 
     document.getElementById("markovChainBtn").disabled = true;
