@@ -9,7 +9,7 @@ function save(){
     }
 
     var test = JSON.stringify(myObj,null, "\t");
-    download("test.json",test);
+    download("Model.json",test);
 }
 
 function load(){
