@@ -395,8 +395,59 @@ class StationaryLink extends Link {
         }
         
     }
-    
-
 }
 
-module.exports = State;
+class TempLink extends Link{ // this will be the more adaptive link when being drawn.
+	constructor(startNode,mousePos){
+		super(startNode,mousePos.x,mousePos.y);
+		this.mousePos = mousePos;
+		this.refresh(mousePos);
+	}
+
+	refresh(mousePos){
+		this.endNode = model.getElementAt(mousePos);
+		if (!(this.endNode instanceof State)){this.endNode = null;}
+		if (this.startNode != this.endNode){
+			this.type = LinkType.DIRECT;
+		} else {
+			this.type = LinkType.SELF;
+		}
+		this.x = mousePos.x;
+		this.y = mousePos.y;
+
+		this.setAnchorangle(mousePos);
+	}
+
+	draw(c){
+		if(this.type === LinkType.DIRECT || this.startNode instanceof EmissionState){
+			if (this.endNode == null){
+				this.endPos.x = this.x;
+				this.endPos.y = this.y;
+				this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
+			} else {
+				this.endPos = this.endNode.closestPointOnCircle(this.startNode.x, this.startNode.y);
+				this.startPos = this.startNode.closestPointOnCircle(this.endNode.x, this.endNode.y);
+			}
+
+
+			c.beginPath();
+			c.moveTo(this.startPos.x, this.startPos.y);
+			c.lineTo(this.endPos.x, this.endPos.y);
+			c.stroke();
+
+		
+		} else if(this.type == LinkType.SELF){
+			var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
+			var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
+			var circleRadius = 0.75 * nodeRadius;
+			var startAngle = this.anchorAngle - Math.PI * 0.8;
+			var endAngle = this.anchorAngle + Math.PI * 0.8;
+
+
+			c.beginPath();
+			c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
+			c.stroke();
+		}
+
+	}
+}

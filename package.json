@@ -1,5 +1,6 @@
 {
     "scripts": {
+        "pretest": "python build.py",
         "test": "jest"
     }
 }

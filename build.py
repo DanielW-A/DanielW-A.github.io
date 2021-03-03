@@ -4,12 +4,12 @@ import os, time, sys
 
 def sources():
 	print ('sources')
-	path = './js'
-	return [os.path.join(base, f) for base, folders, files in os.walk(path) for f in files if f.endswith('.js')]
+	path = './src/main'
+	return [os.path.join(base, f) for base, folders, files in os.walk(path) for f in files if (f.endswith('.js') and 'Control' not in f)]
 
 def build():
 	print ('build')
-	path = './test/mm.js'
+	path = './src/test/js/mm.js'
 	data = '\n'.join(open(file, 'r').read() for file in sources())
 	with open(path, 'w') as f:
 		f.write(data)
