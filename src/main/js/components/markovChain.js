@@ -90,7 +90,6 @@ class MarkovChain extends MarkovModel{
     }
     step() {
         var temp = this.transition(this.processor.currentState);
-        console.log(temp);
         this.saveState(temp);
         return this.processor.outPut;
     }
@@ -171,14 +170,32 @@ class MarkovChain extends MarkovModel{
         }
 
         var sts = this.states;
-        if (sts == null || sts == []){
+        if (sts == null || Object.keys(sts).length === 0){
             this.processor.errors.push("There are no states");
         }
+        var emmissions = [];
+        var names = [];
         for (i in sts) {
-            if (i === sts[i]) {
-                errorMsg += "WARNING : " + i + " state has defult emission string \n";
-            } else if (sts[i].length > 1) {
-                errorMsg += "WARNING : " + i + " state has defult emission string of lenght > 1 \n";
+            if (sts[i].text == ""){
+                this.processor.warnings.push("State id: " + i + " has no name");
+            }
+
+            if (sts[i].emission == "" || sts[i].emission == null ) {
+                this.processor.warnings.push("State id: " + i + ", name: " + this.states[i].text + " has defult emission string");
+            } else if (sts[i].emission.length > 1) {
+                this.processor.warnings.push("State id: " + i + ", name: " + this.states[i].text + " has an emission string of size >1");
+            }
+
+            
+            for (j in sts){
+                if (sts[i].emission == sts[j].emission && i != j && !emmissions.includes(i)){
+                    emmissions.push(j);
+                    this.processor.errors.push("State id: " + i + ", name: " + sts[i].text + " and state id: " + j + ", name: " + sts[j].text + " have the same emission");
+                }
+                if (sts[i].text == sts[j].text && i != j && !names.includes(i)){
+                    names.push(j);
+                    this.processor.warnings.push("State id: " + i + " and state id: " + j + ", have the same name: " + sts[j].text);
+                }
             }
         }
 
@@ -204,23 +221,6 @@ class MarkovChain extends MarkovModel{
         for (i in initProb) { str += (initProb[i] == 0) ? '' : initProb[i] + ','; }
         str += "}";
         return str;
-    }
-    run(count,step) {
-        if (this.validCheck() != "") { output.innerText("There are unresolved errors"); return;}
-        if (count < 1 || count == null) { output.innerText(""); return; }
-
-        var output = document.getElementById('output');
-
-        this.clearCache();
-        this.getStartState();
-
-        while (this.processor.outPutLength < count) {
-            this.step();
-            sleep(step);
-            output.innerText(this.processor.outPut);
-
-        }
-        return this.processor.outPut;
     }
 
     static runTests() {

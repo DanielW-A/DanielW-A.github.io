@@ -198,7 +198,7 @@ document.onkeypress = function(e) {
 		closeAccordion(document.getElementById("stateButton"));
 		return false;
 	}
-	if(!canvasHasFocus() || running != true){
+	if(!canvasHasFocus() || running == true){
 		return true;
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
 		if (selectedObj instanceof StationaryLink){

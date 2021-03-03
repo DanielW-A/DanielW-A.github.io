@@ -21,7 +21,7 @@ class MarkovModel{
         };
     }
     deleteState(object){
-        for (i in this.states) {
+        for (var i in this.states) {
             if (this.states[i] === object) {
                 this.removeAllTrasitions(i);
                 delete this.states[i];
@@ -29,8 +29,8 @@ class MarkovModel{
         }
     }
     deleteTrasition(object){
-        for (i in this.transitions) {
-            for (j in this.transitions[i]){
+        for (var i in this.transitions) {
+            for (var j in this.transitions[i]){
                 if (this.transitions[i][j] === object){
                     if (this.transitions[i][j].type == LinkType.ARC){
                         this.transitions[j][i].type = LinkType.DIRECT;
@@ -42,12 +42,10 @@ class MarkovModel{
     }
     removeAllTrasitions(i) {
         delete this.transitions[i];
-        var self = this;
-        $.each(self.transitions, function (stateA, sTrans) {
-            $.each(sTrans, function (stateB) {
-                if (stateB == i) { self.removeTransition(stateA, stateB); }
-            });
-        });
+        for (var j in this.states){
+            if (!this.transitions[j]){continue;}
+            if (this.transitions[j][i]){delete this.transitions[j][i]}
+        }
         return this;
     }
     removeTransition(stateA, stateB) {
@@ -104,7 +102,6 @@ class MarkovModel{
     }
     step() {
         var temp = this.transition(this.processor.currentState);
-        console.log(temp);
         this.saveState(temp);
         return this.processor.outPut;
     }
@@ -398,10 +395,14 @@ class StationaryLink extends Link {
 }
 
 class TempLink extends Link{ // this will be the more adaptive link when being drawn.
-	constructor(startNode,mousePos){
+	constructor(startNode,mousePos, endNode){
 		super(startNode,mousePos.x,mousePos.y);
 		this.mousePos = mousePos;
-		this.refresh(mousePos);
+        if (endNode == null){
+		    this.refresh(mousePos);
+        } else {
+            this.endNode = endNode;
+        }
 	}
 
 	refresh(mousePos){
