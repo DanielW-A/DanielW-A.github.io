@@ -398,3 +398,5 @@ class StationaryLink extends Link {
     
 
 }
+
+module.exports = State;

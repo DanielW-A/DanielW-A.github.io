@@ -332,7 +332,6 @@ function step() {
 }
 
 
-function p(str){return "<p>" + str + "</p>";}
 function label(str){return "<label>" + str + "</label>";}
 function input(str,id){return "<input id=\"" + id + "\"  value=\"" + str + "\" oninput=\"trasitionChange('"+id+"',this)\">";}
 
