@@ -1,7 +1,29 @@
 
 const { expect } = require('@jest/globals');
 const mm = require('./mm');
+const { default: Big } = require("big.js");
 
+///////////////////////////////////////////////////
+// Markov Model
+///////////////////////////////////////////////////
+
+test('Markov Model: valdate probability', () => {
+    var model = new mm.markovChain();
+    
+    expect(model.validateProbability("")).toEqual("");
+    expect(model.validateProbability("0")).toEqual("0");
+    expect(model.validateProbability("0.")).toEqual("0.");
+    expect(model.validateProbability(".")).toEqual("0.");
+    expect(model.validateProbability("1")).toEqual("1");
+    expect(model.validateProbability("0.1")).toEqual("0.1");
+    expect(model.validateProbability("0.03930482943273928012")).toEqual("0.03930482943273928012");
+
+    expect(model.validateProbability("2")).toEqual("");
+    expect(model.validateProbability("a")).toEqual("");
+    expect(model.validateProbability("00")).toEqual("0");
+    expect(model.validateProbability("0.a")).toEqual("0.");
+    expect(model.validateProbability("0.0393048294a3273928012")).toEqual("0.0393048294");
+});
 
 ///////////////////////////////////////////////////
 // Markov Chain
@@ -312,6 +334,16 @@ test('Hidden Markov Model: Create a model and validating', () => {
     expect(model.processor.warnings.length).toEqual(0);
 });
 
+test('Hidden Markov Model: Validating the unputs', () => {
+    var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
+
+    expect(model.validateObs("")).toEqual("");
+    expect(model.validateObs("NCDNCD")).toEqual("NCDNCD");
+    expect(model.validateObs("NFGNDDFGEET")).toEqual("NNDD");
+    expect(model.validateObs(")£$)$R*J!^&&&%£ γ")).toEqual("");
+    expect(model.validateObs(")£$)$R*J!^&&&%£ γ  nd")).toEqual("ND");
+});
+
 test('Hidden Markov Model: Deleting components', () => {
     model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
@@ -402,11 +434,11 @@ test('Hidden Markov Model: Running Forward Algorithm', () => {
 
     model.initForward();
     Alpha = model.algProsessor.A;
-    expect(Alpha[1][0]).toEqual(model.initialProbabilityDistribution[0]*parseFloat(model.transitions[0]['e0'].text))
-    expect(Alpha[1][0]).toEqual(0.3);
+    expect(Alpha[1][0].toString()).toEqual(Big(model.initialProbabilityDistribution[0]).times(Big(model.transitions[0]['e0'].text)).toString());
+    expect(Alpha[1][0].toString()).toEqual("0.3");
 
-    // expect(Alpha[1][1]).toEqual(model.initialProbabilityDistribution[1]*parseFloat(model.transitions[1]['e0'].text)) epsilon error
-    expect(Alpha[1][1]).toEqual(0.04);
+    expect(Alpha[1][1].toString()).toEqual(Big(model.initialProbabilityDistribution[1]).times(Big(model.transitions[1]['e0'].text)).toString());
+    expect(Alpha[1][1].toString()).toEqual("0.04");
 
 
     for (var i = 1; i < emissionStr.length; i++){
@@ -431,9 +463,9 @@ test('Hidden Markov Model: Running Backward Algorithm', () => {
 
     model.initBackward();
     Beta = model.algProsessor.B;
-    expect(Beta[emissionStr.length][0]).toEqual(1)
+    expect(Beta[emissionStr.length][0].toString()).toEqual("1")
 
-    expect(Beta[emissionStr.length][1]).toEqual(1);
+    expect(Beta[emissionStr.length][1].toString()).toEqual("1");
 
 
     for (var i = 1; i < emissionStr.length; i++){
@@ -446,4 +478,59 @@ test('Hidden Markov Model: Running Backward Algorithm', () => {
 
     //TODO check some random values from my own caculations.
 
+});
+
+test('Hidden Markov Model: Running Gamma Algorithm', () => {
+    var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
+
+    var emissionStr = "NNCCDDNCDDCDNCNNND";
+    //TODO
+
+});
+
+test('Hidden Markov Model: Running Viterbi Algorithm', () => {
+    var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
+
+    var emissionStr = "NNCCDDNCDDCDNCNNND";
+    //TODO
+
+});
+
+test('Hidden Markov Model: Running Balm-Welch Algorithm', () => {
+    var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
+
+    var emissionStr = "NNCCDDNCDDCDNCNNND";
+    //TODO
+
+});
+
+test('Hidden Markov Model: Gamma and Balm-Welch Equal', () => {
+    var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
+
+    
+    var emissionStr = "NNCCDDNCDDCDNCNNND";
+
+    model.algProsessor.observedString = model.decodeEmissions(emissionStr);
+
+    model.runForward();
+    model.runBackward();
+    model.runGamma();
+    for (var i = 1; i < emissionStr.length-2; i++){
+        model.inductiveBaumWelch();
+    }
+
+
+    var testXi = 0
+    for(var t = 0; t < model.algProsessor.observedString.length-3; t++){
+        for (var i in model.states){
+            testXi = new Big(0);
+            for (var j in model.states){
+                testXi = testXi.plus(model.algProsessor.X[t+1][i][j]);
+            }
+            var testY = model.algProsessor.Y[t+1][i].round(120,0);
+            testXi = testXi.round(120,0); // some small rounding errors, either way this is significant places so so little data lost.
+
+            expect(testXi.eq(testY)).toBeTruthy();
+        }
+    }
 });

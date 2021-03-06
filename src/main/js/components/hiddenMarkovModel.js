@@ -1,3 +1,5 @@
+const dp = 124;
+
 class LatentState extends State{
    
     constructor(x,y,id,colour){
@@ -85,6 +87,7 @@ class HMMTransition extends StationaryLink{
 class HiddenMarkovModel extends MarkovModel{
     constructor(){
         super();
+        Big.DP = dp;
         model = this;
         this.lastEmissionId = 0;
         this.algProsessor = {
@@ -310,7 +313,7 @@ class HiddenMarkovModel extends MarkovModel{
         return (this.processor.errors.length == 0)
     }
 
-    validateObS(str){
+    validateObs(str){
 
         var emmissions = {};
         for (var i in this.emissionStates){
@@ -423,12 +426,11 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.A[t] = [];
         var char = this.algProsessor.observedString[t-1];
         for(var i in this.states){
-            var tempSum = 0;
+            var tempSum = new Big(0);
             for(var j in this.states){
-                tempSum += this.algProsessor.A[t-1][j]*parseFloat(this.transitions[j][i].text); 
+                tempSum = tempSum.plus(Big(this.algProsessor.A[t-1][j]).times(parseFloat(this.transitions[j][i].text))); 
             }
-            this.algProsessor.A[t][i] = tempSum*this.states[i].getEmissionProbability(this.getStateFromEmission(char));
-            this.algProsessor.A[t][i] = Math.round( this.algProsessor.A[t][i] * 10000 + Number.EPSILON ) / 10000;
+            this.algProsessor.A[t][i] = tempSum.times(this.states[i].getEmissionProbability(this.getStateFromEmission(char)));
         }
     }
     initForward(){
@@ -438,8 +440,7 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.A[this.algProsessor.t] = [];
         for (var i in this.states){
             var emissionState = this.getStateFromEmission(this.algProsessor.observedString[0]);
-            this.algProsessor.A[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmissionProbability(emissionState);
-            this.algProsessor.A[this.algProsessor.t][i] = Math.round( this.algProsessor.A[this.algProsessor.t][i] * 10000 + Number.EPSILON ) / 10000;
+            this.algProsessor.A[this.algProsessor.t][i] = Big(this.initialProbabilityDistribution[i]).times(this.states[i].getEmissionProbability(emissionState));
         }
     }
 
@@ -471,13 +472,13 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.t--;
         var t = this.algProsessor.t;
         this.algProsessor.B[t] = [];
-        var char = this.algProsessor.observedString[t-1];
+        var char = this.algProsessor.observedString[t];
         for(var i in this.states){
-            var tempSum = 0;
+            var tempSum = new Big(0);
             for(var j in this.states){
-                tempSum += this.algProsessor.B[t+1][j]*parseFloat(this.transitions[i][j].text); 
+                tempSum = tempSum.plus(Big(this.algProsessor.B[t+1][j]).times(parseFloat(this.transitions[i][j].text)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char)))); 
             }
-            this.algProsessor.B[t][i] = tempSum*this.states[i].getEmissionProbability(this.getStateFromEmission(char));
+            this.algProsessor.B[t][i] = tempSum;
         }
     }
 
@@ -489,7 +490,7 @@ class HiddenMarkovModel extends MarkovModel{
         var char = this.algProsessor.observedString[this.algProsessor.t-1];
         for (var i in this.states){
             var emissionState = this.getStateFromEmission(this.algProsessor.observedString[0]);
-            this.algProsessor.B[this.algProsessor.t][i] = 1;
+            this.algProsessor.B[this.algProsessor.t][i] = new Big(1);
             // this.algProsessor.B[this.algProsessor.t][i] = this.states[i].getEmissionProbability(this.getStateFromEmission(char))
         }
     }
@@ -502,9 +503,11 @@ class HiddenMarkovModel extends MarkovModel{
         if (this.algProsessor.observedString == null){
             this.initGamma();
         } else if (this.algProsessor.t < -1) {
+            document.getElementById("algVarDropdown").value = this.AlgVars.A;
             this.runForward();
             this.algProsessor.t = -1;
         } else if (this.algProsessor.t < 0){
+            document.getElementById("algVarDropdown").value = this.AlgVars.B;
             this.runBackward();
             this.algProsessor.t = 0;
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
@@ -512,6 +515,8 @@ class HiddenMarkovModel extends MarkovModel{
             comp.disabled = false;
             comp.value = "";
         } else { // inductive step;
+            
+            document.getElementById("algVarDropdown").value = this.AlgVars.Y;
             this.inductiveGamma();
         }
     }
@@ -526,35 +531,33 @@ class HiddenMarkovModel extends MarkovModel{
     }
 
     runForward(){
-        document.getElementById("algVarDropdown").value = this.AlgVars.A;
-        this.InitForward();
+        this.initForward();
         for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
             this.inductiveFoward();
         }
     }
 
     runBackward(){
-        document.getElementById("algVarDropdown").value = this.AlgVars.B;
-        this.InitForwardBackward();
+        this.initBackward();
         for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
             this.inductiveBackward();
         }
     }
 
     inductiveGamma(){
-        document.getElementById("algVarDropdown").value = this.AlgVars.Y;
         
         this.algProsessor.t++;
         var t = this.algProsessor.t;
         this.algProsessor.Y[t] = [];
         var char = this.algProsessor.observedString[t-1];
         
-        var tempSum = 0;
-        for(i in this.states){
-            tempSum += this.algProsessor.A[t][i] * this.algProsessor.B[t][i];
+        var tempSum = new Big(0);
+        for(var i in this.states){
+            tempSum = tempSum.plus(Big(this.algProsessor.A[t][i]).times(this.algProsessor.B[t][i]));
         }
-        for(i in this.states){
-            this.algProsessor.Y[t][i] = (this.algProsessor.A[t][i] * this.algProsessor.B[t][i]) / tempSum;
+        for(var i in this.states){
+            var numerator = new Big(this.algProsessor.A[t][i]).times(this.algProsessor.B[t][i])
+            this.algProsessor.Y[t][i] = numerator.div(tempSum);
         }
     }
 
@@ -585,8 +588,7 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.D[this.algProsessor.t] = [];
         for (var i in this.states){
             var emissionState = this.getStateFromEmission(this.algProsessor.observedString[0]);
-            this.algProsessor.D[this.algProsessor.t][i] = this.initialProbabilityDistribution[i]*this.states[i].getEmissionProbability(emissionState);
-            this.algProsessor.D[this.algProsessor.t][i] = Math.round( this.algProsessor.D[this.algProsessor.t][i] * 10000 + Number.EPSILON ) / 10000;
+            this.algProsessor.D[this.algProsessor.t][i] = Big(this.initialProbabilityDistribution[i]).times(this.states[i].getEmissionProbability(emissionState));
         }
     }
 
@@ -603,14 +605,14 @@ class HiddenMarkovModel extends MarkovModel{
         var argMax = "";
         for (var j in this.states){
             for (var i in this.states){
-                var temp = this.algProsessor.D[this.algProsessor.t-1][i]*parseFloat(this.transitions[i][j].text);
+                var temp = new Big(this.algProsessor.D[this.algProsessor.t-1][i]).times(parseFloat(this.transitions[i][j].text));
                 if (temp > max){
                     max = temp;
                     argMax = i;
                 }
             }
 
-            this.algProsessor.D[this.algProsessor.t][j] = max*this.states[j].getEmissionProbability(this.getStateFromEmission(char));
+            this.algProsessor.D[this.algProsessor.t][j] = max.times(this.states[j].getEmissionProbability(this.getStateFromEmission(char)));
             this.algProsessor.P[this.algProsessor.t][j] = "" + this.states[argMax].text;
         }
     }
@@ -624,12 +626,15 @@ class HiddenMarkovModel extends MarkovModel{
         if (this.algProsessor.observedString == null){
             this.initBaumWelch();
         } else if (this.algProsessor.t < -2) {
+            document.getElementById("algVarDropdown").value = this.AlgVars.A;
             this.runForward();
             this.algProsessor.t = -2;
         } else if (this.algProsessor.t < -1){
+            document.getElementById("algVarDropdown").value = this.AlgVars.B;
             this.runBackward();
             this.algProsessor.t = -1;
         } else if (this.algProsessor.t < 0){
+            document.getElementById("algVarDropdown").value = this.AlgVars.Y;
             this.runGamma();
             this.algProsessor.t = 0;
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t+1){
@@ -638,24 +643,61 @@ class HiddenMarkovModel extends MarkovModel{
             comp.disabled = false;
             comp.value = "";
         } else { // inductive step;
+            document.getElementById("algVarDropdown").value = this.AlgVars.X;
             this.inductiveBaumWelch();
         }
     }
 
     updateModel(){
 
+        // var t= 1;
+        // var char = 'N';
+
+        // var bigSum = new Big('0');
+        // for (var i in this.states){
+        //     for (var j in this.states){
+        //         bigSum = bigSum.plus(this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j]);
+        //     }
+        // }
+
+        // var test =bigSum.toNumber();
+        
+        // var sum = 0;
+        // for (var i in this.states){
+        //     for (var j in this.states){
+        //         sum += this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j];
+        //     }
+        // }
+        // var sum2 = 0;
+        // for(i in this.states){
+        //     sum2 += this.algProsessor.A[t][i] * this.algProsessor.B[t][i];
+        // }
+        // var test1 = this.algProsessor.A[t][0] * this.algProsessor.B[t][0];
+        // var test2 = this.algProsessor.A[t][0] * parseFloat(this.transitions[0][0].text) * this.states[0].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][0] +
+        //             this.algProsessor.A[t][0] * parseFloat(this.transitions[0][1].text) * this.states[1].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][1];
+
+        // var fakeB = parseFloat(this.transitions[0][0].text) * this.states[0].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][0] +
+        //             parseFloat(this.transitions[0][1].text) * this.states[1].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][1];
+        
+        // var B = this.algProsessor.B[t][0].toNumber();
+
+
         var testXi = 0
         for(var t = 0; t < this.algProsessor.observedString.length-1; t++){
             for (var i in this.states){
-                testXi = 0;
+                testXi = new Big(0);
                 for (var j in this.states){
-                    testXi += this.algProsessor.X[t+1][i][j];
+                    testXi = testXi.plus(this.algProsessor.X[t+1][i][j]);
                 }
-                var testY = this.algProsessor.Y[t+1][i];
-                if (testXi != testY){
-                    this.algProsessor.Y[t+1][i] = testXi; // TODO terrible solution 
-                    //throw 'Xi and Gamma are not equal!'
-                } // TODO i think ill have to go over this by hand, there are many spaces i could have gone wrong.
+                var testY = this.algProsessor.Y[t+1][i].round(dp-4,0);
+                testXi = testXi.round(dp-4,0); // some small rounding errors, either way this is significant places so so little data lost.
+
+                if (!testXi.eq(testY)){
+                    var tes1 = testXi.toNumber();
+                    var tes2 = testY.toNumber();
+                    var diff = testY.minus(testXi);
+                    throw 'Xi and Gamma are not equal!'
+                } 
             }
 
         }
@@ -668,8 +710,13 @@ class HiddenMarkovModel extends MarkovModel{
 
         // π0i = γ1(i)
 
+        var sum = new Big(0);
         for(var i in this.states){
-            this.initialProbabilityDistribution[i] = this.algProsessor.Y[1][i].toString();
+            this.initialProbabilityDistribution[i] = removeZeros(this.algProsessor.Y[1][i].toFixed(6));
+            sum = sum.plus(this.initialProbabilityDistribution[i]);
+        }
+        if (!sum.eq(1)){
+            this.initialProbabilityDistribution[1] = Big(this.initialProbabilityDistribution[1]).plus(sum.minus(1));
         }
 
         //         m0i,j = ΣT−1t=1 ξt(i, j)/ΣT−1t γt(i)
@@ -679,40 +726,38 @@ class HiddenMarkovModel extends MarkovModel{
         for (var i in this.states){
             for (var j in this.states){
                 
-                xiSum = 0;
-                gammaSum = 0;
+                xiSum = new Big(0);
+                gammaSum = new Big(0);
                 for(var t = 0; t < this.algProsessor.observedString.length-1; t++){
-                    xiSum += this.algProsessor.X[t+1][i][j];
-                    gammaSum += this.algProsessor.Y[t+1][i];
+                    xiSum = xiSum.plus(this.algProsessor.X[t+1][i][j]);
+                    gammaSum = gammaSum.plus(this.algProsessor.Y[t+1][i]);
                 }
-                this.transitions[i][j].text = (xiSum/gammaSum).toString();
+                this.transitions[i][j].text = removeZeros(xiSum.div(gammaSum).toFixed(6));
             }
         } // TODO check for epsilon errors and make more efficent.
         
 
         //         e0j(k) = ΣT−1t=1 γt(i)/ΣT−1t=1 γt(i)
 
-        gammaSum = 0;
         var conditionalGammaSumm = 0;
         for (var i in this.states){
             for (var j in this.emissionStates){
 
-                conditionalGammaSumm = 0;
-                gammaSum = 0;
+                conditionalGammaSumm = new Big(0);
+                gammaSum = new Big(0);
                 for (var t = 0; t < this.algProsessor.observedString.length-1; t++){
-                    gammaSum += this.algProsessor.Y[t+1][i];
+                    gammaSum = gammaSum.plus(this.algProsessor.Y[t+1][i]);
                     if (this.algProsessor.observedString[t] == this.emissionStates[j].getEmissions()){
-                        conditionalGammaSumm += this.algProsessor.Y[t+1][i];
+                        conditionalGammaSumm = conditionalGammaSumm.plus(this.algProsessor.Y[t+1][i]);
                     }
                 }
-                this.transitions[i][j].text = (conditionalGammaSumm/gammaSum).toString();
+                this.transitions[i][j].text = removeZeros(conditionalGammaSumm.div(gammaSum).toFixed(6));
             }
         }
     }
 
     runGamma(){
         this.algProsessor.t = 0;
-        document.getElementById("algVarDropdown").value = this.AlgVars.Y;
         for (var i = 0; i < this.algProsessor.observedString.length; i++){
             this.inductiveGamma();
         }
@@ -727,24 +772,27 @@ class HiddenMarkovModel extends MarkovModel{
     }
 
     inductiveBaumWelch(){
-        
-        document.getElementById("algVarDropdown").value = this.AlgVars.X;
 
         this.algProsessor.t++
         var t = this.algProsessor.t;
         this.algProsessor.X[t] = [];
-        var char = this.algProsessor.observedString[t-1];
+        var char = this.algProsessor.observedString[t];
 
-        var sum = 0;
+        var sum = new Big(0);
         for (var i in this.states){
             for (var j in this.states){
-                sum += this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j];
+                sum = sum.plus(this.algProsessor.A[t][i].times(parseFloat(this.transitions[i][j].text)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char))).times(this.algProsessor.B[t+1][j]));
             }
         }
+        // for(i in this.states){
+        //     sum += this.algProsessor.A[t][i] * this.algProsessor.B[t][i];
+        // }
+
         for (var i in this.states){
             if (!this.algProsessor.X[t][i]){this.algProsessor.X[t][i] = [];}
             for (var j in this.states){
-                this.algProsessor.X[t][i][j] = (this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j])/sum;
+                var numerator = this.algProsessor.A[t][i].times(parseFloat(this.transitions[i][j].text)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char))).times(this.algProsessor.B[t+1][j])
+                this.algProsessor.X[t][i][j] = numerator.div(sum);
             }
         }
     }

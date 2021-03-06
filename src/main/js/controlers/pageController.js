@@ -130,7 +130,7 @@ window.onload = function() {
     var stateInitProb = document.getElementById("sInitalProability");
     stateInitProb.addEventListener('input', function(e){
         if (selectedObj instanceof State){
-            model.initialProbabilityDistribution[selectedObj.id] = validateProability(this.value);
+            model.initialProbabilityDistribution[selectedObj.id] = model.validateProbability(this.value);
             refresh();
         }
     });
@@ -148,7 +148,7 @@ window.onload = function() {
 
     var obserevedString = document.getElementById("algString");
     obserevedString.addEventListener('input', function(e){
-        var obsStr = model.validateObS(obserevedString.value);
+        var obsStr = model.validateObs(obserevedString.value);
         obserevedString.value = obsStr;
         refresh();
     });
@@ -165,30 +165,6 @@ window.onload = function() {
         refreshInfoPanels();
     };
 
-}
-
-validateProability = function(text){ // slower than original but handles pasting without disabling it.
-    if (text == ""){
-        return text;
-    }
-
-    if (text.charCodeAt(0) != 48){
-        if (text.charCodeAt(0) == 46){
-            return "0.";
-        }
-        return "";
-    }
-    if (text.charCodeAt(1) != 46){
-        return "0";
-    }
-    for (var i=2; i < text.length; i++){
-        var keyCode = text.charCodeAt(i);
-        if(!(keyCode >= 48 && keyCode <= 57)){
-            return text.substr(0, i);
-        }
-    }
-
-    return text;
 }
 
 test = function(){
@@ -336,7 +312,7 @@ function label(str){return "<label>" + str + "</label>";}
 function input(str,id){return "<input id=\"" + id + "\"  value=\"" + str + "\" oninput=\"trasitionChange('"+id+"',this)\">";}
 
 function trasitionChange(stateB,comp){
-    var str = validateProability(comp.value);
+    var str = model.validateProbability(comp.value);
     if (str != ""){
         if (model.transitions[selectedObj.id][stateB] == null){
             var state = model.getState(stateB);
@@ -506,10 +482,8 @@ function refreshInfoPanels(){
                     th(states[i].text);
             for (j = 1; j <= str.length; j++){
                 if(!values[j]) {values[j] = []};
-                if(values[j][i]==null) {values[j][i] = 0;};
-                console.log((values[j][i]))
-                console.log(!isNaN(values[j][i]))
-                table += td((isNaN(values[j][i]))? values[j][i] : Math.round( values[j][i] * 10000000000 + Number.EPSILON ) / 10000000000,j,i); 
+                if(values[j][i]==null) {values[j][i] = new Big(0);};
+                table += td((isNaN(values[j][i]))? values[j][i] : removeZeros(values[j][i].toPrecision(8)),j,i); 
             }
             table += "</tr>";
 
@@ -522,6 +496,12 @@ function refreshInfoPanels(){
         height = window.innerHeight * 0.20;
         
     }
+}
+
+function removeZeros(str){
+    var char = str.charAt(str.length-1)
+    if (str == "0" || (char != '0' && char != '.') || str.includes('e')){return str}
+    return removeZeros(str.substr(0,str.length-1));
 }
 
 function highlightTable(){

@@ -124,6 +124,7 @@ canvas {
 #tableWrapper table * {
   border: 1px solid#000000;
   background-color:rgba(200,200,200,0.2);
+  white-space: nowrap;
 }
 #tableWrapper table th {
     background-color: rgba(80,80,80,0.2);;

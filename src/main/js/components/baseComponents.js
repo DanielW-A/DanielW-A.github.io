@@ -105,6 +105,34 @@ class MarkovModel{
         this.saveState(temp);
         return this.processor.outPut;
     }
+
+    validateProbability(text){ // slower than original but handles pasting without disabling it.
+        if (text == ""){
+            return text;
+        }
+    
+        if (text.charCodeAt(0) != 48){
+            if (text.charCodeAt(0) == 46){
+                return "0.";
+            }
+            if (text.charCodeAt(0) == 49){
+                return "1";
+            }
+            return "";
+        }
+
+        if (text.charCodeAt(1) != 46){
+            return "0";
+        }
+        for (var i=2; i < text.length; i++){
+            var keyCode = text.charCodeAt(i);
+            if(!(keyCode >= 48 && keyCode <= 57)){
+                return text.substr(0, i);
+            }
+        }
+    
+        return text;
+    }
 }
 
 const LinkType = {
