@@ -14,20 +14,30 @@ function exportLatex(){
 }
 
 
-toggleAccordion = function(component){
-    refreshInfoPanels();
-    component.classList.toggle("active");
+function toggleAccordion(component){
     var panel = component.nextElementSibling;
-    if (panel.style.maxHeight) {
-        panel.style.maxHeight = null;
-    } else {
-        //closeAccordion(document.getElementById("sTransitionBtn"));
-        panel.style.maxHeight = panel.scrollHeight + "px";
-        if(component.id == "stateButton"){
-            document.getElementById("sTransitionBtn").click();
-            setTimeout("refreshAccordion(panel)",200);
-        }
-    }
+
+     if (panel.style.maxHeight) {
+        closeAccordion(component);
+     } else {
+        openAccordion(component);
+     }
+
+
+    // if (panel.style.maxHeight) {
+    //     panel.style.maxHeight = null;
+    //     setTimeout("refreshInfoPanels()",200);
+        
+    // } else {
+        
+    //     refreshInfoPanels();
+    //     //closeAccordion(document.getElementById("sTransitionBtn"));
+    //     panel.style.maxHeight = panel.scrollHeight + "px";
+    //     if(component.id == "stateButton"){
+    //         openAccordion(document.getElementById("sTransitionBtn"));
+    //         setTimeout("refreshAccordion(panel)",200);
+    //     }
+    // }
     try { // If there isnt an element in the position im checking then nothing needs to be done.
         if (component.parentElement.parentElement.previousElementSibling.className.includes('accordion')){
             component.parentElement.parentElement.style.maxHeight = component.parentElement.parentElement.scrollHeight +  panel.scrollHeight + "px";
@@ -39,22 +49,36 @@ toggleAccordion = function(component){
     
 }
 
-refreshAccordion =  function(panel){
+function refreshAccordion(panel){
+    panel = (panel)? panel : document.getElementById("statePanelInfo");
     if (panel.style.maxHeight){
         panel.style.maxHeight = panel.scrollHeight + "px";
     }
 }
 
 //pass the button that controles the accordion
-openAccordion = function(component){
-    if (component.nextElementSibling.style.maxHeight == ''){
-        component.click();
+function openAccordion(component){
+    
+    var panel = component.nextElementSibling;
+    component.classList.add("active");
+    if (!panel.style.maxHeight){
+        refreshInfoPanels();
+        panel.style.maxHeight = panel.scrollHeight + "px";
+
+        if(component.id == "stateButton"){
+            openAccordion(document.getElementById("sTransitionBtn"));
+            setTimeout("refreshAccordion()",200);
+        }
+    } else {
+        refreshAccordion(panel);
     }
 }
 
-closeAccordion = function(component){
-    if (component.nextElementSibling.style.maxHeight != ''){
-        component.click();
+function closeAccordion(component){
+    component.classList.remove("active");
+    if (component.nextElementSibling.style.maxHeight){
+        component.nextElementSibling.style.maxHeight = null;
+        setTimeout("refreshInfoPanels()",200);
     }
 }
 
@@ -135,13 +159,16 @@ window.onload = function() {
         }
     });
 
-    var stateTrasitions = document.getElementById("sInitalProability");
-    // stateTrasitions.addEventListener('input', function(e){
-    //    /// TODO
-    // });
-
     var AlgButton = document.getElementById("algButton");
     AlgButton.addEventListener("click", function() {
+        if (!model.validCheck()) { 
+            output.innerHTML = "There are unresolved errors";
+            refreshInfoPanels();
+            var panel = document.getElementById("errorPanelInfo");
+            panel.style.maxHeight = panel.scrollHeight + "px";
+            document.getElementById("errorButton").classList.add("active");
+            return;
+        }
         model.algStep(document.getElementById("algorithmDropdown").value);
         refresh();
     });
@@ -243,12 +270,12 @@ clear = function(){
     currentEmission = null;
 }
 
-var runner = null;
 run = function(steps,time){
-    if (runner != null){
+    if (running){
         selectedObj = null;
         currentEmission = null;
         resetCaret();
+        running = false;
         return;
     }
     var output = document.getElementById('outputString');
@@ -267,7 +294,7 @@ run = function(steps,time){
     selectedObj = null;
     clearInterval(caretTimer);
     caretVisible = false;
-
+    running = true;
     step();
 
 
@@ -279,7 +306,9 @@ run = function(steps,time){
 
 var currentEmission = null;
 function step() {
-    running = true;
+    if (!running){
+        return;
+    }
     
     var time = document.getElementById("stepSpeed").value;
     var steps = document.getElementById("stepCount").value;
@@ -346,7 +375,7 @@ function refreshInfoPanels(){
     document.getElementById("sInital").style.display = (selectedObj instanceof EmissionState)? "none" : "";
     document.getElementById("sTransition").style.display = (selectedObj instanceof EmissionState)? "none" : "";
 
-    if (selectedObj instanceof State && runner == null){
+    if (selectedObj instanceof State && !running){
         sIDText.value = selectedObj.id;
         sNameText.value = selectedObj.text;
         sEmissionText.value = selectedObj.emission;
@@ -357,7 +386,7 @@ function refreshInfoPanels(){
             if(!model.transitions[selectedObj.id]){model.transitions[selectedObj.id] = []};
             transStr += p(label((model.states[i].text == "")?i:model.states[i].text) + input((model.transitions[selectedObj.id][i] == null)? "" :model.transitions[selectedObj.id][i].text,i));
         }
-        if (model instanceof HiddenMarkovModel){
+        if (model instanceof HiddenMarkovModel){ // set a different colour add a scrole 
             if(!model.transitions[selectedObj.id]){model.transitions[selectedObj.id] = []};
             for (var i in model.emissionStates){
                 transStr += p(label((model.emissionStates[i].text == "")?i:model.emissionStates[i].text) + input((model.transitions[selectedObj.id][i] == null)? "" :model.transitions[selectedObj.id][i].text,i));
@@ -596,21 +625,30 @@ function tableCellMouseOver(e,comp,j,i){
         if (t == 1){
             str = forwardInital(t,i,s,output,A);
         } else {
-            str = forwardInduction(t,i,s,k,output,A);
+            str = forwardInduction(t,i,s,output,A);
         }
     } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.B){
         var t = j;
         var s = model.states[i];
+        for (var k in model.states){S++;}
         var output = document.getElementById("algString").value;
         var B = model.getBeta();
 
         if (t == output.length){
-            str = backwardInital(t,i,s,output,B)
+            str = backwardInital(t,i,s,output,B);
         } else {
-            str = backwardInduction(t,i,s,k,output,B);
+            str = backwardInduction(t,i,s,output,B);
         }
-    } else if (document.getElementById("algVarDropdown").value == model.AlgVars.G){
-        
+    } else if (model.algProsessor.type == model.AlgType.MOSTLIKELY || document.getElementById("algVarDropdown").value == model.AlgVars.Y){
+        var t = j;
+        var s = model.states[i];
+        for (var k in model.states){S++;}
+        var output = document.getElementById("algString").value;
+        var A = model.getAlpha();
+        var B = model.getBeta();
+        var G = model.getVar(model.AlgVars.Y);
+
+        str = gammaInduction(t,i,s,output,G,A,B);
     }
     
 

@@ -22,7 +22,9 @@ class LatentState extends State{
     }
 
     getEmissionProbability(emissionState){
-        if (emissionState instanceof EmissionState) {return parseFloat(model.transitions[this.id][emissionState.id].text);}
+        if (emissionState instanceof EmissionState) {
+            return (model.transitions[this.id][emissionState.id])?parseFloat(model.transitions[this.id][emissionState.id].text):0;
+        }
         for (i in model.transitions[this.id]) {
             if (model.transitions[this.id][i].endNode instanceof EmissionState){
                 if (model.transitions[this.id][i].endNode.getEmissions() == emissionState){
@@ -111,8 +113,9 @@ class HiddenMarkovModel extends MarkovModel{
     /////////////////////////////////////////////////
     // Editing the model
     /////////////////////////////////////////////////
-    addState(x,y) { //latent
-        var id = this.lastId++;
+    addState(x,y,id) { //latent
+        if (id){this.lastId = id+1;} 
+        else {id = this.lastId++;}
         this.states[id] =  new LatentState(x,y,id,this.nextColour());
         this.initialProbabilityDistribution[id] = 0;
         this.transitions[id] = {};
@@ -387,8 +390,12 @@ class HiddenMarkovModel extends MarkovModel{
         }
         return emissions;
     }
+    getTrasitionProability(i,j){
+        return (this.transitions[i][j])?parseFloat(this.transitions[i][j].text):0;
+    }
   
     algStep(type){
+        this.validCheck();
         this.currentAlg = type;
         if (type == this.AlgType.FORWARD){this.forwardStep();}
         else if (type === this.AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
@@ -428,7 +435,14 @@ class HiddenMarkovModel extends MarkovModel{
         for(var i in this.states){
             var tempSum = new Big(0);
             for(var j in this.states){
-                tempSum = tempSum.plus(Big(this.algProsessor.A[t-1][j]).times(parseFloat(this.transitions[j][i].text))); 
+                if (j == '15'){
+                    console.log("Here");
+                    var a = this.getTrasitionProability(j,i);
+                    var b = this.transitions[j][i];
+                    console.log("Here");
+
+                }
+                tempSum = tempSum.plus(Big(this.algProsessor.A[t-1][j]).times(this.getTrasitionProability(j,i))); 
             }
             this.algProsessor.A[t][i] = tempSum.times(this.states[i].getEmissionProbability(this.getStateFromEmission(char)));
         }
@@ -476,7 +490,7 @@ class HiddenMarkovModel extends MarkovModel{
         for(var i in this.states){
             var tempSum = new Big(0);
             for(var j in this.states){
-                tempSum = tempSum.plus(Big(this.algProsessor.B[t+1][j]).times(parseFloat(this.transitions[i][j].text)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char)))); 
+                tempSum = tempSum.plus(Big(this.algProsessor.B[t+1][j]).times(this.getTrasitionProability(i,j)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char)))); 
             }
             this.algProsessor.B[t][i] = tempSum;
         }
@@ -605,7 +619,7 @@ class HiddenMarkovModel extends MarkovModel{
         var argMax = "";
         for (var j in this.states){
             for (var i in this.states){
-                var temp = new Big(this.algProsessor.D[this.algProsessor.t-1][i]).times(parseFloat(this.transitions[i][j].text));
+                var temp = new Big(this.algProsessor.D[this.algProsessor.t-1][i]).times(this.getTrasitionProability(i,j));
                 if (temp > max){
                     max = temp;
                     argMax = i;
@@ -732,7 +746,15 @@ class HiddenMarkovModel extends MarkovModel{
                     xiSum = xiSum.plus(this.algProsessor.X[t+1][i][j]);
                     gammaSum = gammaSum.plus(this.algProsessor.Y[t+1][i]);
                 }
-                this.transitions[i][j].text = removeZeros(xiSum.div(gammaSum).toFixed(6));
+                if (gammaSum.eq(0) || xiSum.eq(0)){
+                    if(this.transitions[i][j]){this.delete(this.transitions[i][j])}
+                } else {
+                    if (!this.transitions[i][j]){
+                        throw "this shouldnt happen"
+                    }
+                    this.transitions[i][j].text = removeZeros(xiSum.div(gammaSum).toFixed(6));
+            
+                }
             }
         } // TODO check for epsilon errors and make more efficent.
         
@@ -741,17 +763,28 @@ class HiddenMarkovModel extends MarkovModel{
 
         var conditionalGammaSumm = 0;
         for (var i in this.states){
+            if (i == 3){
+                console.log("here");
+            }
             for (var j in this.emissionStates){
 
                 conditionalGammaSumm = new Big(0);
                 gammaSum = new Big(0);
-                for (var t = 0; t < this.algProsessor.observedString.length-1; t++){
+                for (var t = 0; t < this.algProsessor.observedString.length; t++){
                     gammaSum = gammaSum.plus(this.algProsessor.Y[t+1][i]);
                     if (this.algProsessor.observedString[t] == this.emissionStates[j].getEmissions()){
                         conditionalGammaSumm = conditionalGammaSumm.plus(this.algProsessor.Y[t+1][i]);
                     }
                 }
-                this.transitions[i][j].text = removeZeros(conditionalGammaSumm.div(gammaSum).toFixed(6));
+                if (gammaSum.eq(0) || conditionalGammaSumm.eq(0)){
+                    if(this.transitions[i][j]){this.delete(this.transitions[i][j])}
+                } else {
+                    if (!this.transitions[i][j]){
+                        throw "this shouldnt happen"
+                    }
+                    this.transitions[i][j].text = removeZeros(conditionalGammaSumm.div(gammaSum).toFixed(6));
+            
+                }
             }
         }
     }
@@ -781,7 +814,7 @@ class HiddenMarkovModel extends MarkovModel{
         var sum = new Big(0);
         for (var i in this.states){
             for (var j in this.states){
-                sum = sum.plus(this.algProsessor.A[t][i].times(parseFloat(this.transitions[i][j].text)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char))).times(this.algProsessor.B[t+1][j]));
+                sum = sum.plus(this.algProsessor.A[t][i].times(this.getTrasitionProability(i,j)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char))).times(this.algProsessor.B[t+1][j]));
             }
         }
         // for(i in this.states){
@@ -791,7 +824,7 @@ class HiddenMarkovModel extends MarkovModel{
         for (var i in this.states){
             if (!this.algProsessor.X[t][i]){this.algProsessor.X[t][i] = [];}
             for (var j in this.states){
-                var numerator = this.algProsessor.A[t][i].times(parseFloat(this.transitions[i][j].text)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char))).times(this.algProsessor.B[t+1][j])
+                var numerator = this.algProsessor.A[t][i].times(this.getTrasitionProability(i,j)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char))).times(this.algProsessor.B[t+1][j])
                 this.algProsessor.X[t][i][j] = numerator.div(sum);
             }
         }

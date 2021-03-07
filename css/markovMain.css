@@ -144,7 +144,7 @@ canvas {
 .hoverInfo{
     pointer-events: all;
     position: fixed;
-    background-color: green;
+    background-color: rgba(150,150,150,0.9);
     border: 1px solid;
     display: none;
     text-align: center;

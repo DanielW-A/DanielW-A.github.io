@@ -32,8 +32,13 @@ initCanvas = function() {
 		var mousePos = getMousePos(canvas,e);
 
         console.log(mousePos);
-		selectedObj = model.getElementAt(mousePos);
+		var oldSelectedObj = selectedObj;
+        selectedObj = model.getElementAt(mousePos);
 		if (selectedObj instanceof State){
+            if (!oldSelectedObj){
+                closeAccordion(document.getElementById("stateButton"));
+            }
+            refreshInfoPanels();
             openAccordion(document.getElementById("stateButton"));
             document.getElementById("sNameText").focus();
 		}
@@ -52,7 +57,7 @@ initCanvas = function() {
 			}
 		}
 		resetCaret();
-        refresh();
+        refreshComponents();
         
 		document.getElementById("hoverInfo").style.display = "none";
 		document.getElementById("algTable").style.color = "";

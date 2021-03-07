@@ -1,0 +1,3682 @@
+{
+	"type": "HiddenMarkovModel",
+	"states": {
+		"0": {
+			"x": 211,
+			"y": 223,
+			"id": 0,
+			"text": "s2",
+			"emissionProabilities": {},
+			"colour": "#0000FF"
+		},
+		"1": {
+			"x": 308,
+			"y": 268,
+			"id": 1,
+			"text": "s3",
+			"emissionProabilities": {},
+			"colour": "#FF0000"
+		},
+		"2": {
+			"x": 424,
+			"y": 174,
+			"id": 2,
+			"text": "s4",
+			"emissionProabilities": {},
+			"colour": "#FFA500"
+		},
+		"3": {
+			"x": 527,
+			"y": 295,
+			"id": 3,
+			"text": "s5",
+			"emissionProabilities": {},
+			"colour": "#9932CC"
+		},
+		"4": {
+			"x": 648,
+			"y": 313,
+			"id": 4,
+			"text": "s6",
+			"emissionProabilities": {},
+			"colour": "#A0522D"
+		},
+		"5": {
+			"x": 731,
+			"y": 118,
+			"id": 5,
+			"text": "s7",
+			"emissionProabilities": {},
+			"colour": "#008000"
+		},
+		"6": {
+			"x": 843,
+			"y": 331,
+			"id": 6,
+			"text": "s8",
+			"emissionProabilities": {},
+			"colour": "#0000FF"
+		},
+		"7": {
+			"x": 899,
+			"y": 154,
+			"id": 7,
+			"text": "s9",
+			"emissionProabilities": {},
+			"colour": "#FF0000"
+		},
+		"8": {
+			"x": 959,
+			"y": 213,
+			"id": 8,
+			"text": "s10",
+			"emissionProabilities": {},
+			"colour": "#FFA500"
+		},
+		"9": {
+			"x": 1077,
+			"y": 288,
+			"id": 9,
+			"text": "s11",
+			"emissionProabilities": {},
+			"colour": "#9932CC"
+		},
+		"10": {
+			"x": 1169,
+			"y": 164,
+			"id": 10,
+			"text": "s12",
+			"emissionProabilities": {},
+			"colour": "#A0522D"
+		},
+		"11": {
+			"x": 1203,
+			"y": 231,
+			"id": 11,
+			"text": "s13",
+			"emissionProabilities": {},
+			"colour": "#008000"
+		},
+		"12": {
+			"x": 1280,
+			"y": 285,
+			"id": 12,
+			"text": "s14",
+			"emissionProabilities": {},
+			"colour": "#0000FF"
+		},
+		"13": {
+			"x": 1372,
+			"y": 129,
+			"id": 13,
+			"text": "s15",
+			"emissionProabilities": {},
+			"colour": "#FF0000"
+		},
+		"14": {
+			"x": 1448,
+			"y": 204,
+			"id": 14,
+			"text": "s16",
+			"emissionProabilities": {},
+			"colour": "#FFA500"
+		},
+		"15": {
+			"x": 333,
+			"y": 114,
+			"id": 15,
+			"text": "s1",
+			"emissionProabilities": {},
+			"colour": "#9932CC"
+		},
+		"17": {
+			"x": 1481,
+			"y": 325,
+			"id": 17,
+			"text": "s17",
+			"emissionProabilities": {},
+			"colour": "#A0522D"
+		}
+	},
+	"transitions": {
+		"0": {
+			"0": {
+				"x": 211,
+				"y": 223,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 201.40318250999596,
+					"y": 194.69997031001054
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": -2.356194490192345,
+				"text": "0.9",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"1": {
+				"x": 259.5,
+				"y": 245.5,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 280.7859050914201,
+					"y": 255.37490442385467
+				},
+				"startPos": {
+					"x": 238.2140949085799,
+					"y": 235.62509557614533
+				},
+				"anchorAngle": -0.017697267257770367,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"2": {
+				"x": 317.5,
+				"y": 198.5,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 394.7636442670098,
+					"y": 180.72573441744845
+				},
+				"startPos": {
+					"x": 240.2363557329902,
+					"y": 216.27426558255155
+				},
+				"anchorAngle": -0.004464256057130025,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"3": {
+				"x": 369,
+				"y": 259,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 497.7496558108012,
+					"y": 288.33536461511926
+				},
+				"startPos": {
+					"x": 240.25034418919878,
+					"y": 229.66463538488074
+				},
+				"anchorAngle": 0.030385781635640596,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"4": {
+				"x": 429.5,
+				"y": 268,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 618.616679361921,
+					"y": 306.94851520039566
+				},
+				"startPos": {
+					"x": 240.38332063807897,
+					"y": 229.05148479960437
+				},
+				"anchorAngle": 0.03561438845687143,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"5": {
+				"x": 471,
+				"y": 170.5,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 701.5935051672344,
+					"y": 123.9378499181546
+				},
+				"startPos": {
+					"x": 240.40649483276562,
+					"y": 217.0621500818454
+				},
+				"anchorAngle": 0.028893690830077732,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"6": {
+				"x": 527,
+				"y": 277,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 813.0383459143235,
+					"y": 329.48701012079255
+				},
+				"startPos": {
+					"x": 239.7638468227051,
+					"y": 231.52238052918665
+				},
+				"anchorAngle": 0.02474742194802284,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"7": {
+				"x": 555,
+				"y": 188.5,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 869.6624712509384,
+					"y": 160.26912256187234
+				},
+				"startPos": {
+					"x": 240.99818618574542,
+					"y": 223.31830231405002
+				},
+				"anchorAngle": 0.008558992134938275,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"8": {
+				"x": 585,
+				"y": 218,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 929.0026805866606,
+					"y": 213.40103368199652
+				},
+				"startPos": {
+					"x": 240.9973194133393,
+					"y": 222.59896631800348
+				},
+				"anchorAngle": -0.00514134287325943,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"9": {
+				"x": 644,
+				"y": 255.5,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 1077,
+					"y": 288,
+					"id": 9,
+					"text": "s11",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1047.08414957128,
+					"y": 285.75458397474966
+				},
+				"startPos": {
+					"x": 240.91585042872003,
+					"y": 225.24541602525034
+				},
+				"anchorAngle": -0.008225431411598292,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"10": {
+				"x": 690,
+				"y": 193.5,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1139.056732376379,
+					"y": 165.84410520855286
+				},
+				"startPos": {
+					"x": 240.94326762362098,
+					"y": 221.15589479144714
+				},
+				"anchorAngle": -0.010822088317063536,
+				"text": "0.01",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e0": {
+				"x": 166.5,
+				"y": 345,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 122,
+					"y": 467,
+					"id": "e0",
+					"text": "A",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 132.94262295081967,
+					"y": 437
+				},
+				"startPos": {
+					"x": 200.71989028146137,
+					"y": 251.18367158790366
+				},
+				"anchorAngle": 1.9992825538406747,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e1": {
+				"x": 201,
+				"y": 390,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 191,
+					"y": 557,
+					"id": "e1",
+					"text": "B",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 192.79640718562874,
+					"y": 527
+				},
+				"startPos": {
+					"x": 209.20680481662896,
+					"y": 252.9463595622963
+				},
+				"anchorAngle": 1.629725070138327,
+				"text": "0.4",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e2": {
+				"x": 230.5,
+				"y": 346,
+				"startNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 250,
+					"y": 469,
+					"id": "e2",
+					"text": "C",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 245.2439024390244,
+					"y": 439
+				},
+				"startPos": {
+					"x": 215.6974316301484,
+					"y": 252.62995335939766
+				},
+				"anchorAngle": 1.4276767789122038,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"1": {
+			"1": {
+				"x": 308,
+				"y": 268,
+				"startNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 334.7971176265637,
+					"y": 281.22516817658067
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.9",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"10": {
+				"x": 738.5,
+				"y": 216,
+				"startNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1139.2164864901342,
+					"y": 167.5975440244205
+				},
+				"startPos": {
+					"x": 337.78351350986577,
+					"y": 264.4024559755795
+				},
+				"anchorAngle": -0.009864045047214652,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"14": {
+				"x": 878,
+				"y": 236,
+				"startNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 1448,
+					"y": 204,
+					"id": 14,
+					"text": "s16",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1418.047164626241,
+					"y": 205.68156268764963
+				},
+				"startPos": {
+					"x": 337.95283537375894,
+					"y": 266.3184373123504
+				},
+				"anchorAngle": -0.01512340206013772,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e2": {
+				"x": 279,
+				"y": 368.5,
+				"startNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 250,
+					"y": 469,
+					"id": "e2",
+					"text": "C",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 258.65671641791045,
+					"y": 439
+				},
+				"startPos": {
+					"x": 299.68263459090934,
+					"y": 296.82397322805554
+				},
+				"anchorAngle": 1.83089671055228,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e3": {
+				"x": 308,
+				"y": 412,
+				"startNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 308,
+					"y": 556,
+					"id": "e3",
+					"text": "D",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 308,
+					"y": 526
+				},
+				"startPos": {
+					"x": 308,
+					"y": 298
+				},
+				"anchorAngle": 1.640856909433352,
+				"text": "0.7",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e4": {
+				"x": 333.5,
+				"y": 360,
+				"startNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 359,
+					"y": 452,
+					"id": "e4",
+					"text": "E",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 350.6847826086956,
+					"y": 422
+				},
+				"startPos": {
+					"x": 316.0131074561988,
+					"y": 296.91003474393295
+				},
+				"anchorAngle": 1.4146699609515545,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"2": {
+			"2": {
+				"x": 424,
+				"y": 174,
+				"startNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 450.7971176265637,
+					"y": 187.22516817658064
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"11": {
+				"x": 813.5,
+				"y": 202.5,
+				"startNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 1173.0097297888763,
+					"y": 231.76096937235206
+				},
+				"startPos": {
+					"x": 453.5600788919527,
+					"y": 179.11831198965046
+				},
+				"anchorAngle": -0.012852762659266223,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e4": {
+				"x": 391.5,
+				"y": 313,
+				"startNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 359,
+					"y": 452,
+					"id": "e4",
+					"text": "E",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 366.0143884892086,
+					"y": 422
+				},
+				"startPos": {
+					"x": 417.16982503579953,
+					"y": 203.2121329238111
+				},
+				"anchorAngle": 1.8750922948917859,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e6": {
+				"x": 448.5,
+				"y": 311.5,
+				"startNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 473,
+					"y": 449,
+					"id": "e6",
+					"text": "G",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 467.6545454545454,
+					"y": 419
+				},
+				"startPos": {
+					"x": 429.2625673027184,
+					"y": 203.53481649484823
+				},
+				"anchorAngle": 1.407701034584656,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e5": {
+				"x": 426.5,
+				"y": 364.5,
+				"startNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 429,
+					"y": 555,
+					"id": "e5",
+					"text": "F",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 428.6062992125984,
+					"y": 525
+				},
+				"startPos": {
+					"x": 424.39366688969994,
+					"y": 203.997416995134
+				},
+				"anchorAngle": 1.6086331499892843,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e2": {
+				"x": 337,
+				"y": 321.5,
+				"startNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 250,
+					"y": 469,
+					"id": "e2",
+					"text": "C",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 267.6949152542373,
+					"y": 439
+				},
+				"startPos": {
+					"x": 408.75878302612006,
+					"y": 199.83999429479647
+				},
+				"anchorAngle": 2.215618438782787,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"3": {
+			"3": {
+				"x": 527,
+				"y": 295,
+				"startNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 553.7971176265637,
+					"y": 308.22516817658067
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"7": {
+				"x": 713,
+				"y": 224.5,
+				"startNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 873.3893557310413,
+					"y": 169.62137279851163
+				},
+				"startPos": {
+					"x": 556.5307406556066,
+					"y": 289.7210091577523
+				},
+				"anchorAngle": -0.010752273791101238,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"10": {
+				"x": 848,
+				"y": 229.5,
+				"startNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1139.6056951814169,
+					"y": 169.99790331967972
+				},
+				"startPos": {
+					"x": 556.394304818583,
+					"y": 289.0020966803203
+				},
+				"anchorAngle": -0.03360079441599321,
+				"text": "0.6",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e7": {
+				"x": 524.5,
+				"y": 417.5,
+				"startNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 522,
+					"y": 540,
+					"id": "e7",
+					"text": "H",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 522.6122448979592,
+					"y": 510
+				},
+				"startPos": {
+					"x": 526.3878825601245,
+					"y": 324.9937545539034
+				},
+				"anchorAngle": 1.687905071361761,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e8": {
+				"x": 558.5,
+				"y": 378,
+				"startNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 590,
+					"y": 461,
+					"id": "e8",
+					"text": "I",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 578.6144578313254,
+					"y": 431
+				},
+				"startPos": {
+					"x": 537.6447203519833,
+					"y": 323.0479933084004
+				},
+				"anchorAngle": 1.373400766945016,
+				"text": "0.9",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"4": {
+			"4": {
+				"x": 648,
+				"y": 313,
+				"startNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 674.7971176265637,
+					"y": 326.22516817658067
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"7": {
+				"x": 773.5,
+				"y": 233.5,
+				"startNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 878.2221593266721,
+					"y": 175.6348668459857
+				},
+				"startPos": {
+					"x": 676.4383221054206,
+					"y": 303.4580944084486
+				},
+				"anchorAngle": -0.03213179439340964,
+				"text": "0.25",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"10": {
+				"x": 908.5,
+				"y": 238.5,
+				"startNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1140.1563716314995,
+					"y": 172.2489455410875
+				},
+				"startPos": {
+					"x": 676.8436283685006,
+					"y": 304.7510544589125
+				},
+				"anchorAngle": -0.049660924238401793,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"13": {
+				"x": 1010,
+				"y": 221,
+				"startNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1372,
+					"y": 129,
+					"id": 13,
+					"text": "s15",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1342.9242939937772,
+					"y": 136.38940594633286
+				},
+				"startPos": {
+					"x": 677.0757060062228,
+					"y": 305.6105940536671
+				},
+				"anchorAngle": -0.04125487488096084,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e8": {
+				"x": 619,
+				"y": 387,
+				"startNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 590,
+					"y": 461,
+					"id": "e8",
+					"text": "I",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 601.7567567567568,
+					"y": 431
+				},
+				"startPos": {
+					"x": 637.0537890304817,
+					"y": 340.9317107498054
+				},
+				"anchorAngle": 1.7359450042095235,
+				"text": "0.9",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e9": {
+				"x": 638.5,
+				"y": 428.5,
+				"startNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 629,
+					"y": 544,
+					"id": "e9",
+					"text": "J",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 631.4675324675325,
+					"y": 514
+				},
+				"startPos": {
+					"x": 645.5407721444509,
+					"y": 342.89903340167524
+				},
+				"anchorAngle": 1.577065837125382,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e10": {
+				"x": 675,
+				"y": 383,
+				"startNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 702,
+					"y": 453,
+					"id": "e10",
+					"text": "K",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 690.4285714285714,
+					"y": 423
+				},
+				"startPos": {
+					"x": 658.7961620467871,
+					"y": 340.9900497509296
+				},
+				"anchorAngle": 1.2743756741700998,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"5": {
+			"5": {
+				"x": 731,
+				"y": 118,
+				"startNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 757.7971176265637,
+					"y": 131.22516817658064
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.9",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"6": {
+				"x": 787,
+				"y": 224.5,
+				"startNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 829.0378838676794,
+					"y": 304.44704699835455
+				},
+				"startPos": {
+					"x": 744.9621161323206,
+					"y": 144.55295300164545
+				},
+				"anchorAngle": 0,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e10": {
+				"x": 716.5,
+				"y": 285.5,
+				"startNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 702,
+					"y": 453,
+					"id": "e10",
+					"text": "K",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 704.5970149253732,
+					"y": 423
+				},
+				"startPos": {
+					"x": 728.4126615738168,
+					"y": 147.88821975073785
+				},
+				"anchorAngle": 1.628982997608501,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e11": {
+				"x": 741.5,
+				"y": 331.5,
+				"startNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 752,
+					"y": 545,
+					"id": "e11",
+					"text": "L",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 750.5245901639345,
+					"y": 515
+				},
+				"startPos": {
+					"x": 732.4736287759938,
+					"y": 147.96378511187402
+				},
+				"anchorAngle": 1.5233635768471065,
+				"text": "0.8",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e12": {
+				"x": 767.5,
+				"y": 289,
+				"startNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 804,
+					"y": 460,
+					"id": "e12",
+					"text": "M",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 797.5964912280701,
+					"y": 430
+				},
+				"startPos": {
+					"x": 737.2624362138381,
+					"y": 147.339084727844
+				},
+				"anchorAngle": 1.2094064901719894,
+				"text": "0.15",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"6": {
+			"0": {
+				"x": 527,
+				"y": 277,
+				"startNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 240.96165408567595,
+					"y": 224.51298987920745
+				},
+				"startPos": {
+					"x": 814.2361531772954,
+					"y": 322.4776194708129
+				},
+				"anchorAngle": -3.1168452316417703,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"6": {
+				"x": 843,
+				"y": 331,
+				"startNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 869.7971176265637,
+					"y": 344.22516817658067
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.7",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"9": {
+				"x": 960,
+				"y": 309.5,
+				"startNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 1077,
+					"y": 288,
+					"id": 9,
+					"text": "s11",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1047.4940423479138,
+					"y": 293.42203495316113
+				},
+				"startPos": {
+					"x": 872.5059576520861,
+					"y": 325.57796504683887
+				},
+				"anchorAngle": -0.08955572865056705,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"11": {
+				"x": 1023,
+				"y": 281,
+				"startNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1174.0944627111019,
+					"y": 239.02931591358285
+				},
+				"startPos": {
+					"x": 871.9055372888982,
+					"y": 322.9706840864172
+				},
+				"anchorAngle": -0.0655624651541107,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e12": {
+				"x": 823.5,
+				"y": 395.5,
+				"startNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 804,
+					"y": 460,
+					"id": "e12",
+					"text": "M",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 813.0697674418604,
+					"y": 430
+				},
+				"startPos": {
+					"x": 834.3183149617103,
+					"y": 359.71634281895825
+				},
+				"anchorAngle": 1.6364296201668511,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e13": {
+				"x": 841.5,
+				"y": 438.5,
+				"startNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 840,
+					"y": 546,
+					"id": "e13",
+					"text": "N",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 840.4186046511628,
+					"y": 516
+				},
+				"startPos": {
+					"x": 842.5814360940163,
+					"y": 360.99707992882986
+				},
+				"anchorAngle": 1.4977557614917774,
+				"text": "0.4",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e14": {
+				"x": 867,
+				"y": 390,
+				"startNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 891,
+					"y": 449,
+					"id": "e14",
+					"text": "O",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 878.7966101694915,
+					"y": 419
+				},
+				"startPos": {
+					"x": 854.3039438760579,
+					"y": 358.78886202864254
+				},
+				"anchorAngle": 1.204220936950718,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"7": {
+			"0": {
+				"x": 555,
+				"y": 188.5,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 240.33752874906168,
+					"y": 216.73087743812766
+				},
+				"startPos": {
+					"x": 869.001813814254,
+					"y": 153.68169768594998
+				},
+				"anchorAngle": -3.133033661454855,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"1": {
+				"x": 603.5,
+				"y": 211,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 308,
+					"y": 268,
+					"id": 1,
+					"text": "s3",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 337.4569891135652,
+					"y": 262.3179411862159
+				},
+				"startPos": {
+					"x": 869.5430108864348,
+					"y": 159.68205881378415
+				},
+				"anchorAngle": -3.127988050812018,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"2": {
+				"x": 661.5,
+				"y": 164,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 453.9734425089033,
+					"y": 172.7379603154146
+				},
+				"startPos": {
+					"x": 869.0265574910967,
+					"y": 155.2620396845854
+				},
+				"anchorAngle": -3.1269186545020102,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"3": {
+				"x": 713,
+				"y": 224.5,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 527,
+					"y": 295,
+					"id": 3,
+					"text": "s5",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 552.6106442689611,
+					"y": 279.37862720149246
+				},
+				"startPos": {
+					"x": 869.4692593443949,
+					"y": 159.27899084225805
+				},
+				"anchorAngle": 3.130840379798692,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"4": {
+				"x": 773.5,
+				"y": 233.5,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 648,
+					"y": 313,
+					"id": 4,
+					"text": "s6",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 668.7778406733262,
+					"y": 291.36513315401294
+				},
+				"startPos": {
+					"x": 870.5616778945787,
+					"y": 163.54190559154927
+				},
+				"anchorAngle": 3.1094608591963837,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"5": {
+				"x": 815,
+				"y": 136,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 760.3340724223223,
+					"y": 124.2858726619262
+				},
+				"startPos": {
+					"x": 869.6659275776777,
+					"y": 147.7141273380738
+				},
+				"anchorAngle": 3.0921823531815607,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"6": {
+				"x": 871,
+				"y": 242.5,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 843,
+					"y": 331,
+					"id": 6,
+					"text": "s8",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 852.0494073984845,
+					"y": 302.3974087583615
+				},
+				"startPos": {
+					"x": 889.9505926015155,
+					"y": 182.6025912416385
+				},
+				"anchorAngle": 3.0471377181947465,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"7": {
+				"x": 899,
+				"y": 154,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 925.7971176265637,
+					"y": 167.22516817658064
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e20": {
+				"x": 1027,
+				"y": 299.5,
+				"startNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 1155,
+					"y": 445,
+					"id": "e20",
+					"text": "U",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1128.6082474226805,
+					"y": 415
+				},
+				"startPos": {
+					"x": 918.81534681178,
+					"y": 176.5244762587031
+				},
+				"anchorAngle": 0.8889688890246997,
+				"text": "1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"8": {
+			"8": {
+				"x": 959,
+				"y": 213,
+				"startNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 985.7971176265637,
+					"y": 226.22516817658064
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"15": {
+				"x": 646,
+				"y": 163.5,
+				"startNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 333,
+					"y": 114,
+					"id": 15,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 362.63173666970556,
+					"y": 118.68616921773298
+				},
+				"startPos": {
+					"x": 929.3682633302944,
+					"y": 208.31383078226702
+				},
+				"anchorAngle": -2.99077105905144,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e14": {
+				"x": 925,
+				"y": 331,
+				"startNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 891,
+					"y": 449,
+					"id": "e14",
+					"text": "O",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 899.6440677966102,
+					"y": 419
+				},
+				"startPos": {
+					"x": 950.6938551396981,
+					"y": 241.8272086328122
+				},
+				"anchorAngle": 1.8899695673105679,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e15": {
+				"x": 949,
+				"y": 375,
+				"startNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 939,
+					"y": 537,
+					"id": "e15",
+					"text": "P",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 940.8518518518518,
+					"y": 507
+				},
+				"startPos": {
+					"x": 957.151666240637,
+					"y": 242.94300690167904
+				},
+				"anchorAngle": 1.656032344831104,
+				"text": "0.4",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e16": {
+				"x": 974.5,
+				"y": 325,
+				"startNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 990,
+					"y": 437,
+					"id": "e16",
+					"text": "Q",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 985.8482142857143,
+					"y": 407
+				},
+				"startPos": {
+					"x": 963.1125891506767,
+					"y": 242.71677321779293
+				},
+				"anchorAngle": 1.4321565896607384,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"9": {
+			"9": {
+				"x": 1077,
+				"y": 288,
+				"startNode": {
+					"x": 1077,
+					"y": 288,
+					"id": 9,
+					"text": "s11",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 1077,
+					"y": 288,
+					"id": 9,
+					"text": "s11",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 1103.7971176265637,
+					"y": 301.22516817658067
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.95",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"14": {
+				"x": 1262.5,
+				"y": 246,
+				"startNode": {
+					"x": 1077,
+					"y": 288,
+					"id": 9,
+					"text": "s11",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 1448,
+					"y": 204,
+					"id": 14,
+					"text": "s16",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1418.740601030792,
+					"y": 210.62476957793385
+				},
+				"startPos": {
+					"x": 1106.259398969208,
+					"y": 281.3752304220661
+				},
+				"anchorAngle": -0.22266094063636496,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e17": {
+				"x": 1050,
+				"y": 400.5,
+				"startNode": {
+					"x": 1077,
+					"y": 288,
+					"id": 9,
+					"text": "s11",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 1023,
+					"y": 513,
+					"id": "e17",
+					"text": "R",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1030.2,
+					"y": 483
+				},
+				"startPos": {
+					"x": 1069.9988114257403,
+					"y": 317.17161905941555
+				},
+				"anchorAngle": 1.872681944940374,
+				"text": "0.95",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e18": {
+				"x": 1070.5,
+				"y": 368.5,
+				"startNode": {
+					"x": 1077,
+					"y": 288,
+					"id": 9,
+					"text": "s11",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 1064,
+					"y": 449,
+					"id": "e18",
+					"text": "S",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1066.4223602484471,
+					"y": 419
+				},
+				"startPos": {
+					"x": 1074.5854980111108,
+					"y": 317.90267847778273
+				},
+				"anchorAngle": 1.6078164426688268,
+				"text": "0.05",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"10": {
+			"5": {
+				"x": 950,
+				"y": 141,
+				"startNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 760.8359092490521,
+					"y": 121.13345165629315
+				},
+				"startPos": {
+					"x": 1139.164090750948,
+					"y": 160.86654834370685
+				},
+				"anchorAngle": -3.0369534139280563,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"10": {
+				"x": 1169,
+				"y": 164,
+				"startNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 1195.7971176265637,
+					"y": 177.22516817658064
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"11": {
+				"x": 1186,
+				"y": 197.5,
+				"startNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1189.4241134941456,
+					"y": 204.24751776787508
+				},
+				"startPos": {
+					"x": 1182.5758865058544,
+					"y": 190.75248223212492
+				},
+				"anchorAngle": 0.8288490587889791,
+				"text": "0.6",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e18": {
+				"x": 1116.5,
+				"y": 306.5,
+				"startNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1064,
+					"y": 449,
+					"id": "e18",
+					"text": "S",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1075.0526315789473,
+					"y": 419
+				},
+				"startPos": {
+					"x": 1158.6288392351794,
+					"y": 192.15029350451331
+				},
+				"anchorAngle": 1.925619129695648,
+				"text": "0.4",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e19": {
+				"x": 1142.5,
+				"y": 339,
+				"startNode": {
+					"x": 1169,
+					"y": 164,
+					"id": 10,
+					"text": "s12",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1116,
+					"y": 514,
+					"id": "e19",
+					"text": "T",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1120.5428571428572,
+					"y": 484
+				},
+				"startPos": {
+					"x": 1164.5083491254302,
+					"y": 193.6618453981032
+				},
+				"anchorAngle": 1.7350182204155564,
+				"text": "0.6",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"11": {
+			"2": {
+				"x": 813.5,
+				"y": 202.5,
+				"startNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 453.9902702111237,
+					"y": 173.23903062764794
+				},
+				"startPos": {
+					"x": 1173.4399211080472,
+					"y": 225.88168801034954
+				},
+				"anchorAngle": -3.0934676102201437,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"7": {
+				"x": 1051,
+				"y": 192.5,
+				"startNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 928.081626738854,
+					"y": 161.36606993056498
+				},
+				"startPos": {
+					"x": 1173.918373261146,
+					"y": 223.63393006943502
+				},
+				"anchorAngle": -2.958938040675222,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"11": {
+				"x": 1203,
+				"y": 231,
+				"startNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 1229.7971176265637,
+					"y": 244.22516817658064
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"14": {
+				"x": 1325.5,
+				"y": 217.5,
+				"startNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 1448,
+					"y": 204,
+					"id": 14,
+					"text": "s16",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1418.180531341684,
+					"y": 207.2862271582634
+				},
+				"startPos": {
+					"x": 1232.819468658316,
+					"y": 227.7137728417366
+				},
+				"anchorAngle": -0.03402941174160484,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e20": {
+				"x": 1179,
+				"y": 338,
+				"startNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 1155,
+					"y": 445,
+					"id": "e20",
+					"text": "U",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1161.728971962617,
+					"y": 415
+				},
+				"startPos": {
+					"x": 1196.4341651627392,
+					"y": 260.2726803161209
+				},
+				"anchorAngle": 1.7690315170100226,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e21": {
+				"x": 1204,
+				"y": 371,
+				"startNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 1205,
+					"y": 511,
+					"id": "e21",
+					"text": "V",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1204.7857142857142,
+					"y": 481
+				},
+				"startPos": {
+					"x": 1203.2142802480225,
+					"y": 260.99923472316095
+				},
+				"anchorAngle": 1.595097097796002,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e22": {
+				"x": 1235.5,
+				"y": 333,
+				"startNode": {
+					"x": 1203,
+					"y": 231,
+					"id": 11,
+					"text": "s13",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"endNode": {
+					"x": 1268,
+					"y": 435,
+					"id": "e22",
+					"text": "W",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1258.4411764705883,
+					"y": 405
+				},
+				"startPos": {
+					"x": 1212.1076759456441,
+					"y": 259.58409066017555
+				},
+				"anchorAngle": 1.2623389332097488,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"12": {
+			"8": {
+				"x": 1119.5,
+				"y": 249,
+				"startNode": {
+					"x": 1280,
+					"y": 285,
+					"id": 12,
+					"text": "s14",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 959,
+					"y": 213,
+					"id": 8,
+					"text": "s10",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 988.272680316121,
+					"y": 219.56583483726075
+				},
+				"startPos": {
+					"x": 1250.7273196838792,
+					"y": 278.43416516273925
+				},
+				"anchorAngle": -2.92094547092945,
+				"text": "0.8",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"12": {
+				"x": 1280,
+				"y": 285,
+				"startNode": {
+					"x": 1280,
+					"y": 285,
+					"id": 12,
+					"text": "s14",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 1280,
+					"y": 285,
+					"id": 12,
+					"text": "s14",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 1306.7971176265637,
+					"y": 298.22516817658067
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e22": {
+				"x": 1274,
+				"y": 360,
+				"startNode": {
+					"x": 1280,
+					"y": 285,
+					"id": 12,
+					"text": "s14",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 1268,
+					"y": 435,
+					"id": "e22",
+					"text": "W",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1270.4,
+					"y": 405
+				},
+				"startPos": {
+					"x": 1277.6076433315134,
+					"y": 314.90445835608375
+				},
+				"anchorAngle": 1.7570191672060382,
+				"text": "1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"13": {
+			"12": {
+				"x": 1326,
+				"y": 207,
+				"startNode": {
+					"x": 1372,
+					"y": 129,
+					"id": 13,
+					"text": "s15",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 1280,
+					"y": 285,
+					"id": 12,
+					"text": "s14",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1295.2395505983288,
+					"y": 259.1590228984859
+				},
+				"startPos": {
+					"x": 1356.7604494016712,
+					"y": 154.84097710151408
+				},
+				"anchorAngle": 2.1036402144142854,
+				"text": "1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e24": {
+				"x": 1360.5,
+				"y": 290,
+				"startNode": {
+					"x": 1372,
+					"y": 129,
+					"id": 13,
+					"text": "s15",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 1349,
+					"y": 451,
+					"id": "e24",
+					"text": "Y",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1351.142857142857,
+					"y": 421
+				},
+				"startPos": {
+					"x": 1369.8625885003628,
+					"y": 158.92376099492205
+				},
+				"anchorAngle": 1.704184854083393,
+				"text": "1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"14": {
+			"17": {
+				"x": 1464.5,
+				"y": 264.5,
+				"startNode": {
+					"x": 1448,
+					"y": 204,
+					"id": 14,
+					"text": "s16",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 1481,
+					"y": 325,
+					"id": 17,
+					"text": "s17",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1473.1064778262366,
+					"y": 296.05708536286807
+				},
+				"startPos": {
+					"x": 1455.8935221737634,
+					"y": 232.94291463713196
+				},
+				"anchorAngle": 1.2543648711697701,
+				"text": "1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e23": {
+				"x": 1383.5,
+				"y": 361,
+				"startNode": {
+					"x": 1448,
+					"y": 204,
+					"id": 14,
+					"text": "s16",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 1319,
+					"y": 518,
+					"id": "e23",
+					"text": "X",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1331.3248407643312,
+					"y": 488
+				},
+				"startPos": {
+					"x": 1436.5997337783076,
+					"y": 231.7494852217936
+				},
+				"anchorAngle": 1.9611012556981497,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e25": {
+				"x": 1419.5,
+				"y": 361.5,
+				"startNode": {
+					"x": 1448,
+					"y": 204,
+					"id": 14,
+					"text": "s16",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"endNode": {
+					"x": 1391,
+					"y": 519,
+					"id": "e25",
+					"text": "Z",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1396.4285714285713,
+					"y": 489
+				},
+				"startPos": {
+					"x": 1442.6581798012937,
+					"y": 233.52058530864002
+				},
+				"anchorAngle": 1.7581166608206378,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"15": {
+			"0": {
+				"x": 272,
+				"y": 168.5,
+				"startNode": {
+					"x": 333,
+					"y": 114,
+					"id": 15,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 211,
+					"y": 223,
+					"id": 0,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 233.37162142471868,
+					"y": 203.01223987463658
+				},
+				"startPos": {
+					"x": 310.6283785752813,
+					"y": 133.98776012536342
+				},
+				"anchorAngle": 0.054889862594153814,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"2": {
+				"x": 378.5,
+				"y": 144,
+				"startNode": {
+					"x": 333,
+					"y": 114,
+					"id": 15,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 424,
+					"y": 174,
+					"id": 2,
+					"text": "s4",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 398.95412844036696,
+					"y": 157.4862385321101
+				},
+				"startPos": {
+					"x": 358.04587155963304,
+					"y": 130.5137614678899
+				},
+				"anchorAngle": 0.012697730226091093,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"5": {
+				"x": 532,
+				"y": 116,
+				"startNode": {
+					"x": 333,
+					"y": 114,
+					"id": 15,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 731,
+					"y": 118,
+					"id": 5,
+					"text": "s7",
+					"emissionProabilities": {},
+					"colour": "#008000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 701.001514998486,
+					"y": 117.698507688427
+				},
+				"startPos": {
+					"x": 362.99848500151404,
+					"y": 114.301492311573
+				},
+				"anchorAngle": 0.03277514440407577,
+				"text": "0.34",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"7": {
+				"x": 616,
+				"y": 134,
+				"startNode": {
+					"x": 333,
+					"y": 114,
+					"id": 15,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 899,
+					"y": 154,
+					"id": 7,
+					"text": "s9",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 869.0746371928508,
+					"y": 151.8851333705195
+				},
+				"startPos": {
+					"x": 362.9253628071492,
+					"y": 116.11486662948052
+				},
+				"anchorAngle": 0.013887995930967073,
+				"text": "0.24",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"14": {
+				"x": 890.5,
+				"y": 159,
+				"startNode": {
+					"x": 333,
+					"y": 114,
+					"id": 15,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 1448,
+					"y": 204,
+					"id": 14,
+					"text": "s16",
+					"emissionProabilities": {},
+					"colour": "#FFA500"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1418.0972547184358,
+					"y": 201.58632549296792
+				},
+				"startPos": {
+					"x": 362.9027452815641,
+					"y": 116.41367450703208
+				},
+				"anchorAngle": 0.0805428709951446,
+				"text": "0.12",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e0": {
+				"x": 227.5,
+				"y": 290.5,
+				"startNode": {
+					"x": 333,
+					"y": 114,
+					"id": 15,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#9932CC"
+				},
+				"endNode": {
+					"x": 122,
+					"y": 467,
+					"id": "e0",
+					"text": "A",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 139.93201133144476,
+					"y": 437
+				},
+				"startPos": {
+					"x": 317.6080591554854,
+					"y": 139.75049819011204
+				},
+				"anchorAngle": 2.5840039493220823,
+				"text": "1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"17": {
+			"17": {
+				"x": 1481,
+				"y": 325,
+				"startNode": {
+					"x": 1481,
+					"y": 325,
+					"id": 17,
+					"text": "s17",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1481,
+					"y": 325,
+					"id": 17,
+					"text": "s17",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 1508.3149522800034,
+					"y": 312.8804303569859
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": -0.8760580505981934,
+				"text": "1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e26": {
+				"x": 1457,
+				"y": 391.5,
+				"startNode": {
+					"x": 1481,
+					"y": 325,
+					"id": 17,
+					"text": "s17",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1433,
+					"y": 458,
+					"id": "e26",
+					"text": "0",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1443.827067669173,
+					"y": 428
+				},
+				"startPos": {
+					"x": 1470.8158799739376,
+					"y": 353.21849923888146
+				},
+				"anchorAngle": 1.788754540734496,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e27": {
+				"x": 1477.5,
+				"y": 420,
+				"startNode": {
+					"x": 1481,
+					"y": 325,
+					"id": 17,
+					"text": "s17",
+					"emissionProabilities": {},
+					"colour": "#A0522D"
+				},
+				"endNode": {
+					"x": 1474,
+					"y": 515,
+					"id": "e27",
+					"text": "@",
+					"emission": null
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 1475.1052631578948,
+					"y": 485
+				},
+				"startPos": {
+					"x": 1479.895486188698,
+					"y": 354.97966059248574
+				},
+				"anchorAngle": 1.6119495494363396,
+				"text": "0.5",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"e0": [],
+		"e1": [],
+		"e2": [],
+		"e3": [],
+		"e4": [],
+		"e5": [],
+		"e6": [],
+		"e7": [],
+		"e8": [],
+		"e9": [],
+		"e10": [],
+		"e11": [],
+		"e12": [],
+		"e13": [],
+		"e14": [],
+		"e15": [],
+		"e16": [],
+		"e17": [],
+		"e18": [],
+		"e19": [],
+		"e20": [],
+		"e21": [],
+		"e22": [],
+		"e23": [],
+		"e24": [],
+		"e25": [],
+		"e26": [],
+		"e27": []
+	},
+	"initialProbabilityDistribution": {
+		"0": 0,
+		"1": 0,
+		"2": 0,
+		"3": 0,
+		"4": 0,
+		"5": 0,
+		"6": 0,
+		"7": 0,
+		"8": 0,
+		"9": 0,
+		"10": 0,
+		"11": 0,
+		"12": 0,
+		"13": 0,
+		"14": 0,
+		"15": "1",
+		"16": 0,
+		"17": 0
+	},
+	"emissionStates": {
+		"e0": {
+			"x": 122,
+			"y": 467,
+			"id": "e0",
+			"text": "A",
+			"emission": null
+		},
+		"e1": {
+			"x": 191,
+			"y": 557,
+			"id": "e1",
+			"text": "B",
+			"emission": null
+		},
+		"e2": {
+			"x": 250,
+			"y": 469,
+			"id": "e2",
+			"text": "C",
+			"emission": null
+		},
+		"e3": {
+			"x": 308,
+			"y": 556,
+			"id": "e3",
+			"text": "D",
+			"emission": null
+		},
+		"e4": {
+			"x": 359,
+			"y": 452,
+			"id": "e4",
+			"text": "E",
+			"emission": null
+		},
+		"e5": {
+			"x": 429,
+			"y": 555,
+			"id": "e5",
+			"text": "F",
+			"emission": null
+		},
+		"e6": {
+			"x": 473,
+			"y": 449,
+			"id": "e6",
+			"text": "G",
+			"emission": null
+		},
+		"e7": {
+			"x": 522,
+			"y": 540,
+			"id": "e7",
+			"text": "H",
+			"emission": null
+		},
+		"e8": {
+			"x": 590,
+			"y": 461,
+			"id": "e8",
+			"text": "I",
+			"emission": null
+		},
+		"e9": {
+			"x": 629,
+			"y": 544,
+			"id": "e9",
+			"text": "J",
+			"emission": null
+		},
+		"e10": {
+			"x": 702,
+			"y": 453,
+			"id": "e10",
+			"text": "K",
+			"emission": null
+		},
+		"e11": {
+			"x": 752,
+			"y": 545,
+			"id": "e11",
+			"text": "L",
+			"emission": null
+		},
+		"e12": {
+			"x": 804,
+			"y": 460,
+			"id": "e12",
+			"text": "M",
+			"emission": null
+		},
+		"e13": {
+			"x": 840,
+			"y": 546,
+			"id": "e13",
+			"text": "N",
+			"emission": null
+		},
+		"e14": {
+			"x": 891,
+			"y": 449,
+			"id": "e14",
+			"text": "O",
+			"emission": null
+		},
+		"e15": {
+			"x": 939,
+			"y": 537,
+			"id": "e15",
+			"text": "P",
+			"emission": null
+		},
+		"e16": {
+			"x": 990,
+			"y": 437,
+			"id": "e16",
+			"text": "Q",
+			"emission": null
+		},
+		"e17": {
+			"x": 1023,
+			"y": 513,
+			"id": "e17",
+			"text": "R",
+			"emission": null
+		},
+		"e18": {
+			"x": 1064,
+			"y": 449,
+			"id": "e18",
+			"text": "S",
+			"emission": null
+		},
+		"e19": {
+			"x": 1116,
+			"y": 514,
+			"id": "e19",
+			"text": "T",
+			"emission": null
+		},
+		"e20": {
+			"x": 1155,
+			"y": 445,
+			"id": "e20",
+			"text": "U",
+			"emission": null
+		},
+		"e21": {
+			"x": 1205,
+			"y": 511,
+			"id": "e21",
+			"text": "V",
+			"emission": null
+		},
+		"e22": {
+			"x": 1268,
+			"y": 435,
+			"id": "e22",
+			"text": "W",
+			"emission": null
+		},
+		"e23": {
+			"x": 1319,
+			"y": 518,
+			"id": "e23",
+			"text": "X",
+			"emission": null
+		},
+		"e24": {
+			"x": 1349,
+			"y": 451,
+			"id": "e24",
+			"text": "Y",
+			"emission": null
+		},
+		"e25": {
+			"x": 1391,
+			"y": 519,
+			"id": "e25",
+			"text": "Z",
+			"emission": null
+		},
+		"e26": {
+			"x": 1433,
+			"y": 458,
+			"id": "e26",
+			"text": "0",
+			"emission": null
+		},
+		"e27": {
+			"x": 1474,
+			"y": 515,
+			"id": "e27",
+			"text": "@",
+			"emission": null
+		}
+	}
+}

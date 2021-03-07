@@ -7,6 +7,8 @@ const { default: Big } = require("big.js");
 // Markov Model
 ///////////////////////////////////////////////////
 
+const emissionStr = "NNCCDDNCDDCDNCNNND";
+
 test('Markov Model: valdate probability', () => {
     var model = new mm.markovChain();
     
@@ -427,7 +429,6 @@ test('Hidden Markov Model: Running the model', () => {
 test('Hidden Markov Model: Running Forward Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    var emissionStr = "NNCCDDNCDDCDNCNNND";
     var Alpha
 
     model.algProsessor.observedString = model.decodeEmissions(emissionStr);
@@ -456,7 +457,6 @@ test('Hidden Markov Model: Running Forward Algorithm', () => {
 test('Hidden Markov Model: Running Backward Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    var emissionStr = "NNCCDDNCDDCDNCNNND";
     var Beta;
 
     model.algProsessor.observedString = model.decodeEmissions(emissionStr);
@@ -483,7 +483,6 @@ test('Hidden Markov Model: Running Backward Algorithm', () => {
 test('Hidden Markov Model: Running Gamma Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    var emissionStr = "NNCCDDNCDDCDNCNNND";
     //TODO
 
 });
@@ -491,7 +490,6 @@ test('Hidden Markov Model: Running Gamma Algorithm', () => {
 test('Hidden Markov Model: Running Viterbi Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    var emissionStr = "NNCCDDNCDDCDNCNNND";
     //TODO
 
 });
@@ -499,7 +497,6 @@ test('Hidden Markov Model: Running Viterbi Algorithm', () => {
 test('Hidden Markov Model: Running Balm-Welch Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    var emissionStr = "NNCCDDNCDDCDNCNNND";
     //TODO
 
 });
@@ -507,21 +504,19 @@ test('Hidden Markov Model: Running Balm-Welch Algorithm', () => {
 test('Hidden Markov Model: Gamma and Balm-Welch Equal', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    
-    var emissionStr = "NNCCDDNCDDCDNCNNND";
 
     model.algProsessor.observedString = model.decodeEmissions(emissionStr);
 
     model.runForward();
     model.runBackward();
     model.runGamma();
-    for (var i = 1; i < emissionStr.length-2; i++){
+    for (var i = 1; i < emissionStr.length-1; i++){
         model.inductiveBaumWelch();
     }
 
 
     var testXi = 0
-    for(var t = 0; t < model.algProsessor.observedString.length-3; t++){
+    for(var t = 0; t < model.algProsessor.observedString.length-2; t++){
         for (var i in model.states){
             testXi = new Big(0);
             for (var j in model.states){
@@ -533,4 +528,23 @@ test('Hidden Markov Model: Gamma and Balm-Welch Equal', () => {
             expect(testXi.eq(testY)).toBeTruthy();
         }
     }
+});
+
+/////////////////////////////////////////////////////////////
+// Large HMM
+/////////////////////////////////////////////////////////////
+
+test('Hidden Markov Model: large model', () => {
+    var model = new mm.hiddenMarkovModel();
+
+    var fs = require('fs');
+    
+
+    var data = fs.readFileSync('scr/test/js/test.json', 'utf8');
+
+                    console.log(data);
+                    mm.decodeJSON(data);
+
+                    expect(model.states.length).toBeGreaterThan(0);
+
 });

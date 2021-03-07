@@ -46,7 +46,7 @@ function decodeJSON(str){
 
     for (var i in obj.states){
         var oldState = obj.states[i];
-        var state = model.addState(oldState.x,oldState.y);
+        var state = model.addState(oldState.x,oldState.y,oldState.id);
         state.text = oldState.text;
         model.initialProbabilityDistribution[i] = obj.initialProbabilityDistribution[i];
     }
