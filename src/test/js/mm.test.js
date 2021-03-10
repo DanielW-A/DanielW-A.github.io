@@ -534,17 +534,23 @@ test('Hidden Markov Model: Gamma and Balm-Welch Equal', () => {
 // Large HMM
 /////////////////////////////////////////////////////////////
 
-test('Hidden Markov Model: large model', () => {
+test('Hidden Markov Model: large model', done  => {
     var model = new mm.hiddenMarkovModel();
 
     var fs = require('fs');
     
 
-    var data = fs.readFileSync('scr/test/js/test.json', 'utf8');
+    fs.readFile('src/test/js/test.json', function (err, data) {
+                    if (err) throw err;
 
-                    console.log(data);
-                    mm.decodeJSON(data);
+                    JSON.parse(data);
+                    model.createModelOn(JSON.parse(data));
 
-                    expect(model.states.length).toBeGreaterThan(0);
+                    expect(Object.keys(model.states).length).toBeGreaterThan(0);
+                    expect(Object.keys(model.emissionStates).length).toBeGreaterThan(0);
+                    expect(Object.keys(model.transitions).length).toBeGreaterThan(0);
+                    expect(model.validCheck()).toBeTruthy();
+                    done();
+    });
 
 });

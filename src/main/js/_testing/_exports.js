@@ -2,4 +2,3 @@
 module.exports.markovChain = MarkovChain;
 module.exports.tempLink = TempLink;
 module.exports.hiddenMarkovModel =  HiddenMarkovModel;
-// module.exports.decodeJSON = decodeJSON();

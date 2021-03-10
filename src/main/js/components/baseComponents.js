@@ -133,6 +133,36 @@ class MarkovModel{
     
         return text;
     }
+
+    createModelOn(obj){
+    
+        for (var i in obj.states){
+            var oldState = obj.states[i];
+            var state = this.addState(oldState.x,oldState.y,oldState.id);
+            state.text = oldState.text;
+            this.initialProbabilityDistribution[i] = obj.initialProbabilityDistribution[i];
+        }
+        
+        if (this instanceof HiddenMarkovModel){
+            for ( var i in obj.emissionStates){
+                var oldEmmisisonState = obj.emissionStates[i];
+                var emissionState = model.addEmissionState(oldEmmisisonState.x,oldEmmisisonState.y);
+                emissionState.text = oldEmmisisonState.text;
+                emissionState.emission = oldEmmisisonState.emission;
+            }
+        }
+        
+        for (var i in obj.transitions){
+            for (var j in obj.transitions[i]){
+                var oldTrans = obj.transitions[i][j];
+                var trans = model.addTransistion(new TempLink(model.states[oldTrans.startNode.id],{x : oldTrans.endNode.x, y :oldTrans.endNode.y}));
+                trans.text = oldTrans.text;
+                trans.anchorAngle = oldTrans.anchorAngle; 
+            }
+        }
+    
+    
+    }
 }
 
 const LinkType = {
@@ -141,7 +171,7 @@ const LinkType = {
     SELF: 'self'
 }
 
-const colours = ["#0000FF","#FF0000","#FFA500","#9932CC","#A0522D","#008000"]; //TODO (make it a multiple of 6)
+const colours = ["#0000FF","#FF0000","#FFA500","#9932CC","#A0522D","#008000","#6D6656","#0BBB1B","#532233","#897EF1","#A41AB6","#117509"]; //(make it a multiple of 6)
 const nodeRadius = 30; 
 const mousePadding = 5;
 
@@ -217,7 +247,6 @@ class Link extends viewable {
 
     setAnchorangle(mousePos){
         this.anchorAngle = Math.atan2(mousePos.y - this.startNode.y, mousePos.x - this.startNode.x) + 0; //this.mouseOffsetAngle;
-        console.log(this.anchorAngle);
         if(this.anchorAngle < -Math.PI) this.anchorAngle += 2 * Math.PI;
 	    if(this.anchorAngle > Math.PI) this.anchorAngle -= 2 * Math.PI;
     }

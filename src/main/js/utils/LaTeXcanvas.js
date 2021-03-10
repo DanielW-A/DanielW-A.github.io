@@ -12,6 +12,7 @@ function ExportAsLaTeX() {
 			'\\begin{document}\n' +
 			'\n' +
 			'\\begin{center}\n' +
+            '\\hspace*{-5em}' +
 			'\\begin{tikzpicture}[scale=0.25, every node/.style={scale=0.8}]\n' +
 			'\\tikzstyle{every node}+=[inner sep=0pt]\n' +
 			this._texData +

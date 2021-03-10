@@ -52,7 +52,22 @@ function toggleAccordion(component){
 function refreshAccordion(panel){
     panel = (panel)? panel : document.getElementById("statePanelInfo");
     if (panel.style.maxHeight){
-        panel.style.maxHeight = panel.scrollHeight + "px";
+        var informationPanel = document.getElementById("informationPanel");
+        if(panel.id == "statePanelInfo"){
+            informationPanel.scrollHeight
+            closeAccordion(document.getElementById("sTransitionBtn"));
+            panel.style.maxHeight =  window.innerHeight - (informationPanel.scrollHeight)+ "px";
+            openAccordion(document.getElementById("sTransitionBtn"));
+            // setTimeout("refreshAccordion()",200);
+            return;
+        }
+        if (informationPanel.scrollHeight + panel.scrollHeight > window.innerHeight){
+            panel.style.maxHeight =  window.innerHeight - informationPanel.scrollHeight + "px";
+            panel.style.overflow = "auto";
+        } else {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+
+        }
     }
 }
 
@@ -63,14 +78,27 @@ function openAccordion(component){
     component.classList.add("active");
     if (!panel.style.maxHeight){
         refreshInfoPanels();
-        panel.style.maxHeight = panel.scrollHeight + "px";
-
+        var informationPanel = document.getElementById("informationPanel");
         if(component.id == "stateButton"){
-            openAccordion(document.getElementById("sTransitionBtn"));
-            setTimeout("refreshAccordion()",200);
+            informationPanel.scrollHeight
+            closeAccordion(document.getElementById("sTransitionBtn"));
+            panel.style.maxHeight =  window.innerHeight - (informationPanel.scrollHeight)+ "px";
+            // openAccordion(document.getElementById("sTransitionBtn"));
+            setTimeout("openAccordion(document.getElementById(\"sTransitionBtn\"))",50);
+            return;
         }
+        if (informationPanel.scrollHeight + panel.scrollHeight > window.innerHeight){
+            panel.style.maxHeight =  window.innerHeight - informationPanel.scrollHeight + "px";
+            panel.style.overflow = "auto";
+        } else {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+
+        }
+
+
+        
     } else {
-        refreshAccordion(panel);
+        // refreshAccordion(panel);
     }
 }
 
@@ -78,6 +106,9 @@ function closeAccordion(component){
     component.classList.remove("active");
     if (component.nextElementSibling.style.maxHeight){
         component.nextElementSibling.style.maxHeight = null;
+        if(component.id == "stateButton"){
+            closeAccordion(document.getElementById("sTransitionBtn"));
+        }
         setTimeout("refreshInfoPanels()",200);
     }
 }
@@ -337,7 +368,9 @@ function step() {
 }
 
 
-function label(str){return "<label>" + str + "</label>";}
+function label(str,colour){
+    var style =  (colour != null)?"style=\"color:" + colour + "\"":""
+    return "<label "+ style + ">" + str + "</label>";}
 function input(str,id){return "<input id=\"" + id + "\"  value=\"" + str + "\" oninput=\"trasitionChange('"+id+"',this)\">";}
 
 function trasitionChange(stateB,comp){
@@ -386,10 +419,10 @@ function refreshInfoPanels(){
             if(!model.transitions[selectedObj.id]){model.transitions[selectedObj.id] = []};
             transStr += p(label((model.states[i].text == "")?i:model.states[i].text) + input((model.transitions[selectedObj.id][i] == null)? "" :model.transitions[selectedObj.id][i].text,i));
         }
-        if (model instanceof HiddenMarkovModel){ // set a different colour add a scrole 
+        if (model instanceof HiddenMarkovModel){
             if(!model.transitions[selectedObj.id]){model.transitions[selectedObj.id] = []};
             for (var i in model.emissionStates){
-                transStr += p(label((model.emissionStates[i].text == "")?i:model.emissionStates[i].text) + input((model.transitions[selectedObj.id][i] == null)? "" :model.transitions[selectedObj.id][i].text,i));
+                transStr += p(label((model.emissionStates[i].text == "")?i:model.emissionStates[i].text,"red") + input((model.transitions[selectedObj.id][i] == null)? "" :model.transitions[selectedObj.id][i].text,i));
             }
         }
         sTransitionForm.innerHTML = transStr;

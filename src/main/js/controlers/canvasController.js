@@ -160,6 +160,8 @@ document.onkeydown = function(e) {
 		return true;
     } else if(key == "Escape") { 
 		selectedObj = null;
+        
+        closeAccordion(document.getElementById("stateButton"));
 		refresh();
 			
 	} else if(key == "Backspace") {

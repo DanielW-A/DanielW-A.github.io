@@ -1,4 +1,4 @@
-function save(){
+function saveToJSON(){
 
     var myObj = {
         type: model.constructor.name,
@@ -17,6 +17,27 @@ function load(){
     console.log("test");
 }
 
+function decodeJSON(str){
+    var obj = JSON.parse(str);
+    if (!(model.constructor.name === obj.type)){
+        if (model instanceof HiddenMarkovModel){
+            model = new MarkovChain();
+            document.getElementById("markovChainBtn").disabled = true;
+            document.getElementById("hiddenMarkovModelBtn").disabled = false;
+        } else {
+            model = new HiddenMarkovModel();
+            document.getElementById("markovChainBtn").disabled = false;
+            document.getElementById("hiddenMarkovModelBtn").disabled = true;
+        }
+    } else {
+        clear();
+    }
+    model.createModelOn(obj);
+
+    initModelUI();
+    refresh();
+}
+
 function loadfile(){
     
     const curFiles = document.getElementById("loadInput").files;
@@ -31,51 +52,7 @@ function loadfile(){
     }
 }
 
-function decodeJSON(str){
-    var obj = JSON.parse(str);
-
-    if (!(model.constructor.name === obj.type)){
-        if (model instanceof HiddenMarkovModel){
-            model = new MarkovChain();
-        } else {
-            model = new HiddenMarkovModel();
-        }
-    }
-    initModelUI();
-    refresh();
-
-    for (var i in obj.states){
-        var oldState = obj.states[i];
-        var state = model.addState(oldState.x,oldState.y,oldState.id);
-        state.text = oldState.text;
-        model.initialProbabilityDistribution[i] = obj.initialProbabilityDistribution[i];
-    }
-    
-    if (model instanceof HiddenMarkovModel){
-        for ( var i in obj.emissionStates){
-            var oldEmmisisonState = obj.emissionStates[i];
-            var emissionState = model.addEmissionState(oldEmmisisonState.x,oldEmmisisonState.y);
-            emissionState.text = oldEmmisisonState.text;
-            emissionState.emission = oldEmmisisonState.emission;
-        }
-    }
-    
-    for (var i in obj.transitions){
-        for (var j in obj.transitions[i]){
-            var oldTrans = obj.transitions[i][j];
-            var trans = model.addTransistion(new TempLink(model.states[oldTrans.startNode.id],{x : oldTrans.endNode.x, y :oldTrans.endNode.y}));
-            trans.text = oldTrans.text;
-            trans.anchorAngle = oldTrans.anchorAngle; 
-        }
-    }
-
-    
-    initModelUI();
-    refresh();
-
-}
-
-function download(filename, text) {
+function download(filename, text) { // not just used for JSON
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
