@@ -7,7 +7,7 @@ const { default: Big } = require("big.js");
 // Markov Model
 ///////////////////////////////////////////////////
 
-const emissionStr = "NNCCDDNCDDCDNCNNND";
+const emissionStr = "NNCNDDCDDNN";
 
 test('Markov Model: valdate probability', () => {
     var model = new mm.markovChain();
@@ -447,6 +447,22 @@ test('Hidden Markov Model: Running Forward Algorithm', () => {
     }
 
     Alpha = model.algProsessor.A;
+
+    
+    expect(Alpha[2][0].toString()).toEqual("0.113");
+    expect(Alpha[2][1].toString()).toEqual("0.0114");
+    
+    expect(Alpha[3][0].toString()).toEqual("0.033464");
+    expect(Alpha[3][1].toString()).toEqual("0.012222");
+    
+    expect(Alpha[4][0].toString()).toEqual("0.0141568");
+    expect(Alpha[4][1].toString()).toEqual("0.00173724");
+    
+    expect(Alpha[9][0].toString()).toEqual("0.000007702635924352");
+    expect(Alpha[9][1].toString()).toEqual("0.000056182951577088");
+    
+    expect(Alpha[11][0].toString()).toEqual("0.000005596790745600448");
+    expect(Alpha[11][1].toString()).toEqual("6.340987570095744e-7");
 
     expect(Alpha != null);
 
