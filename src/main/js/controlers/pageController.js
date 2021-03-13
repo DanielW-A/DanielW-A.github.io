@@ -113,7 +113,16 @@ function closeAccordion(component){
     }
 }
 
+function performanceTest(){
+    var t0 = performance.now()
+    
+    for (var i = 0; i < 1000 ; i ++){
+        refresh();
+    }
 
+    var t1 = performance.now()
+    console.log("refresh took " + (t1 - t0) + " milliseconds.")
+};
 
 window.onload = function() {
     initCanvas();
@@ -129,6 +138,9 @@ window.onload = function() {
     }
 
     // buttons
+    document.getElementById("performance").addEventListener("click", function(){
+        performanceTest();
+    }); 
     document.getElementById("saveBtn").addEventListener("click", function() {
         save();
     });
