@@ -67,67 +67,109 @@ const viterbiDesc = p("This is used to calculate the most likely sequence of  in
 
 function forwardInital(t,i,s,output,A){
     equType = "init";
-    str =  "<div id=\"init1\">" + span(1,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = (";
+    str =  "<div id=\"init1\">" + span(1,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = (";
     str += span(1,2,t,i,null,"\\(\\pi(e_" + i + ")\\)");
-    str +=  ")" + span(1,4,t,i,model.getEmmisionState(output.charAt(t-1)),"\\(e_{"+s.text+"} ("+output.charAt(t-1)+")\\)") + "</div>";
+    str +=  ")" + span(1,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\(e_{"+s.text+"} ("+output.charAt(t-1)+")\\)") + "</div>";
 
-    str +=  "<div id=\"init2\">" + span(2,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\("+A[t][i]+"\\)") + " = (";
+    str +=  "<div id=\"init2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(A[t][i].toPrecision(6))+"\\)") + " = (";
     str += span(2,2,t,i,null,"\\("+model.initialProbabilityDistribution[i]+"\\)");
-    str +=  ")" + span(2,4,t,i,model.getEmmisionState(output.charAt(t-1)),"\\("+ s.getEmmisionProbability(output.charAt(t-1))+"\\)") + "</div>";
+    str +=  ")" + span(2,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+ s.getEmissionProbability(output.charAt(t-1))+"\\)") + "</div>";
     return str;
 }
-function forwardInduction(t,i,s,k,output,A){
+function forwardInduction(t,i,s,output,A){
     equType = "equ";
-    str = "<div id=\"equ1\">" + span(1,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = (";
+    str = "<div id=\"equ1\">" + span(1,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = (";
     for (var k in model.states){
-        str += span(1,2+""+k,t-1,k,model.getEmmisionState(output.charAt(t-2)),"\\(\\alpha_{"+(t-1)+"} ("+model.states[k].text+")\\)");
+        str += span(1,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\(\\alpha_{"+(t-1)+"} ("+model.states[k].text+")\\)");
         str += span(1,3+""+k,t-1,k,i,"\\(m_{"+model.states[k].text+","+s.text+"} \\)");
         str += " + ";
     } 
     str = str.substr(0, str.length - 3);
-    str +=  ")" + span(1,4,t,i,model.getEmmisionState(output.charAt(t-1)),"\\(e_{"+s.text+"} ("+output.charAt(t-1)+")\\)") + "</div>";
+    str +=  ")" + span(1,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\(e_{"+s.text+"} ("+output.charAt(t-1)+")\\)") + "</div>";
 
-    str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\("+A[t][i]+"\\)") + " = (";
+    str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(A[t][i].toPrecision(6))+"\\)") + " = (";
     for (var k in model.states){
-        str += span(2,2+""+k,t-1,k,model.getEmmisionState(output.charAt(t-2)),"\\("+A[t-1][k]+"\\)");
+        str += span(2,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\("+A[t-1][k]+"\\)") + '*';
         str += span(2,3+""+k,t-1,k,i,"\\("+model.transitions[k][i].text+"\\)");
         str += " + ";
     }
     str = str.substr(0, str.length - 3);
-    str +=  ")" + span(2,4,t,i,model.getEmmisionState(output.charAt(t-1)),"\\("+ s.getEmmisionProbability(output.charAt(t-1))+"\\)") + "</div>";
+    str +=  ")" + span(2,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+ s.getEmissionProbability(output.charAt(t-1))+"\\)") + "</div>";
     return str;
 }
 function backwardInital(t,i,s,output,B){
     equType = "init";
-    str =  "<div id=\"init1\">" + span(1,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = 1" + "</div>";
+    str =  "<div id=\"init1\">" + span(1,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = 1" + "</div>";
 
-    str +=  "<div id=\"init2\">" + span(2,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\("+B[t][i]+"\\)") + " = 1" + "</div>";
+    str +=  "<div id=\"init2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(B[t][i].toPrecision(6))+"\\)") + " = 1" + "</div>";
     return str;
 }
-function backwardInduction(t,i,s,k,output,B){
+function backwardInduction(t,i,s,output,B){
     equType = "equ";
-    str = "<div id=\"equ1\">" + span(1,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\(\\beta_{"+t+"}("+s.text+")\\)") + " = (";
+    str = "<div id=\"equ1\">" + span(1,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\(\\beta_{"+t+"}("+s.text+")\\)") + " = (";
     for (var k in model.states){
-        str += span(1,2+""+k,t+1,k,model.getEmmisionState(output.charAt(t)),"\\(\\beta_{"+(t+1)+"} ("+model.states[k].text+")\\)");
+        str += span(1,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\(\\beta_{"+(t+1)+"} ("+model.states[k].text+")\\)");
         str += span(1,3+""+k,t+1,i,k,"\\(m_{"+s.text+","+model.states[k].text+"} \\)");
+        str += span(1,4+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\(e_{"+model.states[k].text+"} ("+output.charAt(t)+")\\)");
         str += " + ";
     } 
     str = str.substr(0, str.length - 3);
-    str +=  ")" + span(1,4,t,i,model.getEmmisionState(output.charAt(t-1)),"\\(e_{"+s.text+"} ("+output.charAt(t-1)+")\\)") + "</div>";
+    str +=  ")" + "</div>";
 
-    str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmmisionState(output.charAt(t-1)),"\\("+B[t][i]+"\\)") + " = (";
+    str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(B[t][i].toPrecision(6))+"\\)") + " = (";
     for (var k in model.states){
-        str += span(2,2+""+k,t+1,k,model.getEmmisionState(output.charAt(t)),"\\("+B[t+1][k]+"\\)");
-        str += span(2,3+""+k,t+1,i,k,"\\("+model.transitions[i][k].text+"\\)");
+        str += span(2,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+B[t+1][k]+"\\)") + '*';
+        str += span(2,3+""+k,t+1,i,k,"\\("+model.transitions[i][k].text+"\\)") + '*';
+        str += span(2,4+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+ model.states[k].getEmissionProbability(output.charAt(t))+"\\)");
         str += " + ";
     }
     str = str.substr(0, str.length - 3);
-    str +=  ")" + span(2,4,t,i,model.getEmmisionState(output.charAt(t+1)),"\\("+ s.getEmmisionProbability(output.charAt(t-1))+"\\)") + "</div>";
+    str +=  ")" + "</div>";
     return str;
 }
+function gammaInduction(t,i,s,output,G,A,B){
+    equType = "equ";
+    str = "<div id=\"equ1\">" + "\\(\\gamma_{"+t+"}("+s.text+") = \\frac{(\\alpha_{"+(t)+"} ("+s.text+") \\beta_{"+(t)+"} ("+s.text+")}{";
+    for (var k in model.states){
+        str += "\\alpha_{"+(t)+"} ("+model.states[k].text+") \\beta{"+(t)+"} ("+model.states[k].text+")";
+        str += " + ";
+    } 
+    str = str.substr(0, str.length - 3);
+    str +=  "}\\)" + "</div>";
 
+    str += "<div id=\"equ2\">" + "\\("+removeZeros(G[t][i].toPrecision(6))+" = \\frac{("+removeZeros(A[t][i].toPrecision(6))+" "+removeZeros(B[t][i].toPrecision(6))+"}{";
+    for (var k in model.states){
+        str += ""+removeZeros(A[t][k].toPrecision(6))+" "+removeZeros(B[t][k].toPrecision(6))+"";
+        str += " + ";
+    } 
+    str = str.substr(0, str.length - 3);
+    str +=  "}\\)" + "</div>";
+
+    return str;
+}
+function viterbiInduction(t,i,s,output,A){
+    // equType = "equ";
+    // str = "<div id=\"equ1\">" + span(1,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\(\\delta_{"+t+"}("+s.text+")\\)") + " = (";
+    // for (var k in model.states){
+    //     str += span(1,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\(\\alpha_{"+(t-1)+"} ("+model.states[k].text+")\\)");
+    //     str += span(1,3+""+k,t-1,k,i,"\\(m_{"+model.states[k].text+","+s.text+"} \\)");
+    //     str += " + ";
+    // } 
+    // str = str.substr(0, str.length - 3);
+    // str +=  ")" + span(1,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\(e_{"+s.text+"} ("+output.charAt(t-1)+")\\)") + "</div>";
+
+    // str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(A[t][i].toPrecision(6))+"\\)") + " = (";
+    // for (var k in model.states){
+    //     str += span(2,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\("+A[t-1][k]+"\\)");
+    //     str += span(2,3+""+k,t-1,k,i,"\\("+model.transitions[k][i].text+"\\)");
+    //     str += " + ";
+    // }
+    // str = str.substr(0, str.length - 3);
+    // str +=  ")" + span(2,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+ s.getEmissionProbability(output.charAt(t-1))+"\\)") + "</div>";
+    // return str;
+}
 ///////////////////////////////////////////////////////
-// instructions TODO
+// instructions
 ///////////////////////////////////////////////////////
 
 const markovChainInstructions =  

@@ -6,11 +6,11 @@ class ChainState extends State{
    
     constructor(x,y,id){
         super(x,y,id);
-        this.emmision = null;
+        this.emission = null;
     }
 
-    getEmmision(){
-        return (this.emmision == null)? "("  + this.text + ")" : this.emmision;
+    getEmissions(){
+        return (this.emission == null)? "("  + this.text + ")" : this.emission;
     }
 
 }
@@ -46,22 +46,6 @@ class MarkovChain extends MarkovModel{
         this.transitions[id] = {};
         return this.states[id];
     }
-    // setName(id, text) {
-    //     this.states[id].text = text;
-    //     return this;
-    // }
-    // setEmmision(id, emmision) {
-    //     this.states[id].emmision = emmision;
-    //     return this;
-    // }
-    // setInitialProbability(state, probability) {
-    //     this.initialProbabilityDistribution[state] = probability;
-    // }
-    // addTransistion(stateA, stateB, probability) {
-    //     if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
-    //     this.transitions[stateA][stateB] = new Transition(0,0,probability); // might switch stateB and prob in the future.
-    //     return this;
-    // }
     addTransistion(tempLink){
         if (!this.transitions[tempLink.startNode.id]) {this.transitions[tempLink.startNode.id] = {};}
         this.transitions[tempLink.startNode.id][tempLink.endNode.id] = new Transition(tempLink.startNode,tempLink.endNode,tempLink.anchorAngle,null);
@@ -71,20 +55,12 @@ class MarkovChain extends MarkovModel{
         }
         return this.transitions[tempLink.startNode.id][tempLink.endNode.id];
     }
-    // editTransistion(stateA, stateB, probability){
-    //     if (!this.transitions[stateA]) {this.transitions[stateA] = {};}
-    //     this.transitions[stateA.id][stateB.id] = probability;
-    // }
-    /////////////////////////////////////////////////
-    // Querying the model
-    /////////////////////////////////////////////////
-    
     /////////////////////////////////////////////////
     // processing
     /////////////////////////////////////////////////
     saveState(state) {
         this.processor.currentState = state;
-        this.processor.outPut += this.states[state].getEmmision();
+        this.processor.outPut += this.states[state].getEmissions();
         this.processor.outPutLength++;
     }
     getStartState() {
@@ -114,7 +90,6 @@ class MarkovChain extends MarkovModel{
     }
     step() {
         var temp = this.transition(this.processor.currentState);
-        console.log(temp);
         this.saveState(temp);
         return this.processor.outPut;
     }
@@ -163,13 +138,13 @@ class MarkovChain extends MarkovModel{
         var initProb = this.initialProbabilityDistribution;
         for (i in this.states) {
             if (initProb[i] < 0){
-                this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative Inital proabulity");
+                this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative Initial probability");
             }
             if (initProb[i] == null){initProb[i] = 0;}
             probSum += parseFloat(initProb[i]);
         }
         if (probSum == 0) {
-            this.processor.warnings.push("There are no inital proabilitys, asining temporay ones");
+            this.processor.warnings.push("There are no inital probabilities, assigning temporary ones");
             tempInitial = true;
             for (i in this.states) {
                 initProb[i] = 1/Object.keys(this.states).length;
@@ -185,7 +160,7 @@ class MarkovChain extends MarkovModel{
             var transSum = 0;
             for (j in trans[i]) {
                 if (parseFloat(trans[i][j].text) < 0){
-                    this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative trasition proabulity");
+                    this.processor.errors.push("State id: " + i + ", name: " + this.states[i].text + "has a negative Initial probability");
                 }
                 transSum += parseFloat(trans[i][j].text);
             }
@@ -195,18 +170,36 @@ class MarkovChain extends MarkovModel{
         }
 
         var sts = this.states;
-        if (sts == null || sts == []){
+        if (sts == null || Object.keys(sts).length === 0){
             this.processor.errors.push("There are no states");
         }
+        var emmissions = [];
+        var names = [];
         for (i in sts) {
-            if (i === sts[i]) {
-                errorMsg += "WARNING : " + i + " state has defult emmision string \n";
-            } else if (sts[i].length > 1) {
-                errorMsg += "WARNING : " + i + " state has defult emmision string of lenght > 1 \n";
+            if (sts[i].text == ""){
+                this.processor.warnings.push("State id: " + i + " has no name");
+            }
+
+            if (sts[i].emission == "" || sts[i].emission == null ) {
+                this.processor.warnings.push("State id: " + i + ", name: " + this.states[i].text + " has defult emission string");
+            } else if (sts[i].emission.length > 1) {
+                this.processor.warnings.push("State id: " + i + ", name: " + this.states[i].text + " has an emission string of size >1");
+            }
+
+            
+            for (j in sts){
+                if (sts[i].emission == sts[j].emission && i != j && !emmissions.includes(i)){
+                    emmissions.push(j);
+                    this.processor.errors.push("State id: " + i + ", name: " + sts[i].text + " and state id: " + j + ", name: " + sts[j].text + " have the same emission");
+                }
+                if (sts[i].text == sts[j].text && i != j && !names.includes(i)){
+                    names.push(j);
+                    this.processor.warnings.push("State id: " + i + " and state id: " + j + ", have the same name: " + sts[j].text);
+                }
             }
         }
 
-        return (this.processor.errors.length == 0); // should objectify this later.
+        return (this.processor.errors.length == 0); 
     }
     toString() {
         var i,j;
@@ -229,23 +222,6 @@ class MarkovChain extends MarkovModel{
         str += "}";
         return str;
     }
-    run(count,step) {
-        if (this.validCheck() != "") { output.innerText("There are unresolved errors"); return;}
-        if (count < 1 || count == null) { output.innerText(""); return; }
-
-        var output = document.getElementById('output');
-
-        this.clearCache();
-        this.getStartState();
-
-        while (this.processor.outPutLength < count) {
-            this.step();
-            sleep(step);
-            output.innerText(this.processor.outPut);
-
-        }
-        return this.processor.outPut;
-    }
 
     static runTests() {
         // function assert(outcome, description) {window.console && console.log((outcome ? 'Pass:' : 'FAIL:'),  description);}
@@ -259,12 +235,12 @@ class MarkovChain extends MarkovModel{
         myMC.addState(0, 2);
         var s2 = 1;
         myMC.setName(s2, "S2");
-        myMC.setEmmision(s2, "2");
+        myMC.setEmissions(s2, "2");
 
         myMC.addState(0, 3);
         var s3 = 2;
         myMC.setName(s3, "S3");
-        myMC.setEmmision(s3, "da");
+        myMC.setEmissions(s3, "da");
         myMC.setInitialProbability(s3, 0.2);
 
         var states2 = {};
@@ -291,10 +267,10 @@ class MarkovChain extends MarkovModel{
 
 
         myMC.setName(s1, "S1");
-        myMC.setEmmision(s1, "1");
+        myMC.setEmissions(s1, "1");
 
-        myMC.setEmmision(s2, "2");
-        myMC.setEmmision(s3, "3");
+        myMC.setEmissions(s2, "2");
+        myMC.setEmissions(s3, "3");
 
         myMC.addTransistion(s3, s3, 0.1);
 
@@ -312,3 +288,5 @@ class MarkovChain extends MarkovModel{
         LIKELIHOOD: 'likelihood'
     }
 }
+
+

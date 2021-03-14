@@ -5,7 +5,7 @@ class MarkovModel{
         this.transitions = {};
         this.initialProbabilityDistribution = {};
         
-        this.emmisionStates = {};
+        this.emissionStates = {};
 
         this.userStartState = null;
 
@@ -15,13 +15,13 @@ class MarkovModel{
             currentState: null,
             outPut: "",
             outPutLength: 0,
-            emmisionState: null,
+            emissionState: null,
             errors: [],
             warnings: []
         };
     }
     deleteState(object){
-        for (i in this.states) {
+        for (var i in this.states) {
             if (this.states[i] === object) {
                 this.removeAllTrasitions(i);
                 delete this.states[i];
@@ -29,8 +29,8 @@ class MarkovModel{
         }
     }
     deleteTrasition(object){
-        for (i in this.transitions) {
-            for (j in this.transitions[i]){
+        for (var i in this.transitions) {
+            for (var j in this.transitions[i]){
                 if (this.transitions[i][j] === object){
                     if (this.transitions[i][j].type == LinkType.ARC){
                         this.transitions[j][i].type = LinkType.DIRECT;
@@ -42,12 +42,10 @@ class MarkovModel{
     }
     removeAllTrasitions(i) {
         delete this.transitions[i];
-        var self = this;
-        $.each(self.transitions, function (stateA, sTrans) {
-            $.each(sTrans, function (stateB) {
-                if (stateB == i) { self.removeTransition(stateA, stateB); }
-            });
-        });
+        for (var j in this.states){
+            if (!this.transitions[j]){continue;}
+            if (this.transitions[j][i]){delete this.transitions[j][i]}
+        }
         return this;
     }
     removeTransition(stateA, stateB) {
@@ -69,11 +67,11 @@ class MarkovModel{
     saveState(state) {
         this.processor.currentState = state;
         if (this instanceof HiddenMarkovModel){
-            var emState = this.states[state].getEmmision();
-            this.processor.outPut += emState.getEmmision();
-            this.processor.emmisionState = emState;
+            var emState = this.states[state].getEmissions();
+            this.processor.outPut += emState.getEmissions();
+            this.processor.emissionState = emState;
         } else {
-            this.processor.outPut += this.states[state].getEmmision();
+            this.processor.outPut += this.states[state].getEmissions();
         }
         this.processor.outPutLength++;
     }
@@ -104,9 +102,66 @@ class MarkovModel{
     }
     step() {
         var temp = this.transition(this.processor.currentState);
-        console.log(temp);
         this.saveState(temp);
         return this.processor.outPut;
+    }
+
+    validateProbability(text){ // slower than original but handles pasting without disabling it.
+        if (text == ""){
+            return text;
+        }
+    
+        if (text.charCodeAt(0) != 48){
+            if (text.charCodeAt(0) == 46){
+                return "0.";
+            }
+            if (text.charCodeAt(0) == 49){
+                return "1";
+            }
+            return "";
+        }
+
+        if (text.charCodeAt(1) != 46){
+            return "0";
+        }
+        for (var i=2; i < text.length; i++){
+            var keyCode = text.charCodeAt(i);
+            if(!(keyCode >= 48 && keyCode <= 57)){
+                return text.substr(0, i);
+            }
+        }
+    
+        return text;
+    }
+
+    createModelOn(obj){
+    
+        for (var i in obj.states){
+            var oldState = obj.states[i];
+            var state = this.addState(oldState.x,oldState.y,oldState.id);
+            state.text = oldState.text;
+            this.initialProbabilityDistribution[i] = obj.initialProbabilityDistribution[i];
+        }
+        
+        if (this instanceof HiddenMarkovModel){
+            for ( var i in obj.emissionStates){
+                var oldEmmisisonState = obj.emissionStates[i];
+                var emissionState = model.addEmissionState(oldEmmisisonState.x,oldEmmisisonState.y);
+                emissionState.text = oldEmmisisonState.text;
+                emissionState.emission = oldEmmisisonState.emission;
+            }
+        }
+        
+        for (var i in obj.transitions){
+            for (var j in obj.transitions[i]){
+                var oldTrans = obj.transitions[i][j];
+                var trans = model.addTransistion(new TempLink(model.states[oldTrans.startNode.id],{x : oldTrans.endNode.x, y :oldTrans.endNode.y}));
+                trans.text = oldTrans.text;
+                trans.anchorAngle = oldTrans.anchorAngle; 
+            }
+        }
+    
+    
     }
 }
 
@@ -116,7 +171,7 @@ const LinkType = {
     SELF: 'self'
 }
 
-const colours = ["#0000FF","#FF0000","#FFA500","#9932CC","#A0522D","#008000","#B22222"]; //TODO
+const colours = ["#0000FF","#FF0000","#FFA500","#9932CC","#A0522D","#008000","#6D6656","#0BBB1B","#532233","#897EF1","#A41AB6","#117509"]; //(make it a multiple of 6)
 const nodeRadius = 30; 
 const mousePadding = 5;
 
@@ -192,7 +247,6 @@ class Link extends viewable {
 
     setAnchorangle(mousePos){
         this.anchorAngle = Math.atan2(mousePos.y - this.startNode.y, mousePos.x - this.startNode.x) + 0; //this.mouseOffsetAngle;
-        console.log(this.anchorAngle);
         if(this.anchorAngle < -Math.PI) this.anchorAngle += 2 * Math.PI;
 	    if(this.anchorAngle > Math.PI) this.anchorAngle -= 2 * Math.PI;
     }
@@ -395,6 +449,63 @@ class StationaryLink extends Link {
         }
         
     }
-    
+}
 
+class TempLink extends Link{ // this will be the more adaptive link when being drawn.
+	constructor(startNode,mousePos, endNode){
+		super(startNode,mousePos.x,mousePos.y);
+		this.mousePos = mousePos;
+        if (endNode == null){
+		    this.refresh(mousePos);
+        } else {
+            this.endNode = endNode;
+        }
+	}
+
+	refresh(mousePos){
+		this.endNode = model.getElementAt(mousePos);
+		if (!(this.endNode instanceof State)){this.endNode = null;}
+		if (this.startNode != this.endNode){
+			this.type = LinkType.DIRECT;
+		} else {
+			this.type = LinkType.SELF;
+		}
+		this.x = mousePos.x;
+		this.y = mousePos.y;
+
+		this.setAnchorangle(mousePos);
+	}
+
+	draw(c){
+		if(this.type === LinkType.DIRECT || this.startNode instanceof EmissionState){
+			if (this.endNode == null){
+				this.endPos.x = this.x;
+				this.endPos.y = this.y;
+				this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
+			} else {
+				this.endPos = this.endNode.closestPointOnCircle(this.startNode.x, this.startNode.y);
+				this.startPos = this.startNode.closestPointOnCircle(this.endNode.x, this.endNode.y);
+			}
+
+
+			c.beginPath();
+			c.moveTo(this.startPos.x, this.startPos.y);
+			c.lineTo(this.endPos.x, this.endPos.y);
+			c.stroke();
+
+		
+		} else if(this.type == LinkType.SELF){
+			var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
+			var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
+			var circleRadius = 0.75 * nodeRadius;
+			var startAngle = this.anchorAngle - Math.PI * 0.8;
+			var endAngle = this.anchorAngle + Math.PI * 0.8;
+
+
+			c.beginPath();
+			c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
+			c.stroke();
+		}
+
+	}
 }

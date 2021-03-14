@@ -25,13 +25,15 @@
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
     <!-- <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script> -->
-    <script src="js/components.js"></script>
-    <script src="js/markovChain.js"></script>
-    <script src="js/hiddenMarkovModel.js"></script>
-    <script src="js/pageController.js"></script>
-    <script src="js/canvasController.js"></script>
-    <script src="js/stringBuilder.js"></script>
-    <script src="js/JSONutils.js"></script>
+    <script src='node_modules/big.js/big.js'></script>
+    <script src="src/main/js/components/baseComponents.js"></script>
+    <script src="src/main/js/components/markovChain.js"></script>
+    <script src="src/main/js/components/hiddenMarkovModel.js"></script>
+    <script src="src/main/js/controlers/canvasController.js"></script>
+    <script src="src/main/js/controlers/pageController.js"></script>
+    <script src="src/main/js/utils/JSONutils.js"></script>
+    <script src="src/main/js/utils/LaTeXcanvas.js"></script>
+    <script src="src/main/js/utils/stringBuilder.js"></script>
 
 
     <div id="main">
@@ -50,14 +52,20 @@
             <div id="informationPanel" class="right">
                 <div id="tools">
                     <div style="text-align:center;">
-
-                        <button id="testBtn" title="Test">Test</button>
-                        <button id="saveBtn" title="Save">Save</button>
-                        <button id="loadBtn" title="Load" >Load</button>
-                        <input id="loadInput" title="Load" type="file" accept=".json" style="display: none;"></input>
-                        <button id="clearBtn" title="Clear">Clear</button>
-                        <button id="runBtn" title="Run">Run</button>
-                        <div id="outputString" type="text" placeholder="Output string"></div>
+                        <div>
+                            <button id="testBtn" title="Test">Test</button>
+                            <button id="saveBtn" title="Save">Save</button>
+                            <button id="loadBtn" title="Load" >Load</button>
+                            <input id="loadInput" title="Load" type="file" accept=".json" style="display: none;"></input>
+                            <button id="clearBtn" title="Clear">Clear</button>
+                            <button id="exportBtn" title="export">Export</button>
+                            <button id="runBtn" title="Run">Run</button></div>
+                        <form>
+                            
+                            <p><label>Steps</label><input type="number" id="stepCount" name="stepCount" min="1" value="20"></p>
+                            <p><label>Speed</label><input type="range"  id="stepSpeed" name="stepSpeed" value="20"></p>
+                        </form>
+                        <div id="outputString" type="text" style="word-break: break-all;"></div>
                         <!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
                     </div>
                 </div>
@@ -69,8 +77,8 @@
                             <input type="text" id="sIDText" name="id" readonly="true"></p>
                             <p><label for="sName">Name:</label>
                             <input type="text" id="sNameText" name="StateName"></p>
-                            <p id="sEmmision"><label for="sEmmision">Emmision:</label>
-                            <input type="text" id="sEmmisionText" name="Emmision"></p>
+                            <p id="sEmission"><label for="sEmission">Emissions:</label>
+                            <input type="text" id="sEmissionText" name="Emissions"></p>
                             <p id="sInital"><label for="InitalProability">InitalProability:</label>
                             <input type="text" id="sInitalProability" name="InitalProability"></p>
                         </form>
@@ -110,7 +118,7 @@
                 <div id="InstructionsPanel" class="panelWrapper">
                     <button id="instructionsButton" class="accordion">Instructions</button>
                     <div id="instructionsPanelInfo" class="panel">
-                        <label id="instructionsPanelText">Instructions : TODO</label>
+                        <label id="instructionsPanelText">Instructions</label>
                     </div>
                 </div>
                 <div id="AlgorithmVarPanel" class="panelWrapper">

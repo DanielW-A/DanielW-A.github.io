@@ -1,58 +1,3 @@
-
-class TempLink extends Link{ // this will be the more adaptive link when being drawn.
-	constructor(startNode,mousePos){
-		super(startNode,mousePos.x,mousePos.y);
-		this.mousePos = mousePos;
-		this.refresh(mousePos);
-	}
-
-	refresh(mousePos){
-		this.endNode = model.getElementAt(mousePos);
-		if (!(this.endNode instanceof State)){this.endNode = null;}
-		if (this.startNode != this.endNode){
-			this.type = LinkType.DIRECT;
-		} else {
-			this.type = LinkType.SELF;
-		}
-		this.x = mousePos.x;
-		this.y = mousePos.y;
-
-		this.setAnchorangle(mousePos);
-	}
-
-	draw(c){
-		if(this.type === LinkType.DIRECT || this.startNode instanceof EmmisionState){
-			if (this.endNode == null){
-				this.endPos.x = this.x;
-				this.endPos.y = this.y;
-				this.startPos = this.startNode.closestPointOnCircle(this.x, this.y);
-			} else {
-				this.endPos = this.endNode.closestPointOnCircle(this.startNode.x, this.startNode.y);
-				this.startPos = this.startNode.closestPointOnCircle(this.endNode.x, this.endNode.y);
-			}
-
-
-			c.beginPath();
-			c.moveTo(this.startPos.x, this.startPos.y);
-			c.lineTo(this.endPos.x, this.endPos.y);
-			c.stroke();
-
-		
-		} else if(this.type == LinkType.SELF){
-			var circleX = this.startNode.x + 1.5 * nodeRadius * Math.cos(this.anchorAngle);
-			var circleY = this.startNode.y + 1.5 * nodeRadius * Math.sin(this.anchorAngle);
-			var circleRadius = 0.75 * nodeRadius;
-			var startAngle = this.anchorAngle - Math.PI * 0.8;
-			var endAngle = this.anchorAngle + Math.PI * 0.8;
-
-
-			c.beginPath();
-			c.arc(circleX, circleY, circleRadius, startAngle, endAngle, false);
-			c.stroke();
-		}
-
-	}
-}
 /////////////////////////////////////////////////
 // vars/ consts
 /////////////////////////////////////////////////
@@ -83,12 +28,17 @@ initCanvas = function() {
 	document.documentElement.clientWidth;
 
 	canvas.onmousedown = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
 		var mousePos = getMousePos(canvas,e);
 
         console.log(mousePos);
-		selectedObj = model.getElementAt(mousePos);
+		var oldSelectedObj = selectedObj;
+        selectedObj = model.getElementAt(mousePos);
 		if (selectedObj instanceof State){
+            if (!oldSelectedObj){
+                closeAccordion(document.getElementById("stateButton"));
+            }
+            refreshInfoPanels();
             openAccordion(document.getElementById("stateButton"));
             document.getElementById("sNameText").focus();
 		}
@@ -107,19 +57,19 @@ initCanvas = function() {
 			}
 		}
 		resetCaret();
-        refresh();
+        refreshComponents();
         
 		document.getElementById("hoverInfo").style.display = "none";
 		document.getElementById("algTable").style.color = "";
     };
 
     canvas.ondblclick = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
         var mousePos = getMousePos(canvas,e);
 		selectedObj = model.getElementAt(mousePos);
         if (selectedObj == null){
 			if (control && model instanceof HiddenMarkovModel){
-				selectedObj = model.addEmmisionState(mousePos.x,mousePos.y);
+				selectedObj = model.addEmissionState(mousePos.x,mousePos.y);
 			} else {
             	selectedObj = model.addState(mousePos.x,mousePos.y);
 			}
@@ -132,7 +82,7 @@ initCanvas = function() {
 	};
 	
 	canvas.onmousemove = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
 		var mousePos = getMousePos(canvas,e);
 		if(drawingLink != null){
 			drawingLink.refresh(mousePos);
@@ -150,7 +100,7 @@ initCanvas = function() {
 	}
 
 	canvas.onmouseup = function(e) {
-		if (runner != null){return;}
+		if (running == true){return;}
         movingObject = false;
         
 		if(drawingLink != null){
@@ -205,11 +155,13 @@ document.onkeydown = function(e) {
 			refresh();
             closeAccordion(document.getElementById("stateButton"));
 		}
-	}else if(!canvasHasFocus() || runner != null){ // changed hoe this works a bit , now less imprtant
+	}else if(!canvasHasFocus() || running == true){ // changed hoe this works a bit , now less imprtant
 		//don't read keystrokes when other things have focus
 		return true;
     } else if(key == "Escape") { 
 		selectedObj = null;
+        
+        closeAccordion(document.getElementById("stateButton"));
 		refresh();
 			
 	} else if(key == "Backspace") {
@@ -253,7 +205,7 @@ document.onkeypress = function(e) {
 		closeAccordion(document.getElementById("stateButton"));
 		return false;
 	}
-	if(!canvasHasFocus() || runner != null){
+	if(!canvasHasFocus() || running == true){
 		return true;
 	} else if(keyCode >= 31 && keyCode <= 127 && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObj != null) {
 		if (selectedObj instanceof StationaryLink){
@@ -323,12 +275,16 @@ refresh = function() {
 }
 
 
-refreshComponents = function() {
+refreshComponents = function(latexCanvas) {
 
-	c = canvas.getContext("2d");
-	canvas.width = document.body.clientWidth;
-	canvas.height = window.innerHeight;
-    c.clearRect(0, 0, canvas.width, canvas.height);
+	if (latexCanvas == null){
+		c = canvas.getContext("2d");
+		canvas.width = document.body.clientWidth;
+		canvas.height = window.innerHeight;
+    	c.clearRect(0, 0, canvas.width, canvas.height);
+	} else {
+		c = latexCanvas;
+	}
 
 	var alpha = 1;
 	if (graphSpotlight){c.globalAlpha = alpha = 0.2;}
@@ -340,11 +296,11 @@ refreshComponents = function() {
 		c.globalAlpha = alpha;
 	}
 	if (model instanceof HiddenMarkovModel){
-		for (i in model.emmisionStates){
+		for (i in model.emissionStates){
 			c.lineWidth = 1;
-			c.fillStyle = c.strokeStyle = (model.emmisionStates[i] === selectedObj || model.emmisionStates[i] === currentEmmision) ? 'blue' : 'black';
-			if (graphSpotlight && currentEmmision === model.emmisionStates[i]){c.globalAlpha = 1;}
-			model.emmisionStates[i].draw(c,(model.emmisionStates[i] === selectedObj));	
+			c.fillStyle = c.strokeStyle = (model.emissionStates[i] === selectedObj || model.emissionStates[i] === currentEmission) ? 'blue' : 'black';
+			if (graphSpotlight && currentEmission === model.emissionStates[i]){c.globalAlpha = 1;}
+			model.emissionStates[i].draw(c,(model.emissionStates[i] === selectedObj));	
 			c.globalAlpha = alpha;
 		}
 	}
@@ -359,9 +315,9 @@ refreshComponents = function() {
 			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj ) ? 'blue' : 'black';
 			if(j.charAt(0) == 'e'){
 				c.fillStyle = c.strokeStyle = model.states[i].colour;
-				if (!((model.states[i] === selectedObj && model.emmisionStates[j] === currentEmmision) || ((runner == null) && (!graphSpotlight)))){
+				if (!((model.states[i] === selectedObj && model.emissionStates[j] === currentEmission) || ((running == false) && (!graphSpotlight)))){
 					c.globalAlpha = 0.1;
-				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emmisionStates[j] == selectedObj)){
+				} else if (selectedObj instanceof State && !((model.states[i] == selectedObj) || model.emissionStates[j] == selectedObj)){
 					c.globalAlpha = 0.4;
 				} else {
 					c.globalAlpha = 1;
@@ -383,134 +339,3 @@ function resetCaret() {
 	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 530); // 530 is the defult time
 	caretVisible = true;
 }
-
-// 		if (mode === 'drawing') {
-// 			selectedObject = selectObject(mouse.x, mouse.y);
-// 			movingObject = false;
-// 			originalClick = mouse;
-// 			if(selectedObject != null) {
-// 				if(shift && selectedObject instanceof Node) {
-// 					currentLink = new SelfLink(selectedObject, mouse, checkDirected());
-// 				} else {
-// 					movingObject = true;
-// 					deltaMouseX = deltaMouseY = 0;
-// 					if(selectedObject.setMouseStart) {
-// 						selectedObject.setMouseStart(mouse.x, mouse.y);
-// 					}
-// 				}
-// 				resetCaret();
-// 			} else if(shift) {
-// 				currentLink = new TemporaryLink(mouse, mouse, checkDirected());
-// 			}
-// 		}
-// 		else if (mode === 'coinfiring') {
-// 			var currentObject = selectObject(mouse.x, mouse.y);
-// 			if (currentObject != null) {
-// 				if (currentObject instanceof Node) {
-// 					var chipsToFireAway = 0;
-// 					// Look for edges to adjacent nodes
-// 					var modifier = 1;
-// 					if (shift) {
-// 						modifier = -1;
-// 					}
-// 					var edges = leavingEdges(currentObject);
-// 					for (var i = 0; i < edges.length; i++) {
-// 						var edge = edges[i];
-// 						var otherNode = edge.nodeB;
-// 						if (otherNode === currentObject) {
-// 							otherNode = edge.nodeA;
-// 						}
-// 						var edgeWeight = 1;
-// 						if (edge.text !== '' && !isNaN(edge.text)) {
-// 							edgeWeight = parseInt(edge.text);
-// 						}
-// 						chipsToFireAway += edgeWeight;
-// 						incrementNode(otherNode, edgeWeight * modifier);
-// 					}
-// 					incrementNode(currentObject, -chipsToFireAway * modifier)
-// 				}
-// 			}
-// 		}
-
-// 		draw();
-
-// 		if(canvasHasFocus()) {
-// 			// disable drag-and-drop only if the canvas is already focused
-// 			return false;
-// 		} else {
-// 			// otherwise, let the browser switch the focus away from wherever it was
-// 			resetCaret();
-// 			return true;
-// 		}
-// 	};
-
-// 	canvas.ondblclick = function(e) {
-// 		var mouse = crossBrowserRelativeMousePos(e);
-
-// 		if (mode === 'drawing') {
-// 			selectedObject = selectObject(mouse.x, mouse.y);
-// 			if(selectedObject == null) {
-// 				selectedObject = new Node(mouse.x, mouse.y);
-// 				nodes.push(selectedObject);
-// 				resetCaret();
-// 				draw();
-// 			} else if(selectedObject instanceof Node) {
-// 				selectedObject.isAcceptState = !selectedObject.isAcceptState;
-// 				draw();
-// 			}
-// 		}
-// 		else if (mode === 'coinfiring') {
-// 			// Do nothing special
-// 		}
-// 	};
-
-// 	canvas.onmousemove = function(e) {
-// 		var mouse = crossBrowserRelativeMousePos(e);
-
-// 		if(currentLink != null) {
-// 			var targetNode = selectObject(mouse.x, mouse.y);
-// 			if(!(targetNode instanceof Node)) {
-// 				targetNode = null;
-// 			}
-
-// 			if(selectedObject == null) {
-// 				if(targetNode != null) {
-// 					currentLink = new StartLink(targetNode, originalClick, checkDirected());
-// 				} else {
-// 					currentLink = new TemporaryLink(originalClick, mouse, checkDirected());
-// 				}
-// 			} else {
-// 				if(targetNode == selectedObject) {
-// 					currentLink = new SelfLink(selectedObject, mouse, checkDirected());
-// 				} else if(targetNode != null) {
-// 					currentLink = new Link(selectedObject, targetNode, checkDirected());
-// 				} else {
-// 					currentLink = new TemporaryLink(selectedObject.closestPointOnCircle(mouse.x, mouse.y), mouse, checkDirected());
-// 				}
-// 			}
-// 			draw();
-// 		}
-
-// 		if(movingObject) {
-// 			selectedObject.setAnchorPoint(mouse.x, mouse.y);
-// 			if(selectedObject instanceof Node) {
-// 				snapNode(selectedObject);
-// 			}
-// 			draw();
-// 		}
-// 	};
-
-// 	canvas.onmouseup = function(e) {
-// 		movingObject = false;
-
-// 		if(currentLink != null) {
-// 			if(!(currentLink instanceof TemporaryLink)) {
-// 				selectedObject = currentLink;
-// 				links.push(currentLink);
-// 				resetCaret();
-// 			}
-// 			currentLink = null;
-// 			draw();
-// 		}
-// 	};
-// }
