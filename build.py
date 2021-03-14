@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os, time, sys
+import os, time, sys, shutil
 
 def sources():
 	print ('sources')
@@ -13,7 +13,10 @@ def build():
 	data = '\n'.join(open(file, 'r').read() for file in sources())
 	with open(path, 'w') as f:
 		f.write(data)
-	print ('built %s (%u bytes)' % (path, len(data)))
+	print ('built %s (%u bytes)' % (path, len(data))) 
+	os.remove('./src/main/node_modules/big.js')#dont like this at all but it is a solution for right now
+	shutil.copyfile('./node_modules/big.js/big.js', './src/main/node_modules/big.js')
+	print ('Copied Big.js to dependancies')
 
 def stat():
 	print ('stat')
