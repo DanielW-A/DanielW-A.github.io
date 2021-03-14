@@ -89,7 +89,7 @@ function forwardInduction(t,i,s,output,A){
 
     str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(A[t][i].toPrecision(6))+"\\)") + " = (";
     for (var k in model.states){
-        str += span(2,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\("+A[t-1][k]+"\\)");
+        str += span(2,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\("+A[t-1][k]+"\\)") + '*';
         str += span(2,3+""+k,t-1,k,i,"\\("+model.transitions[k][i].text+"\\)");
         str += " + ";
     }
@@ -110,19 +110,21 @@ function backwardInduction(t,i,s,output,B){
     for (var k in model.states){
         str += span(1,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\(\\beta_{"+(t+1)+"} ("+model.states[k].text+")\\)");
         str += span(1,3+""+k,t+1,i,k,"\\(m_{"+s.text+","+model.states[k].text+"} \\)");
+        str += span(1,4+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\(e_{"+model.states[k].text+"} ("+output.charAt(t)+")\\)");
         str += " + ";
     } 
     str = str.substr(0, str.length - 3);
-    str +=  ")" + span(1,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\(e_{"+s.text+"} ("+output.charAt(t-1)+")\\)") + "</div>";
+    str +=  ")" + "</div>";
 
     str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(B[t][i].toPrecision(6))+"\\)") + " = (";
     for (var k in model.states){
-        str += span(2,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+B[t+1][k]+"\\)");
-        str += span(2,3+""+k,t+1,i,k,"\\("+model.transitions[i][k].text+"\\)");
+        str += span(2,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+B[t+1][k]+"\\)") + '*';
+        str += span(2,3+""+k,t+1,i,k,"\\("+model.transitions[i][k].text+"\\)") + '*';
+        str += span(2,4+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+ model.states[k].getEmissionProbability(output.charAt(t))+"\\)");
         str += " + ";
     }
     str = str.substr(0, str.length - 3);
-    str +=  ")" + span(2,4,t,i,model.getEmissionState(output.charAt(t+1)),"\\("+ s.getEmissionProbability(output.charAt(t-1))+"\\)") + "</div>";
+    str +=  ")" + "</div>";
     return str;
 }
 function gammaInduction(t,i,s,output,G,A,B){

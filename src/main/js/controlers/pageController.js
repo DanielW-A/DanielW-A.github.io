@@ -594,6 +594,9 @@ var equType = "equ";
 var graphSpotlight = false;
 function spotlight(id,t,nodeA,nodeB){
     console.log("focus",id,t,nodeA,nodeB);
+    
+    clearInterval(caretTimer);
+    caretVisible = flase;
 
     equType = (id.length < 2 && t == 1)? "init" : "equ";
 
@@ -618,6 +621,8 @@ function spotlight(id,t,nodeA,nodeB){
 }
 function unspotlight(id,t,nodeA,nodeB){
     console.log("unfocus",id,t,nodeA,nodeB);
+
+    resetCaret();
     
     equType = (id.length < 2 && t == 1)? "init" : "equ";
 
