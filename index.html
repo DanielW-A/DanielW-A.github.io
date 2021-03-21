@@ -19,13 +19,15 @@
 
 <body>
     <script src="src/main/js/utils/mathjax-config.js" defer></script>
-<script type="text/javascript" id="MathJax-script" defer
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-</script>
-
+    <script type="text/javascript" id="MathJax-script" defer
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+    <script type="text/javascript" id="MathJax-script" defer
+        src="https://cdn.jsdelivr.net/npm/big.js/big.js">
+    </script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
     <!-- <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script> -->
-    <script src='src/main/node_modules/big.js'></script>
+    <!-- <script src='src/main/node_modules/big.js'></script> -->
     <script src="src/main/js/components/baseComponents.js"></script>
     <script src="src/main/js/components/markovChain.js"></script>
     <script src="src/main/js/components/hiddenMarkovModel.js"></script>
@@ -52,7 +54,7 @@
             <div id="informationPanel" class="right">
                 <div id="tools">
                     <div style="text-align:center;">
-                        <div>
+                    <div>
                             <button id="testBtn" title="Test">Test</button>
                             <button id="saveBtn" title="Save">Save</button>
                             <button id="loadBtn" title="Load" >Load</button>
@@ -60,6 +62,7 @@
                             <button id="clearBtn" title="Clear">Clear</button>
                             <button id="exportBtn" title="export">Export</button>
                             <button id="runBtn" title="Run">Run</button></div>
+                            Hide Emmission:<input id="emissionHide" type="checkbox" style="width: auto;"></input>
                         <form>
                             
                             <p><label>Steps</label><input type="number" id="stepCount" name="stepCount" min="1" value="20"></p>

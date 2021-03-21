@@ -21,13 +21,9 @@ function decodeJSON(str){
     var obj = JSON.parse(str);
     if (!(model.constructor.name === obj.type)){
         if (model instanceof HiddenMarkovModel){
-            model = new MarkovChain();
-            document.getElementById("markovChainBtn").disabled = true;
-            document.getElementById("hiddenMarkovModelBtn").disabled = false;
+            setModelMC();
         } else {
-            model = new HiddenMarkovModel();
-            document.getElementById("markovChainBtn").disabled = false;
-            document.getElementById("hiddenMarkovModelBtn").disabled = true;
+            setModelHMM();
         }
     } else {
         clear();

@@ -1,6 +1,7 @@
 
 const font ='20px "Times New Roman", serif';
 var running = false;
+var hideEmission = false;
 var modelPanel;
 
 function exportLatex(){
@@ -22,22 +23,6 @@ function toggleAccordion(component){
      } else {
         openAccordion(component);
      }
-
-
-    // if (panel.style.maxHeight) {
-    //     panel.style.maxHeight = null;
-    //     setTimeout("refreshInfoPanels()",200);
-        
-    // } else {
-        
-    //     refreshInfoPanels();
-    //     //closeAccordion(document.getElementById("sTransitionBtn"));
-    //     panel.style.maxHeight = panel.scrollHeight + "px";
-    //     if(component.id == "stateButton"){
-    //         openAccordion(document.getElementById("sTransitionBtn"));
-    //         setTimeout("refreshAccordion(panel)",200);
-    //     }
-    // }
     try { // If there isnt an element in the position im checking then nothing needs to be done.
         if (component.parentElement.parentElement.previousElementSibling.className.includes('accordion')){
             component.parentElement.parentElement.style.maxHeight = component.parentElement.parentElement.scrollHeight +  panel.scrollHeight + "px";
@@ -113,11 +98,28 @@ function closeAccordion(component){
     }
 }
 
+function setModelHMM(){
+    model = new HiddenMarkovModel();
+    document.getElementById("markovChainBtn").disabled = false;
+    document.getElementById("hiddenMarkovModelBtn").disabled = true;
+    document.getElementById("emissionHide").disabled = false;
+    initModelUI();
+}
 
+function setModelMC(){
+    model = new MarkovChain();
+    document.getElementById("markovChainBtn").disabled = true;
+    document.getElementById("hiddenMarkovModelBtn").disabled = false;
+    document.getElementById("emissionHide").disabled = true;
+    initModelUI();
+
+}
 
 window.onload = function() {
     initCanvas();
     initModelUI();
+    
+    document.getElementById("emissionHide").disabled = true;
 
     var acc = document.getElementsByClassName("accordion");
     var i;
@@ -127,6 +129,11 @@ window.onload = function() {
             toggleAccordion(this);
         });
     }
+
+    document.getElementById("emissionHide").addEventListener("change", function(){
+        hideEmission = this.checked;
+        refreshComponents();
+    })
 
     // buttons
     document.getElementById("saveBtn").addEventListener("click", function() {
@@ -153,16 +160,10 @@ window.onload = function() {
 
     document.getElementById("markovChainBtn").disabled = true;
     document.getElementById("markovChainBtn").addEventListener("click", function(){
-        model = new MarkovChain();
-        document.getElementById("markovChainBtn").disabled = true;
-        document.getElementById("hiddenMarkovModelBtn").disabled = false;
-        initModelUI();
+        setModelMC();
     });
     document.getElementById("hiddenMarkovModelBtn").addEventListener("click", function(){
-        model = new HiddenMarkovModel();
-        document.getElementById("markovChainBtn").disabled = false;
-        document.getElementById("hiddenMarkovModelBtn").disabled = true;
-        initModelUI();
+        setModelHMM();
     });
 
     // State details

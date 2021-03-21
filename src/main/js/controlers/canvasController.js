@@ -70,6 +70,8 @@ initCanvas = function() {
         if (selectedObj == null){
 			if (control && model instanceof HiddenMarkovModel){
 				selectedObj = model.addEmissionState(mousePos.x,mousePos.y);
+                document.getElementById("emissionHide").checked = false;
+                hideEmission = false;
 			} else {
             	selectedObj = model.addState(mousePos.x,mousePos.y);
 			}
@@ -295,7 +297,7 @@ refreshComponents = function(latexCanvas) {
 		model.states[i].draw(c,(model.states[i] === selectedObj));
 		c.globalAlpha = alpha;
 	}
-	if (model instanceof HiddenMarkovModel){
+	if (model instanceof HiddenMarkovModel && !hideEmission){
 		for (i in model.emissionStates){
 			c.lineWidth = 1;
 			c.fillStyle = c.strokeStyle = (model.emissionStates[i] === selectedObj || model.emissionStates[i] === currentEmission) ? 'blue' : 'black';
@@ -314,6 +316,7 @@ refreshComponents = function(latexCanvas) {
 			c.lineWidth = 1;
 			c.fillStyle = c.strokeStyle = (model.transitions[i][j] === selectedObj ) ? 'blue' : 'black';
 			if(j.charAt(0) == 'e'){
+                if (hideEmission){continue}
 				c.fillStyle = c.strokeStyle = model.states[i].colour;
 				if (!((model.states[i] === selectedObj && model.emissionStates[j] === currentEmission) || ((running == false) && (!graphSpotlight)))){
 					c.globalAlpha = 0.1;
