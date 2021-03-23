@@ -342,6 +342,18 @@ class HiddenMarkovModel extends MarkovModel{
         return newStr
     }
 
+    validateEmission(str){ // TODO this limets the emmision string to one char, i want to expand this.
+        var char = str.charAt(str.length-1);
+
+        for (var i in this.emmissions){
+            if (this.emissionStates[i].getEmissions().toUpperCase() == char.toUpperCase()){
+                return "";
+            }
+        }
+
+        return char.toUpperCase();
+    }
+
     getEmissionState(emissionStr){
         for (var i in this.emissionStates){
             if (this.emissionStates[i].getEmissions() == emissionStr){
@@ -618,6 +630,8 @@ class HiddenMarkovModel extends MarkovModel{
         var max = 0;
         var argMax = "";
         for (var j in this.states){
+            max = 0;
+            argMax = "";
             for (var i in this.states){
                 var temp = new Big(this.algProsessor.D[this.algProsessor.t-1][i]).times(this.getTrasitionProability(i,j));
                 if (temp > max){

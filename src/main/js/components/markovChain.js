@@ -201,6 +201,17 @@ class MarkovChain extends MarkovModel{
 
         return (this.processor.errors.length == 0); 
     }
+    validateEmission(str){ // TODO this limets the emmision string to one char, i want to expand this.
+        var char = str.charAt(str.length-1);
+
+        for (var i in this.states){
+            if (this.states[i].getEmissions().toUpperCase() == char.toUpperCase()){
+                return "";
+            }
+        }
+
+        return char.toUpperCase();
+    }
     toString() {
         var i,j;
         var str = "";

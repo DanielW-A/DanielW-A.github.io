@@ -98,11 +98,35 @@ function closeAccordion(component){
     }
 }
 
+function openAlgPanel(){
+    var div = document.getElementById("algDiv");
+    div.style.maxWidth = '100%';
+    div.style.maxHeight = '100%';
+    var outerDiv = document.getElementById("outerAlgDiv");
+    outerDiv.style.maxWidth = '94px';
+    outerDiv.style.overflowY = 'auto';
+    document.getElementById("closeBtn").innerHTML = "&lt;"
+    document.getElementById("algInput").style.maxWidth = '100%';
+    setTimeout("document.getElementById('algDiv').style.overflow = 'initial';",1000);
+}
+
+function closeAlgPanel(){
+    var div = document.getElementById("algDiv");
+    div.style.maxWidth = '0%';
+    div.style.HeightWidth = '0%';
+    div.style.overflow = 'hidden';
+    document.getElementById("outerAlgDiv").style.overflowY = 'hidden';
+    document.getElementById("algInput").style.maxWidth = 0;
+    document.getElementById("closeBtn").innerHTML = "&gt;"
+
+}
+
 function setModelHMM(){
     model = new HiddenMarkovModel();
     document.getElementById("markovChainBtn").disabled = false;
     document.getElementById("hiddenMarkovModelBtn").disabled = true;
     document.getElementById("emissionHide").disabled = false;
+    document.getElementById("outerAlgDiv").style.display = null;
     initModelUI();
 }
 
@@ -111,6 +135,7 @@ function setModelMC(){
     document.getElementById("markovChainBtn").disabled = true;
     document.getElementById("hiddenMarkovModelBtn").disabled = false;
     document.getElementById("emissionHide").disabled = true;
+    document.getElementById("outerAlgDiv").style.display = 'none';
     initModelUI();
 
 }
@@ -178,7 +203,7 @@ window.onload = function() {
     var stateEmission = document.getElementById("sEmissionText");
     stateEmission.addEventListener('input', function(e){
         if (selectedObj instanceof State){
-            selectedObj.emission = this.value;
+            selectedObj.emission = model.validateEmission(this.value);
             refresh();
         }
     });
@@ -194,6 +219,7 @@ window.onload = function() {
     var AlgButton = document.getElementById("algButton");
     AlgButton.addEventListener("click", function() {
         if (!model.validCheck()) { 
+            var output = document.getElementById('outputString');
             output.innerHTML = "There are unresolved errors";
             refreshInfoPanels();
             var panel = document.getElementById("errorPanelInfo");
@@ -224,7 +250,29 @@ window.onload = function() {
         refreshInfoPanels();
     };
 
+    document.getElementById("closeBtn").addEventListener("click" , function(){
+        if (algFlag){
+            return;
+        } else {
+            algFlag = true;
+            setTimeout("algFlag = false;",1000);
+        }
+        var div = document.getElementById("algDiv");
+        if (div.clientWidth > 0 ){
+            closeAlgPanel();
+        } else {
+            div.style.maxWidth = '94%';
+            document.getElementById("algInput").style.maxWidth = '100%';
+            document.getElementById("outerAlgDiv").style.overflowY = 'auto';
+            document.getElementById("closeBtn").innerHTML = "&lt;"
+            div.style.maxHeight = '100%';
+            setTimeout("document.getElementById('algDiv').style.overflow = 'initial';",1000);
+        }
+    });
+
 }
+
+var algFlag = false;
 
 test = function(){
     var w = canvas.width;

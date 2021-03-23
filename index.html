@@ -140,14 +140,17 @@
                 </div>
             </div>
         </div>
-        <div class="algorithms" id="algDiv">
-            <div class="algInput">
+        <div class="algorithms" id="outerAlgDiv">
+        <span id="closeBtn" class="usable" title="close" src="images/favicon-16x16.png">&lt;</span> <!--TODO change to icon-->
+        <div  id="algDiv">
+            <div class="algInput" id="algInput">
                 <select class="usable" name="algorithmDropdown" id="algorithmDropdown">
                 </select>
                 <select class="usable" name="algVarDropdown" id="algVarDropdown">
                 </select>
                 <input id="algString" class="usable"></input>
                 <button id="algButton" class="usable" title="Run/Step">Run/Step</button>
+                <!-- <button id="closeBtn" class="usable" title="close">close</button> TODO change to icon -->
             </div>
             <div id="tableWrapper">
                 <div id="tableScroll">
@@ -158,6 +161,7 @@
 
             </div>
 
+        </div>
         </div>
         <div id="hoverInfo" class="hoverInfo">
             <panel>

@@ -13,7 +13,8 @@ var offset;
 
 initCanvas = function() {
 
-	model = new MarkovChain();
+	setModelMC();
+    closeAlgPanel();
 
     canvas = document.getElementById('markovCanvas');
 
