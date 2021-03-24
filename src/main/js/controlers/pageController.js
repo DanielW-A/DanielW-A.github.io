@@ -261,7 +261,7 @@ window.onload = function() {
         if (div.clientWidth > 0 ){
             closeAlgPanel();
         } else {
-            div.style.maxWidth = '94%';
+            div.style.maxWidth = '100%';
             document.getElementById("algInput").style.maxWidth = '100%';
             document.getElementById("outerAlgDiv").style.overflowY = 'auto';
             document.getElementById("closeBtn").innerHTML = "&lt;"
