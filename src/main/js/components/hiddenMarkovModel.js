@@ -410,9 +410,9 @@ class HiddenMarkovModel extends MarkovModel{
         this.validCheck();
         this.currentAlg = type;
         if (type == this.AlgType.FORWARD){this.forwardStep();}
-        else if (type === this.AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
+        else if (type === this.AlgType.BACKWARD){this.forwardBackwardStep();}
         else if (type === this.AlgType.VITERBI){this.viterbiStep();}
-        else if (type === this.AlgType.MOSTLIKELY){this.gammaStep();}
+        else if (type === this.AlgType.FORWARDBACKWARD){this.gammaStep();}
         else if (type === this.AlgType.BAUMWELCH){this.baumWelchStep();}//TODO;
     }
 
@@ -421,6 +421,8 @@ class HiddenMarkovModel extends MarkovModel{
     // Forward
     /////////////////////////////////////////////////
     forwardStep(){
+        
+        this.algProsessor.done = false;
         if (this.algProsessor.observedString == null){
             var comp = document.getElementById("algString");
             comp.disabled = true;
@@ -430,8 +432,9 @@ class HiddenMarkovModel extends MarkovModel{
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
-            comp.value = "";
-            highlightTable();
+            // comp.value = "";
+            // highlightTable();
+            this.algProsessor.done = true;
             // this.clearAlgProsessor();
             document.getElementById("description").innerHTML = forwardDesc[2];
         } else { // inductive step;
@@ -526,6 +529,7 @@ class HiddenMarkovModel extends MarkovModel{
     /////////////////////////////////////////////////
 
     gammaStep(){
+        this.algProsessor.done = false;
         if (this.algProsessor.observedString == null){
             this.initGamma();
         } else if (this.algProsessor.t < -1) {
@@ -539,7 +543,8 @@ class HiddenMarkovModel extends MarkovModel{
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
-            comp.value = "";
+            this.algProsessor.done = true;
+            // comp.value = "";
         } else { // inductive step;
             
             document.getElementById("algVarDropdown").value = this.AlgVars.Y;
@@ -597,7 +602,25 @@ class HiddenMarkovModel extends MarkovModel{
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
-            comp.value = "";
+            // comp.value = "";
+            var max = 0;
+            var argMax = "";
+            for (var i in this.algProsessor.D[this.algProsessor.t]){
+                if (this.algProsessor.D[this.algProsessor.t][i] > max){
+                    max = this.algProsessor.D[this.algProsessor.t][i];
+                    argMax = i;
+                }
+            }
+            var sequence = ","+this.states[i].text;
+            for (var i = this.algProsessor.t+1; i--; 2 < i){
+                if (i < 2){
+                    continue;
+                }
+                sequence = ","+this.algProsessor.P[i][argMax] + sequence;
+                argMax = this.algProsessor.P[i][argMax+"id"];
+            }
+            sequence = sequence.substr(1,sequence.length)
+            document.getElementById("description").innerHTML = "Most likely sequence of latent states: " + sequence;
         } else { // inductive step;
             this.inductiveViterbi();
         }
@@ -642,6 +665,7 @@ class HiddenMarkovModel extends MarkovModel{
 
             this.algProsessor.D[this.algProsessor.t][j] = max.times(this.states[j].getEmissionProbability(this.getStateFromEmission(char)));
             this.algProsessor.P[this.algProsessor.t][j] = "" + this.states[argMax].text;
+            this.algProsessor.P[this.algProsessor.t][j+"id"] = argMax;
         }
     }
 
@@ -847,8 +871,8 @@ class HiddenMarkovModel extends MarkovModel{
 
     AlgType = {
         FORWARD: 'Forward',
+        BACKWARD: 'Backward',
         FORWARDBACKWARD: 'Forward-Backward',
-        MOSTLIKELY: 'mostLikely',
         VITERBI: 'Viterbi',
         BAUMWELCH: 'Baum-Welch'
     }
@@ -862,7 +886,7 @@ class HiddenMarkovModel extends MarkovModel{
         X: 'Xi'
     }
 
-    mostLikelyVars = {
+    forwardBackwardVars = {
         A: this.AlgVars.A,
         B: this.AlgVars.B,
         Y: this.AlgVars.Y

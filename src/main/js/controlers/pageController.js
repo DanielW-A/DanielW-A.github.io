@@ -128,6 +128,7 @@ function setModelHMM(){
     document.getElementById("emissionHide").disabled = false;
     document.getElementById("outerAlgDiv").style.display = null;
     initModelUI();
+    refreshComponents();
 }
 
 function setModelMC(){
@@ -137,6 +138,7 @@ function setModelMC(){
     document.getElementById("emissionHide").disabled = true;
     document.getElementById("outerAlgDiv").style.display = 'none';
     initModelUI();
+    refreshComponents();
 
 }
 
@@ -162,7 +164,7 @@ window.onload = function() {
 
     // buttons
     document.getElementById("saveBtn").addEventListener("click", function() {
-        save();
+        saveToJSON();
     });
     document.getElementById("loadBtn").addEventListener("click", function() {
         load();
@@ -229,11 +231,16 @@ window.onload = function() {
         }
         model.algStep(document.getElementById("algorithmDropdown").value);
         refresh();
+        if (model.algProsessor.done){
+            highlightTable();
+        }
     });
 
     var obserevedString = document.getElementById("algString");
     obserevedString.addEventListener('input', function(e){
         var obsStr = model.validateObs(obserevedString.value);
+        model.clearAlgProsessor()
+        model.algProsessor.obserevedString = obsStr;
         obserevedString.value = obsStr;
         refresh();
     });
@@ -574,7 +581,7 @@ function refreshInfoPanels(){
     var values = [];
     if (model.algProsessor.type == model.AlgType.FORWARD){
         values =  model.getAlpha();
-    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+    } else if (model.algProsessor.type == model.AlgType.BACKWARD){
         values =  model.getBeta();
     } else {
         var type = document.getElementById("algVarDropdown").value;
@@ -619,8 +626,10 @@ function highlightTable(){
     var values = [];
     if (model.algProsessor.type == model.AlgType.FORWARD){
         values =  model.getAlpha();
-    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+    } else if (model.algProsessor.type == model.AlgType.BACKWARD){
         values =  model.getBeta();
+    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+        values =  model.getVar(model.AlgVars.Y);
     }
 
     var currentMax = 0;
@@ -645,7 +654,7 @@ function spotlight(id,t,nodeA,nodeB){
     console.log("focus",id,t,nodeA,nodeB);
     
     clearInterval(caretTimer);
-    caretVisible = flase;
+    caretVisible = false;
 
     equType = (id.length < 2 && t == 1)? "init" : "equ";
 
@@ -714,7 +723,7 @@ function tableCellMouseOver(e,comp,j,i){
         } else {
             str = forwardInduction(t,i,s,output,A);
         }
-    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.B){
+    } else if (model.algProsessor.type == model.AlgType.BACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.B){
         var t = j;
         var s = model.states[i];
         for (var k in model.states){S++;}
@@ -726,7 +735,7 @@ function tableCellMouseOver(e,comp,j,i){
         } else {
             str = backwardInduction(t,i,s,output,B);
         }
-    } else if (model.algProsessor.type == model.AlgType.MOSTLIKELY || document.getElementById("algVarDropdown").value == model.AlgVars.Y){
+    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.Y){
         var t = j;
         var s = model.states[i];
         for (var k in model.states){S++;}
@@ -736,6 +745,17 @@ function tableCellMouseOver(e,comp,j,i){
         var G = model.getVar(model.AlgVars.Y);
 
         str = gammaInduction(t,i,s,output,G,A,B);
+    } else if (model.algProsessor.type == model.AlgType.VITERBI || document.getElementById("algVarDropdown").value == model.AlgVars.D){
+        var t = j;
+        var s = model.states[i];
+        for (var k in model.states){S++;}
+        var output = document.getElementById("algString").value;
+        var D = model.getVar(model.AlgVars.D);
+        if (t == 1){
+            str = viterbiInital(t,i,s,output,D);
+        } else {
+            str = viterbiInduction(t,i,s,output,D);
+        }
     }
     
 
@@ -796,7 +816,7 @@ function setAlgDescription(type){
         str += forwardDescription[1];
         str += forwardEquations[1];
         str += forwardDescription[2];
-    } else if (type == model.AlgType.FORWARDBACKWARD){
+    } else if (type == model.AlgType.BACKWARD){
         str += backwardDescription[0];
         str += backwardEquations[0];
         str += backwardDescription[1];
@@ -817,9 +837,9 @@ function setAlgDescription(type){
         }
         algVar.innerHTML = dropdownText;
         algVar.style.display = "";
-    } else if (dropdown.value == model.AlgType.MOSTLIKELY){
-        for (i in model.mostLikelyVars){
-            dropdownText += "<option value=\""+model.mostLikelyVars[i] + "\">"+model.mostLikelyVars[i]+"</option>"
+    } else if (dropdown.value == model.AlgType.FORWARDBACKWARD){
+        for (i in model.forwardBackwardVars){
+            dropdownText += "<option value=\""+model.forwardBackwardVars[i] + "\">"+model.forwardBackwardVars[i]+"</option>"
         }
         algVar.innerHTML = dropdownText;
         algVar.style.display = "";

@@ -21,9 +21,8 @@
     <script src="src/main/js/utils/mathjax-config.js" defer></script>
     <script type="text/javascript" id="MathJax-script" defer
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-    </script>
-    <script type="text/javascript" id="MathJax-script" defer
-        src="https://cdn.jsdelivr.net/npm/big.js/big.js">
+        </script>
+    <script type="text/javascript" id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/big.js/big.js">
     </script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
     <!-- <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script> -->
@@ -48,25 +47,29 @@
             </h1>
         </div>
 
-        <div id="information" class=>
+        <div id="information">
             <!-- The model detals panel -->
             <!-- The the outputs/ description panel -->
             <div id="informationPanel" class="right">
                 <div id="tools">
                     <div style="text-align:center;">
-                    <div>
+                        <div>
                             <button id="testBtn" title="Test">Test</button>
                             <button id="saveBtn" title="Save">Save</button>
-                            <button id="loadBtn" title="Load" >Load</button>
-                            <input id="loadInput" title="Load" type="file" accept=".json" style="display: none;"></input>
+                            <button id="loadBtn" title="Load">Load</button>
+                            <input id="loadInput" title="Load" type="file" accept=".json"
+                                style="display: none;"></input>
                             <button id="clearBtn" title="Clear">Clear</button>
                             <button id="exportBtn" title="export">Export</button>
-                            <button id="runBtn" title="Run">Run</button></div>
-                            Hide Emmission:<input id="emissionHide" type="checkbox" style="width: auto;"></input>
+                            <button id="runBtn" title="Run">Run</button>
+                            <a href="https://github.com/DanielW-A/MarkovModelSamples" target="_blank">Samples</a>
+                        </div>
+                        Hide Emmission:<input id="emissionHide" type="checkbox" style="width: auto;"></input>
                         <form>
-                            
-                            <p><label>Steps</label><input type="number" id="stepCount" name="stepCount" min="1" value="20"></p>
-                            <p><label>Speed</label><input type="range"  id="stepSpeed" name="stepSpeed" value="20"></p>
+
+                            <p><label>Steps</label><input type="number" id="stepCount" name="stepCount" min="1"
+                                    value="20"></p>
+                            <p><label>Speed</label><input type="range" id="stepSpeed" name="stepSpeed" value="20"></p>
                         </form>
                         <div id="outputString" type="text" style="word-break: break-all;"></div>
                         <!--button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State"><img src="images/empty.png" /></button-->
@@ -77,20 +80,26 @@
                     <div id="statePanelInfo" class="panel">
                         <form>
                             <p><label for="sID">id:</label>
-                            <input type="text" id="sIDText" name="id" readonly="true"></p>
+                                <input type="text" id="sIDText" name="id" readonly="true">
+                            </p>
                             <p><label for="sName">Name:</label>
-                            <input type="text" id="sNameText" name="StateName"></p>
+                                <input type="text" id="sNameText" name="StateName">
+                            </p>
                             <p id="sEmission"><label for="sEmission">Emissions:</label>
-                            <input type="text" id="sEmissionText" name="Emissions"></p>
+                                <input type="text" id="sEmissionText" name="Emissions">
+                            </p>
                             <p id="sInital"><label for="InitalProability">InitalProability:</label>
-                            <input type="text" id="sInitalProability" name="InitalProability"></p>
+                                <input type="text" id="sInitalProability" name="InitalProability">
+                            </p>
                         </form>
-                        <div id="sTransition"><button id="sTransitionBtn" class="accordion">Transition probabilities</button>
-                        <div id="sTransitionPanel" class="panel">
-                            <form id="sTransitionForm">
-                            </form>
-                        </div></div>
-                        
+                        <div id="sTransition"><button id="sTransitionBtn" class="accordion">Transition
+                                probabilities</button>
+                            <div id="sTransitionPanel" class="panel">
+                                <form id="sTransitionForm">
+                                </form>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -101,15 +110,20 @@
                         <form>
                             <!-- Cant be bothered to make this edtable i dont think its worth it -->
                             <p><label>\(S\) =</label>
-                            <label id="mStatesText" name="States"></label></p>
+                                <label id="mStatesText" name="States"></label>
+                            </p>
                             <p><label>\(\pi\) =</label>
-                            <label id="mInitalProability" name="mInitalProability"></label></p>
+                                <label id="mInitalProability" name="mInitalProability"></label>
+                            </p>
                             <p><label>\(\Sigma\) =</label>
-                            <label id="mEmissionStates" name="mEmissionStates"></p>
+                                <label id="mEmissionStates" name="mEmissionStates">
+                            </p>
                             <p><label>\(T/M\) =:</label>
-                            <label id="mTransitions" name="mTransitions"></label></p>
+                                <label id="mTransitions" name="mTransitions"></label>
+                            </p>
                             <p><label>\(E\) =</label>
-                            <label id="mEmissionProbaility" name="mEmissionProbaility"></p>
+                                <label id="mEmissionProbaility" name="mEmissionProbaility">
+                            </p>
                         </form>
                     </div>
                 </div>
@@ -131,37 +145,37 @@
                     </div>
                 </div>
             </div>
-            <div id="markovCanvasDiv" class="markovCanvasDiv">
-                <canvas id="markovCanvas" width="1800" height="1000">
-                    <span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
-                </canvas>
-                <div id="results">
-
-                </div>
+        </div>
+        <div id="markovCanvasDiv" class="markovCanvasDiv">
+            <canvas id="markovCanvas" width="1800" height="1000">
+                <span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
+            </canvas>
+            <div id="results">
             </div>
         </div>
         <div class="algorithms" id="outerAlgDiv">
-        <span id="closeBtn" class="usable" title="close" src="images/favicon-16x16.png">&lt;</span> <!--TODO change to icon-->
-        <div  id="algDiv">
-            <div class="algInput" id="algInput">
-                <select class="usable" name="algorithmDropdown" id="algorithmDropdown">
-                </select>
-                <select class="usable" name="algVarDropdown" id="algVarDropdown">
-                </select>
-                <input id="algString" class="usable"></input>
-                <button id="algButton" class="usable" title="Run/Step">Run/Step</button>
-                <!-- <button id="closeBtn" class="usable" title="close">close</button> TODO change to icon -->
-            </div>
-            <div id="tableWrapper">
-                <div id="tableScroll">
-                    <table class="usable" id="algTable" class="algTable"></table>
+            <span id="closeBtn" class="usable" title="close" src="images/favicon-16x16.png">&lt;</span>
+            <!--TODO change to icon-->
+            <div id="algDiv">
+                <div class="algInput" id="algInput">
+                    <select class="usable" name="algorithmDropdown" id="algorithmDropdown">
+                    </select>
+                    <select class="usable" name="algVarDropdown" id="algVarDropdown">
+                    </select>
+                    <input id="algString" class="usable"></input>
+                    <button id="algButton" class="usable" title="Run/Step">Run/Step</button>
+                    <!-- <button id="closeBtn" class="usable" title="close">close</button> TODO change to icon -->
                 </div>
-            </div>
-            <div id="description">
+                <div id="tableWrapper">
+                    <div id="tableScroll">
+                        <table class="usable" id="algTable" class="algTable"></table>
+                    </div>
+                </div>
+                <div id="description">
+
+                </div>
 
             </div>
-
-        </div>
         </div>
         <div id="hoverInfo" class="hoverInfo">
             <panel>
