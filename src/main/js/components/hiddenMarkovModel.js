@@ -633,40 +633,45 @@ class HiddenMarkovModel extends MarkovModel{
 
     viterbiStep(){
         if (this.algProsessor.observedString == null){
+            document.getElementById("algVarDropdown").value = this.AlgVars.D;
+            var comp = document.getElementById("algString");
+            comp.disabled = true;
+            this.algProsessor.observedString = this.decodeEmissions(comp.value);
             this.initViterbi();
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
             // comp.value = "";
-            var max = 0;
-            var argMax = "";
-            for (var i in this.algProsessor.D[this.algProsessor.t]){
-                if (this.algProsessor.D[this.algProsessor.t][i] > max){
-                    max = this.algProsessor.D[this.algProsessor.t][i];
-                    argMax = i;
-                }
-            }
-            var sequence = ","+this.states[i].text;
-            for (var i = this.algProsessor.t+1; i--; 2 < i){
-                if (i < 2){
-                    continue;
-                }
-                sequence = ","+this.algProsessor.P[i][argMax] + sequence;
-                argMax = this.algProsessor.P[i][argMax+"id"];
-            }
-            sequence = sequence.substr(1,sequence.length)
+            var sequence = this.getSqeuence();
             document.getElementById("description").innerHTML = "Most likely sequence of latent states: " + sequence;
         } else { // inductive step;
+            document.getElementById("algVarDropdown").value = this.AlgVars.D;
             this.inductiveViterbi();
         }
     }
 
+    getSqeuence(){
+        var max = 0;
+        var argMax = "";
+        for (var i in this.algProsessor.D[this.algProsessor.t]){
+            if (this.algProsessor.D[this.algProsessor.t][i] >= max){
+                max = this.algProsessor.D[this.algProsessor.t][i];
+                argMax = i;
+            }
+        }
+        var sequence = ","+this.states[i].text;
+        for (var i = this.algProsessor.t+1; i--; 2 < i){
+            if (i < 2){
+                continue;
+            }
+            sequence = ","+this.algProsessor.P[i][argMax] + sequence;
+            argMax = this.algProsessor.P[i][argMax+"id"];
+        }
+        sequence = sequence.substr(1,sequence.length);
+        return sequence;
+    }
+
     initViterbi(){
-        document.getElementById("algVarDropdown").value = this.AlgVars.D;
-    
-        var comp = document.getElementById("algString");
-        comp.disabled = true;
-        this.algProsessor.observedString = this.decodeEmissions(comp.value);
 
         this.algProsessor.t = 1;
         this.algProsessor.D[this.algProsessor.t] = [];
@@ -677,7 +682,6 @@ class HiddenMarkovModel extends MarkovModel{
     }
 
     inductiveViterbi(){
-        document.getElementById("algVarDropdown").value = this.AlgVars.D;
         
         this.algProsessor.t++;
         var t = this.algProsessor.t;
@@ -685,14 +689,14 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.P[t] = [];
         var char = this.algProsessor.observedString[t-1];
 
-        var max = 0;
+        var max = new Big('0');
         var argMax = "";
         for (var j in this.states){
-            max = 0;
+            max = new Big('0');
             argMax = "";
             for (var i in this.states){
                 var temp = new Big(this.algProsessor.D[this.algProsessor.t-1][i]).times(this.getTrasitionProability(i,j));
-                if (temp > max){
+                if (temp.gt(max)){
                     max = temp;
                     argMax = i;
                 }

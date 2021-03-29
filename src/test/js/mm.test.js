@@ -639,8 +639,127 @@ test('forward and backward off this model', () => {
 });
 
 //https://iulg.sitehost.iu.edu/moss/hmmcalculations.pdf
+test("Baulm-Welch from HMMcaculations", () => {
+    var model = new mm.hiddenMarkovModel();
+
+    var fs = require('fs');
+    var data = fs.readFileSync('src/test/js/HMMcalculations.json',  {encoding:'utf8', flag:'r'});
+
+    JSON.parse(data);
+    model.createModelOn(JSON.parse(data));
+
+    model.algProsessor.observedString = model.decodeEmissions("ABBA");
+
+
+    model.runForward();
+    Alpha = model.algProsessor.A;
+    model.runBackward();
+    Beta = model.algProsessor.B;
+    model.runGamma();
+    Gamma = model.algProsessor.Y;
+    for (var i = 0; i < model.algProsessor.observedString.length-1; i++){
+        model.inductiveBaumWelch();
+    }
+    Xi = model.algProsessor.X;
+
+
+    expect(Xi[1][0][0].round(5).minus(new Big("0.28271")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][0][1].round(5).minus(new Big("0.53383")).abs().toNumber()).toBeLessThan(0.01);
+
+    expect(Xi[1][1][0].round(5).minus(new Big("0.02217")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][1][1].round(5).minus(new Big("0.16149")).abs().toNumber()).toBeLessThan(0.01);
+
+    
+    expect(Xi[2][0][0].round(5).minus(new Big("0.10071")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][0][1].round(5).minus(new Big("0.20417")).abs().toNumber()).toBeLessThan(0.005);
+
+    expect(Xi[2][1][0].round(5).minus(new Big("0.07884")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][1][1].round(5).minus(new Big("0.61648")).abs().toNumber()).toBeLessThan(0.005);
+    
+
+    expect(Xi[3][0][0].round(5).minus(new Big("0.04584")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[3][0][1].round(5).minus(new Big("0.13371")).abs().toNumber()).toBeLessThan(0.005);
+
+    expect(Xi[3][1][0].round(5).minus(new Big("0.06699")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[3][1][1].round(5).minus(new Big("0.75365")).abs().toNumber()).toBeLessThan(0.005);
+    
+    
+    model.algProsessor.observedString = model.decodeEmissions("BAB");
+
+
+    model.runForward();
+    Alpha = model.algProsessor.A;
+    model.runBackward();
+    Beta = model.algProsessor.B;
+    model.runGamma();
+    Gamma = model.algProsessor.Y;
+    for (var i = 0; i < model.algProsessor.observedString.length-1; i++){
+        model.inductiveBaumWelch();
+    }
+    Xi = model.algProsessor.X;
+
+    expect(Xi[1][0][0].round(5).minus(new Big("0.23185")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][0][1].round(5).minus(new Big("0.65071")).abs().toNumber()).toBeLessThan(0.011);
+
+    expect(Xi[1][1][0].round(5).minus(new Big("0.01212")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][1][1].round(5).minus(new Big("0.13124")).abs().toNumber()).toBeLessThan(0.011);
+
+    
+    expect(Xi[2][0][0].round(5).minus(new Big("0.08286")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][0][1].round(5).minus(new Big("0.16112")).abs().toNumber()).toBeLessThan(0.005);
+
+    expect(Xi[2][1][0].round(5).minus(new Big("0.09199")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][1][1].round(5).minus(new Big("0.68996")).abs().toNumber()).toBeLessThan(0.02);
+    
+});
 
 //http://www.biostat.jhsph.edu/bstcourse/bio638/notes/HMMs_BaumWelch.pdf
+
+//https://www.cis.upenn.edu/~cis262/notes/Example-Viterbi-DNA.pdf
+test("viterbi from upenn", () => {
+    var model = new mm.hiddenMarkovModel();
+
+    var fs = require('fs');
+    var data = fs.readFileSync('src/test/js/upenn-model.json',  {encoding:'utf8', flag:'r'});
+
+    JSON.parse(data);
+    model.createModelOn(JSON.parse(data));
+
+
+    model.algProsessor.observedString = model.decodeEmissions("GGCACTGAA");
+    
+    
+    model.initViterbi();
+    for (var i = 0; i < model.algProsessor.observedString.length-1; i++){
+        model.inductiveViterbi();
+    }
+
+    Delta = model.algProsessor.D;
+
+    expect(Delta[1][0].round(2).toString()).toEqual("0.15") //2^-2.73
+    expect(Delta[1][1].round(1).toString()).toEqual("0.1") //2^-3.32
+    
+    expect(Delta[2][0].round(4).toString()).toEqual("0.0225") //2^-5.47
+    expect(Delta[2][1].round(3).toString()).toEqual("0.015") //2^-6.06
+
+    expect(Delta[3][0].round(6).toString()).toEqual("0.003375") //2^-8.21
+    expect(Delta[3][1].round(6).toString()).toEqual("0.00225") //2^-8.79
+
+    expect(Delta[4][0].round(7).toString()).toEqual("0.0003375") //2^-11.53
+    expect(Delta[4][1].round(8).toString()).toEqual("0.00050625") //2^-10.94
+
+    expect(Delta[5][0].round(8).toString()).toEqual("0.00006075") //2^-14.01
+    expect(Delta[5][1].round(8).toString()).toEqual("0.00006075") //2^-14.01
+
+    expect(Delta[9][0].round(15).toString()).toEqual("1.889568e-8") //2^-25.65
+    expect(Delta[9][1].round(15).toString()).toEqual("4.251528e-8") //2^-24.49
+    
+
+
+    var sequence = model.getSqeuence();
+    expect(sequence).toEqual("H,H,H,L,L,L,L,L,L")
+});
+
 
 //https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
 test("forward-Backward off Russell & Norvig umbrella world", () => {
@@ -651,6 +770,7 @@ test("forward-Backward off Russell & Norvig umbrella world", () => {
 
     JSON.parse(data);
     model.createModelOn(JSON.parse(data));
+
 
     model.algProsessor.observedString = model.decodeEmissions("UUNUU");
 
