@@ -228,12 +228,14 @@ window.onload = function() {
             panel.style.maxHeight = panel.scrollHeight + "px";
             document.getElementById("errorButton").classList.add("active");
             return;
+        } else if (document.getElementById("algString").value != ''){
+            model.algStep(document.getElementById("algorithmDropdown").value);
+            refresh();
+            if (model.algProsessor.done){
+                highlightTable();
+            }
         }
-        model.algStep(document.getElementById("algorithmDropdown").value);
-        refresh();
-        if (model.algProsessor.done){
-            highlightTable();
-        }
+        
     });
 
     var obserevedString = document.getElementById("algString");
@@ -250,6 +252,7 @@ window.onload = function() {
         model.clearAlgProsessor();
         model.algProsessor.type = dropdown.value;
         setAlgDescription(dropdown.value);
+        model.algProsessor.done = false;
     };
 
     var varDropdown = document.getElementById("algVarDropdown");
@@ -587,33 +590,46 @@ function refreshInfoPanels(){
         var type = document.getElementById("algVarDropdown").value;
         values = model.getVar(type);
     }
-        var states = model.states;
+    var states = model.states;
+    var table = "";
     if(str.length > 0){
         
-        var table = "<tr>" +
+        table = "<tr>" +
                     "<th></th>";
-        for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
+        if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+            table += th("∅");
+            for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
+            str = " " + str;
+        } else {
+            for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
+        }
         table += "</tr>";
 
         for (i in states){
             table += "<tr>" +
                     th(states[i].text);
-            for (j = 1; j <= str.length; j++){
+            for (j = 0; j <= (str.length); j++){
+                if (model.algProsessor.type != model.AlgType.FORWARDBACKWARD && j ==0){continue;};
+                if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD && j == str.length){continue;};
                 if(!values[j]) {values[j] = []};
                 if(values[j][i]==null) {values[j][i] = new Big(0);};
-                table += td((isNaN(values[j][i]))? values[j][i] : removeZeros(values[j][i].toPrecision(8)),j,i); 
+                if(values[j][i][0] != null){
+                    table += td("",j,i);
+                    table = table.substr(0,table.length-5);
+                    for(var k in values[j][i]){
+                        table += (isNaN(values[j][i][k]))? values[j][i][k] : removeZeros(values[j][i][k].toPrecision(4))
+                    }
+                    table += "</td>";
+                } else {
+                    table += td((isNaN(values[j][i]))? values[j][i] : removeZeros(values[j][i].toPrecision(8)),j,i); 
+                }
             }
             table += "</tr>";
 
         }
-        document.getElementById("algTable").innerHTML = table;
-
-        var tablecomp = document.getElementById("algDiv");
-        tablecomp.clientHeight;
-        tablecomp.style.top;
-        height = window.innerHeight * 0.20;
         
     }
+    document.getElementById("algTable").innerHTML = table;
 }
 
 function removeZeros(str){
