@@ -25,7 +25,7 @@ class LatentState extends State{
         if (emissionState instanceof EmissionState) {
             return (model.transitions[this.id][emissionState.id])?parseFloat(model.transitions[this.id][emissionState.id].text):0;
         }
-        for (i in model.transitions[this.id]) {
+        for (var i in model.transitions[this.id]) {
             if (model.transitions[this.id][i].endNode instanceof EmissionState){
                 if (model.transitions[this.id][i].endNode.getEmissions() == emissionState){
                     return parseFloat(model.transitions[this.id][i].text);
@@ -393,6 +393,7 @@ class HiddenMarkovModel extends MarkovModel{
         if (type == this.AlgVars.D) {return this.algProsessor.D;}
         if (type == this.AlgVars.P) {return this.algProsessor.P;}
         if (type == this.AlgVars.X) {return this.algProsessor.X;}
+        return [];
     }
     decodeEmissions(str){
         //TODO THis is just a placeholder
@@ -410,9 +411,9 @@ class HiddenMarkovModel extends MarkovModel{
         this.validCheck();
         this.currentAlg = type;
         if (type == this.AlgType.FORWARD){this.forwardStep();}
-        else if (type === this.AlgType.FORWARDBACKWARD){this.forwardBackwardStep();}
+        else if (type === this.AlgType.BACKWARD){this.forwardBackwardStep();}
         else if (type === this.AlgType.VITERBI){this.viterbiStep();}
-        else if (type === this.AlgType.MOSTLIKELY){this.gammaStep();}
+        else if (type === this.AlgType.FORWARDBACKWARD){this.gammaStep();}
         else if (type === this.AlgType.BAUMWELCH){this.baumWelchStep();}//TODO;
     }
 
@@ -421,6 +422,8 @@ class HiddenMarkovModel extends MarkovModel{
     // Forward
     /////////////////////////////////////////////////
     forwardStep(){
+        
+        this.algProsessor.done = false;
         if (this.algProsessor.observedString == null){
             var comp = document.getElementById("algString");
             comp.disabled = true;
@@ -430,8 +433,9 @@ class HiddenMarkovModel extends MarkovModel{
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
-            comp.value = "";
-            highlightTable();
+            // comp.value = "";
+            // highlightTable();
+            this.algProsessor.done = true;
             // this.clearAlgProsessor();
             document.getElementById("description").innerHTML = forwardDesc[2];
         } else { // inductive step;
@@ -447,13 +451,6 @@ class HiddenMarkovModel extends MarkovModel{
         for(var i in this.states){
             var tempSum = new Big(0);
             for(var j in this.states){
-                if (j == '15'){
-                    console.log("Here");
-                    var a = this.getTrasitionProability(j,i);
-                    var b = this.transitions[j][i];
-                    console.log("Here");
-
-                }
                 tempSum = tempSum.plus(Big(this.algProsessor.A[t-1][j]).times(this.getTrasitionProability(j,i))); 
             }
             this.algProsessor.A[t][i] = tempSum.times(this.states[i].getEmissionProbability(this.getStateFromEmission(char)));
@@ -463,6 +460,7 @@ class HiddenMarkovModel extends MarkovModel{
         //get the string
         //stop string being edited 
         this.algProsessor.t = 1;
+        this.algProsessor.A = [];
         this.algProsessor.A[this.algProsessor.t] = [];
         for (var i in this.states){
             var emissionState = this.getStateFromEmission(this.algProsessor.observedString[0]);
@@ -489,8 +487,20 @@ class HiddenMarkovModel extends MarkovModel{
             var comp = document.getElementById("algString");
             comp.disabled = false;
             comp.value = "";
+        } else if (this.algProsessor.t <= 1){
+            this.terminationBeta();
         } else { // inductive step;
             this.inductiveBackward();
+        }
+    }
+    
+    terminationBeta(){
+        this.algProsessor.t = 0;
+        var t = this.algProsessor.t;
+        this.algProsessor.B[t] = [];
+        var char = this.algProsessor.observedString[t];
+        for (var i in this.states){
+            this.algProsessor.B[t][i] = this.algProsessor.B[t+1][i].times(this.states[i].getEmissionProbability(this.getStateFromEmission(char))).times(this.initialProbabilityDistribution[i])
         }
     }
 
@@ -498,7 +508,7 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.t--;
         var t = this.algProsessor.t;
         this.algProsessor.B[t] = [];
-        var char = this.algProsessor.observedString[t];
+        var char = this.algProsessor.observedString[t-1];
         for(var i in this.states){
             var tempSum = new Big(0);
             for(var j in this.states){
@@ -511,14 +521,15 @@ class HiddenMarkovModel extends MarkovModel{
     initBackward(){
         //get the string
         //stop string being edited 
-        this.algProsessor.t = this.algProsessor.observedString.length;
+        this.algProsessor.t = this.algProsessor.observedString.length +1;
         this.algProsessor.B[this.algProsessor.t] = [];
-        var char = this.algProsessor.observedString[this.algProsessor.t-1];
+        // var char = this.algProsessor.observedString[this.algProsessor.t-1];
         for (var i in this.states){
             var emissionState = this.getStateFromEmission(this.algProsessor.observedString[0]);
             this.algProsessor.B[this.algProsessor.t][i] = new Big(1);
-            // this.algProsessor.B[this.algProsessor.t][i] = this.states[i].getEmissionProbability(this.getStateFromEmission(char))
+            // this.algProsessor.B[this.algProsessor.t][i] = new Big(this.states[i].getEmissionProbability(this.getStateFromEmission(char)));
         }
+        this.inductiveBackward();
     }
 
     /////////////////////////////////////////////////
@@ -526,20 +537,22 @@ class HiddenMarkovModel extends MarkovModel{
     /////////////////////////////////////////////////
 
     gammaStep(){
+        this.algProsessor.done = false;
         if (this.algProsessor.observedString == null){
             this.initGamma();
-        } else if (this.algProsessor.t < -1) {
+        } else if (this.algProsessor.t < -2) {
             document.getElementById("algVarDropdown").value = this.AlgVars.A;
             this.runForward();
-            this.algProsessor.t = -1;
-        } else if (this.algProsessor.t < 0){
+            this.algProsessor.t = -2;
+        } else if (this.algProsessor.t < -1){
             document.getElementById("algVarDropdown").value = this.AlgVars.B;
             this.runBackward();
-            this.algProsessor.t = 0;
+            this.algProsessor.t = -1;
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
-            comp.value = "";
+            this.algProsessor.done = true;
+            // comp.value = "";
         } else { // inductive step;
             
             document.getElementById("algVarDropdown").value = this.AlgVars.Y;
@@ -553,14 +566,18 @@ class HiddenMarkovModel extends MarkovModel{
         var comp = document.getElementById("algString");
         comp.disabled = true;
         this.algProsessor.observedString = this.decodeEmissions(comp.value);
-        this.algProsessor.t = -2;
+        this.algProsessor.t = -3;
     }
 
     runForward(){
         this.initForward();
+        this.algProsessor.A[0] = [];
+        this.algProsessor.A[0][0] = new Big(this.initialProbabilityDistribution[0]);
+        this.algProsessor.A[0][1] = new Big(this.initialProbabilityDistribution[1]);
         for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
             this.inductiveFoward();
         }
+        this.normalise(this.algProsessor.A);
     }
 
     runBackward(){
@@ -568,6 +585,29 @@ class HiddenMarkovModel extends MarkovModel{
         for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
             this.inductiveBackward();
         }
+        this.normalise(this.algProsessor.B);
+        this.reduceT(this.algProsessor.B);
+        // this.terminationBeta();
+    }
+    
+    reduceT(input){
+        for (var i = 1; i < Object.keys(input).length; i++){
+            input[i-1] = [];
+            input[i-1] = input[i];
+        }
+    }
+
+    normalise(input){
+        for (var i in input){
+            var sum = new Big(0);
+            for (var j in input[i]){
+                sum = sum.plus(input[i][j]);
+            }
+            for (var j in input[i]){
+                if (input[i][j] != 1) {input[i][j] = input[i][j].div(sum)};
+            }
+        }
+        return input;
     }
 
     inductiveGamma(){
@@ -593,22 +633,45 @@ class HiddenMarkovModel extends MarkovModel{
 
     viterbiStep(){
         if (this.algProsessor.observedString == null){
+            document.getElementById("algVarDropdown").value = this.AlgVars.D;
+            var comp = document.getElementById("algString");
+            comp.disabled = true;
+            this.algProsessor.observedString = this.decodeEmissions(comp.value);
             this.initViterbi();
         } else if (this.algProsessor.observedString.length <= this.algProsessor.t){
             var comp = document.getElementById("algString");
             comp.disabled = false;
-            comp.value = "";
+            // comp.value = "";
+            var sequence = this.getSqeuence();
+            document.getElementById("description").innerHTML = "Most likely sequence of latent states: " + sequence;
         } else { // inductive step;
+            document.getElementById("algVarDropdown").value = this.AlgVars.D;
             this.inductiveViterbi();
         }
     }
 
+    getSqeuence(){
+        var max = 0;
+        var argMax = "";
+        for (var i in this.algProsessor.D[this.algProsessor.t]){
+            if (this.algProsessor.D[this.algProsessor.t][i] >= max){
+                max = this.algProsessor.D[this.algProsessor.t][i];
+                argMax = i;
+            }
+        }
+        var sequence = ","+this.states[i].text;
+        for (var i = this.algProsessor.t+1; i--; 2 < i){
+            if (i < 2){
+                continue;
+            }
+            sequence = ","+this.algProsessor.P[i][argMax] + sequence;
+            argMax = this.algProsessor.P[i][argMax+"id"];
+        }
+        sequence = sequence.substr(1,sequence.length);
+        return sequence;
+    }
+
     initViterbi(){
-        document.getElementById("algVarDropdown").value = this.AlgVars.D;
-    
-        var comp = document.getElementById("algString");
-        comp.disabled = true;
-        this.algProsessor.observedString = this.decodeEmissions(comp.value);
 
         this.algProsessor.t = 1;
         this.algProsessor.D[this.algProsessor.t] = [];
@@ -619,7 +682,6 @@ class HiddenMarkovModel extends MarkovModel{
     }
 
     inductiveViterbi(){
-        document.getElementById("algVarDropdown").value = this.AlgVars.D;
         
         this.algProsessor.t++;
         var t = this.algProsessor.t;
@@ -627,14 +689,14 @@ class HiddenMarkovModel extends MarkovModel{
         this.algProsessor.P[t] = [];
         var char = this.algProsessor.observedString[t-1];
 
-        var max = 0;
+        var max = new Big('0');
         var argMax = "";
         for (var j in this.states){
-            max = 0;
+            max = new Big('0');
             argMax = "";
             for (var i in this.states){
                 var temp = new Big(this.algProsessor.D[this.algProsessor.t-1][i]).times(this.getTrasitionProability(i,j));
-                if (temp > max){
+                if (temp.gt(max)){
                     max = temp;
                     argMax = i;
                 }
@@ -642,6 +704,7 @@ class HiddenMarkovModel extends MarkovModel{
 
             this.algProsessor.D[this.algProsessor.t][j] = max.times(this.states[j].getEmissionProbability(this.getStateFromEmission(char)));
             this.algProsessor.P[this.algProsessor.t][j] = "" + this.states[argMax].text;
+            this.algProsessor.P[this.algProsessor.t][j+"id"] = argMax;
         }
     }
 
@@ -678,36 +741,36 @@ class HiddenMarkovModel extends MarkovModel{
 
     updateModel(){
 
-        // var t= 1;
-        // var char = 'N';
+        var t= 1;
+        var char = 'N';
 
-        // var bigSum = new Big('0');
-        // for (var i in this.states){
-        //     for (var j in this.states){
-        //         bigSum = bigSum.plus(this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j]);
-        //     }
-        // }
+        var bigSum = new Big('0');
+        for (var i in this.states){
+            for (var j in this.states){
+                bigSum = bigSum.plus(this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j]);
+            }
+        }
 
-        // var test =bigSum.toNumber();
+        var test =bigSum.toNumber();
         
-        // var sum = 0;
-        // for (var i in this.states){
-        //     for (var j in this.states){
-        //         sum += this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j];
-        //     }
-        // }
-        // var sum2 = 0;
-        // for(i in this.states){
-        //     sum2 += this.algProsessor.A[t][i] * this.algProsessor.B[t][i];
-        // }
-        // var test1 = this.algProsessor.A[t][0] * this.algProsessor.B[t][0];
-        // var test2 = this.algProsessor.A[t][0] * parseFloat(this.transitions[0][0].text) * this.states[0].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][0] +
-        //             this.algProsessor.A[t][0] * parseFloat(this.transitions[0][1].text) * this.states[1].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][1];
+        var sum = 0;
+        for (var i in this.states){
+            for (var j in this.states){
+                sum += this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j];
+            }
+        }
+        var sum2 = 0;
+        for(i in this.states){
+            sum2 += this.algProsessor.A[t][i] * this.algProsessor.B[t][i];
+        }
+        var test1 = this.algProsessor.A[t][0] * this.algProsessor.B[t][0];
+        var test2 = this.algProsessor.A[t][0] * parseFloat(this.transitions[0][0].text) * this.states[0].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][0] +
+                    this.algProsessor.A[t][0] * parseFloat(this.transitions[0][1].text) * this.states[1].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][1];
 
-        // var fakeB = parseFloat(this.transitions[0][0].text) * this.states[0].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][0] +
-        //             parseFloat(this.transitions[0][1].text) * this.states[1].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][1];
+        var fakeB = parseFloat(this.transitions[0][0].text) * this.states[0].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][0] +
+                    parseFloat(this.transitions[0][1].text) * this.states[1].getEmissionProbability(this.getStateFromEmission(char)) * this.algProsessor.B[t+1][1];
         
-        // var B = this.algProsessor.B[t][0].toNumber();
+        var B = this.algProsessor.B[t][0].toNumber();
 
 
         var testXi = 0
@@ -778,7 +841,7 @@ class HiddenMarkovModel extends MarkovModel{
         var conditionalGammaSumm = 0;
         for (var i in this.states){
             if (i == 3){
-                console.log("here");
+                // console.log("here");
             }
             for (var j in this.emissionStates){
 
@@ -847,8 +910,8 @@ class HiddenMarkovModel extends MarkovModel{
 
     AlgType = {
         FORWARD: 'Forward',
+        BACKWARD: 'Backward',
         FORWARDBACKWARD: 'Forward-Backward',
-        MOSTLIKELY: 'mostLikely',
         VITERBI: 'Viterbi',
         BAUMWELCH: 'Baum-Welch'
     }
@@ -862,7 +925,7 @@ class HiddenMarkovModel extends MarkovModel{
         X: 'Xi'
     }
 
-    mostLikelyVars = {
+    forwardBackwardVars = {
         A: this.AlgVars.A,
         B: this.AlgVars.B,
         Y: this.AlgVars.Y

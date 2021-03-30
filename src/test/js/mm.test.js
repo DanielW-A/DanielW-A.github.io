@@ -479,9 +479,9 @@ test('Hidden Markov Model: Running Backward Algorithm', () => {
 
     model.initBackward();
     Beta = model.algProsessor.B;
-    expect(Beta[emissionStr.length][0].toString()).toEqual("1")
+    expect(Beta[emissionStr.length+1][0].toString()).toEqual("1")
 
-    expect(Beta[emissionStr.length][1].toString()).toEqual("1");
+    expect(Beta[emissionStr.length+1][1].toString()).toEqual("1");
 
 
     for (var i = 1; i < emissionStr.length; i++){
@@ -540,7 +540,7 @@ test('Hidden Markov Model: Gamma and Balm-Welch Equal', () => {
             }
             var testY = model.algProsessor.Y[t+1][i].round(120,0);
             testXi = testXi.round(120,0); // some small rounding errors, either way this is significant places so so little data lost.
-
+            expect(testXi.toString()).toEqual(testY.toString());
             expect(testXi.eq(testY)).toBeTruthy();
         }
     }
@@ -550,23 +550,303 @@ test('Hidden Markov Model: Gamma and Balm-Welch Equal', () => {
 // Large HMM
 /////////////////////////////////////////////////////////////
 
-test('Hidden Markov Model: large model', done  => {
+test('Hidden Markov Model: large model', ()  => {
+    var model = new mm.hiddenMarkovModel();
+    
+    const fs = require('fs');
+   
+    const data = fs.readFileSync('src/test/js/test.json',
+            {encoding:'utf8', flag:'r'});
+  
+
+    JSON.parse(data);
+    model.createModelOn(JSON.parse(data));
+
+    expect(Object.keys(model.states).length).toBeGreaterThan(0);
+    expect(Object.keys(model.emissionStates).length).toBeGreaterThan(0);
+    expect(Object.keys(model.transitions).length).toBeGreaterThan(0);
+    expect(model.validCheck()).toBeTruthy();
+
+});
+
+//https://www.cs.rochester.edu/u/james/CSC248/Lec11.pdf
+test('forward and backward off this model', () => {
+    var model = new mm.hiddenMarkovModel();
+
+    const fs = require('fs');
+   
+    const data = fs.readFileSync('src/test/js/rochester-model.json',
+            {encoding:'utf8', flag:'r'});
+
+    JSON.parse(data);
+    model.createModelOn(JSON.parse(data));
+
+    model.algProsessor.observedString = model.decodeEmissions("RWBB");
+
+
+    model.initForward();
+    for (var i = 1; i < model.algProsessor.observedString.length; i++){
+        model.inductiveFoward();
+    }
+    Alpha = model.algProsessor.A;
+
+    Big.RM = 1;
+    
+    expect(Alpha[1][0].round(2).toString()).toEqual("0.24");
+    expect(Alpha[1][1].round(2).toString()).toEqual("0.08");
+    
+    expect(Alpha[2][0].round(3).toString()).toEqual("0.067");
+    expect(Alpha[2][1].round(3).toString()).toEqual("0.046");
+    
+    expect(Alpha[3][0].round(3).toString()).toEqual("0.016");
+    expect(Alpha[3][1].round(3).toString()).toEqual("0.018"); 
+    // note that this value is differnt to the one on the document this is to do with the heigher precision i store the intermeadte values at rather than 2 s.f.
+
+    expect(Alpha[4][0].round(4).toString()).toEqual("0.0045");
+    expect(Alpha[4][1].round(4).toString()).toEqual("0.0056");
+
+
+
+    model.algProsessor.observedString = model.decodeEmissions("RWBB");
+
+    model.initBackward();
+    for (var i = 1; i <  model.algProsessor.observedString.length; i++){
+        model.inductiveBackward();
+    }
+    model.terminationBeta();
+
+    Beta = model.algProsessor.B;
+
+    Big.RM = 1;
+
+        
+    expect(Beta[5][0].round(1).toString()).toEqual("1");
+    expect(Beta[5][1].round(1).toString()).toEqual("1");
+    
+    expect(Beta[4][0].round(1).toString()).toEqual("0.3");
+    expect(Beta[4][1].round(1).toString()).toEqual("0.3");
+        
+    expect(Beta[3][0].round(2).toString()).toEqual("0.09");
+    expect(Beta[3][1].round(2).toString()).toEqual("0.09");
+
+    expect(Beta[2][0].round(4).toString()).toEqual("0.0324");
+    expect(Beta[2][1].round(4).toString()).toEqual("0.0297");
+
+    // expect(Beta[1][0].round(4).toString()).toEqual("0.0078"); // this treats beta a liitle differnetly than my model
+    // expect(Beta[1][1].round(4).toString()).toEqual("0.0024");
+  
+
+});
+
+//https://iulg.sitehost.iu.edu/moss/hmmcalculations.pdf
+test("Baulm-Welch from HMMcaculations", () => {
     var model = new mm.hiddenMarkovModel();
 
     var fs = require('fs');
+    var data = fs.readFileSync('src/test/js/HMMcalculations.json',  {encoding:'utf8', flag:'r'});
+
+    JSON.parse(data);
+    model.createModelOn(JSON.parse(data));
+
+    model.algProsessor.observedString = model.decodeEmissions("ABBA");
+
+
+    model.runForward();
+    Alpha = model.algProsessor.A;
+    model.runBackward();
+    Beta = model.algProsessor.B;
+    model.runGamma();
+    Gamma = model.algProsessor.Y;
+    for (var i = 0; i < model.algProsessor.observedString.length-1; i++){
+        model.inductiveBaumWelch();
+    }
+    Xi = model.algProsessor.X;
+
+
+    expect(Xi[1][0][0].round(5).minus(new Big("0.28271")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][0][1].round(5).minus(new Big("0.53383")).abs().toNumber()).toBeLessThan(0.01);
+
+    expect(Xi[1][1][0].round(5).minus(new Big("0.02217")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][1][1].round(5).minus(new Big("0.16149")).abs().toNumber()).toBeLessThan(0.01);
+
+    
+    expect(Xi[2][0][0].round(5).minus(new Big("0.10071")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][0][1].round(5).minus(new Big("0.20417")).abs().toNumber()).toBeLessThan(0.005);
+
+    expect(Xi[2][1][0].round(5).minus(new Big("0.07884")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][1][1].round(5).minus(new Big("0.61648")).abs().toNumber()).toBeLessThan(0.005);
     
 
-    fs.readFile('src/test/js/test.json', function (err, data) {
-                    if (err) throw err;
+    expect(Xi[3][0][0].round(5).minus(new Big("0.04584")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[3][0][1].round(5).minus(new Big("0.13371")).abs().toNumber()).toBeLessThan(0.005);
 
-                    JSON.parse(data);
-                    model.createModelOn(JSON.parse(data));
+    expect(Xi[3][1][0].round(5).minus(new Big("0.06699")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[3][1][1].round(5).minus(new Big("0.75365")).abs().toNumber()).toBeLessThan(0.005);
+    
+    
+    model.algProsessor.observedString = model.decodeEmissions("BAB");
 
-                    expect(Object.keys(model.states).length).toBeGreaterThan(0);
-                    expect(Object.keys(model.emissionStates).length).toBeGreaterThan(0);
-                    expect(Object.keys(model.transitions).length).toBeGreaterThan(0);
-                    expect(model.validCheck()).toBeTruthy();
-                    done();
-    });
 
+    model.runForward();
+    Alpha = model.algProsessor.A;
+    model.runBackward();
+    Beta = model.algProsessor.B;
+    model.runGamma();
+    Gamma = model.algProsessor.Y;
+    for (var i = 0; i < model.algProsessor.observedString.length-1; i++){
+        model.inductiveBaumWelch();
+    }
+    Xi = model.algProsessor.X;
+
+    expect(Xi[1][0][0].round(5).minus(new Big("0.23185")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][0][1].round(5).minus(new Big("0.65071")).abs().toNumber()).toBeLessThan(0.011);
+
+    expect(Xi[1][1][0].round(5).minus(new Big("0.01212")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[1][1][1].round(5).minus(new Big("0.13124")).abs().toNumber()).toBeLessThan(0.011);
+
+    
+    expect(Xi[2][0][0].round(5).minus(new Big("0.08286")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][0][1].round(5).minus(new Big("0.16112")).abs().toNumber()).toBeLessThan(0.005);
+
+    expect(Xi[2][1][0].round(5).minus(new Big("0.09199")).abs().toNumber()).toBeLessThan(0.005);
+    expect(Xi[2][1][1].round(5).minus(new Big("0.68996")).abs().toNumber()).toBeLessThan(0.02);
+    
+});
+
+//http://www.biostat.jhsph.edu/bstcourse/bio638/notes/HMMs_BaumWelch.pdf
+
+//https://www.cis.upenn.edu/~cis262/notes/Example-Viterbi-DNA.pdf
+test("viterbi from upenn", () => {
+    var model = new mm.hiddenMarkovModel();
+
+    var fs = require('fs');
+    var data = fs.readFileSync('src/test/js/upenn-model.json',  {encoding:'utf8', flag:'r'});
+
+    JSON.parse(data);
+    model.createModelOn(JSON.parse(data));
+
+
+    model.algProsessor.observedString = model.decodeEmissions("GGCACTGAA");
+    
+    
+    model.initViterbi();
+    for (var i = 0; i < model.algProsessor.observedString.length-1; i++){
+        model.inductiveViterbi();
+    }
+
+    Delta = model.algProsessor.D;
+
+    expect(Delta[1][0].round(2).toString()).toEqual("0.15") //2^-2.73
+    expect(Delta[1][1].round(1).toString()).toEqual("0.1") //2^-3.32
+    
+    expect(Delta[2][0].round(4).toString()).toEqual("0.0225") //2^-5.47
+    expect(Delta[2][1].round(3).toString()).toEqual("0.015") //2^-6.06
+
+    expect(Delta[3][0].round(6).toString()).toEqual("0.003375") //2^-8.21
+    expect(Delta[3][1].round(6).toString()).toEqual("0.00225") //2^-8.79
+
+    expect(Delta[4][0].round(7).toString()).toEqual("0.0003375") //2^-11.53
+    expect(Delta[4][1].round(8).toString()).toEqual("0.00050625") //2^-10.94
+
+    expect(Delta[5][0].round(8).toString()).toEqual("0.00006075") //2^-14.01
+    expect(Delta[5][1].round(8).toString()).toEqual("0.00006075") //2^-14.01
+
+    expect(Delta[9][0].round(15).toString()).toEqual("1.889568e-8") //2^-25.65
+    expect(Delta[9][1].round(15).toString()).toEqual("4.251528e-8") //2^-24.49
+    
+
+
+    var sequence = model.getSqeuence();
+    expect(sequence).toEqual("H,H,H,L,L,L,L,L,L")
+});
+
+
+//https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
+test("forward-Backward off Russell & Norvig umbrella world", () => {
+    var model = new mm.hiddenMarkovModel();
+
+    var fs = require('fs');
+    var data = fs.readFileSync('src/test/js/Umbrella-world.json',  {encoding:'utf8', flag:'r'});
+
+    JSON.parse(data);
+    model.createModelOn(JSON.parse(data));
+
+
+    model.algProsessor.observedString = model.decodeEmissions("UUNUU");
+
+
+    model.runForward();
+    Alpha = model.algProsessor.A;
+
+    Big.RM = 1;
+    
+    expect(Alpha[0][0].round(2).toString()).toEqual("0.5");
+    expect(Alpha[0][1].round(2).toString()).toEqual("0.5");
+    
+    expect(Alpha[1][0].round(4).toString()).toEqual("0.8182");
+    expect(Alpha[1][1].round(4).toString()).toEqual("0.1818");
+    
+    expect(Alpha[2][0].round(4).toString()).toEqual("0.8834");
+    expect(Alpha[2][1].round(4).toString()).toEqual("0.1166"); 
+
+    expect(Alpha[3][0].round(4).toString()).toEqual("0.1907");
+    expect(Alpha[3][1].round(4).toString()).toEqual("0.8093");
+
+    expect(Alpha[4][0].round(4).toString()).toEqual("0.7308");
+    expect(Alpha[4][1].round(4).toString()).toEqual("0.2692");
+
+    expect(Alpha[5][0].round(4).toString()).toEqual("0.8673");
+    expect(Alpha[5][1].round(4).toString()).toEqual("0.1327");
+
+
+    model.algProsessor.observedString = model.decodeEmissions("UUNUU");
+
+    model.runBackward();
+
+    Beta = model.algProsessor.B;
+
+    Big.RM = 1;
+
+        
+    expect(Beta[5][0].round(1).toString()).toEqual("1");
+    expect(Beta[5][1].round(1).toString()).toEqual("1");
+    
+    expect(Beta[4][0].round(4).toString()).toEqual("0.6273");
+    expect(Beta[4][1].round(4).toString()).toEqual("0.3727");
+        
+    expect(Beta[3][0].round(4).toString()).toEqual("0.6533");
+    expect(Beta[3][1].round(4).toString()).toEqual("0.3467");
+
+    expect(Beta[2][0].round(4).toString()).toEqual("0.3763");
+    expect(Beta[2][1].round(4).toString()).toEqual("0.6237");
+
+    expect(Beta[1][0].round(4).toString()).toEqual("0.5923");
+    expect(Beta[1][1].round(4).toString()).toEqual("0.4077");
+
+    expect(Beta[0][0].round(4).toString()).toEqual("0.6469");
+    expect(Beta[0][1].round(4).toString()).toEqual("0.3531");
+
+    model.algProsessor.t=-1;
+    for (var i = 0; i <= model.algProsessor.observedString.length; i++){
+        model.inductiveGamma();
+    }
+    Gamma = model.algProsessor.Y;
+
+    expect(Gamma[0][0].round(4).toString()).toEqual("0.6469");
+    expect(Gamma[0][1].round(4).toString()).toEqual("0.3531");
+    
+    expect(Gamma[1][0].round(4).toString()).toEqual("0.8673");
+    expect(Gamma[1][1].round(4).toString()).toEqual("0.1327");
+    
+    expect(Gamma[2][0].round(4).toString()).toEqual("0.8204");
+    expect(Gamma[2][1].round(4).toString()).toEqual("0.1796"); 
+
+    expect(Gamma[3][0].round(4).toString()).toEqual("0.3075");
+    expect(Gamma[3][1].round(4).toString()).toEqual("0.6925");
+
+    expect(Gamma[4][0].round(4).toString()).toEqual("0.8204");
+    expect(Gamma[4][1].round(4).toString()).toEqual("0.1796");
+
+    expect(Gamma[5][0].round(4).toString()).toEqual("0.8673");
+    expect(Gamma[5][1].round(4).toString()).toEqual("0.1327");
 });

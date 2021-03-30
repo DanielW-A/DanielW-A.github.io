@@ -1,0 +1,393 @@
+{
+	"type": "HiddenMarkovModel",
+	"states": {
+		"0": {
+			"x": 246,
+			"y": 258,
+			"id": 0,
+			"text": "s1",
+			"emissionProabilities": {},
+			"colour": "#0000FF"
+		},
+		"1": {
+			"x": 462,
+			"y": 257,
+			"id": 1,
+			"text": "s2",
+			"emissionProabilities": {},
+			"colour": "#FF0000"
+		}
+	},
+	"transitions": {
+		"0": {
+			"0": {
+				"x": 246,
+				"y": 258,
+				"startNode": {
+					"x": 246,
+					"y": 258,
+					"id": 0,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 246,
+					"y": 258,
+					"id": 0,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 242.70168956521138,
+					"y": 228.29963409877757
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": -2.1398538288190547,
+				"text": "0.6",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"1": {
+				"x": 354,
+				"y": 257.5,
+				"startNode": {
+					"x": 246,
+					"y": 258,
+					"id": 0,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 462,
+					"y": 257,
+					"id": 1,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 433.5451984795121,
+					"y": 266.4648022858145
+				},
+				"startPos": {
+					"x": 274.54121695620944,
+					"y": 267.2009318299023
+				},
+				"anchorAngle": -0.004629596553711612,
+				"text": "0.4",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e0": {
+				"x": 170.5,
+				"y": 351,
+				"startNode": {
+					"x": 246,
+					"y": 258,
+					"id": 0,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 95,
+					"y": 444,
+					"id": "e0",
+					"text": "R",
+					"emission": "R"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 119.35483870967742,
+					"y": 414
+				},
+				"startPos": {
+					"x": 227.0916511918428,
+					"y": 281.2910786643526
+				},
+				"anchorAngle": 2.2527079414204683,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e1": {
+				"x": 294.5,
+				"y": 350.5,
+				"startNode": {
+					"x": 246,
+					"y": 258,
+					"id": 0,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 343,
+					"y": 443,
+					"id": "e1",
+					"text": "W",
+					"emission": "W"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 327.27027027027026,
+					"y": 413
+				},
+				"startPos": {
+					"x": 259.9309417193023,
+					"y": 284.5693218357828
+				},
+				"anchorAngle": 1.0878791545730548,
+				"text": "0.4",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e2": {
+				"x": 435,
+				"y": 350,
+				"startNode": {
+					"x": 246,
+					"y": 258,
+					"id": 0,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 624,
+					"y": 442,
+					"id": "e2",
+					"text": "B",
+					"emission": "B"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 594,
+					"y": 427.3968253968254
+				},
+				"startPos": {
+					"x": 272.9740171460577,
+					"y": 271.13020940443016
+				},
+				"anchorAngle": 0.45300971242526467,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"1": {
+			"0": {
+				"x": 354,
+				"y": 257.5,
+				"startNode": {
+					"x": 462,
+					"y": 257,
+					"id": 1,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 246,
+					"y": 258,
+					"id": 0,
+					"text": "s1",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 274.45480152049123,
+					"y": 248.53519771419423
+				},
+				"startPos": {
+					"x": 433.45878304378726,
+					"y": 247.79906817010647
+				},
+				"anchorAngle": 3.136963057036082,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"1": {
+				"x": 462,
+				"y": 257,
+				"startNode": {
+					"x": 462,
+					"y": 257,
+					"id": 1,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 462,
+					"y": 257,
+					"id": 1,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 488.7971176265637,
+					"y": 270.22516817658067
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.7",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e0": {
+				"x": 278.5,
+				"y": 350.5,
+				"startNode": {
+					"x": 462,
+					"y": 257,
+					"id": 1,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 95,
+					"y": 444,
+					"id": "e0",
+					"text": "R",
+					"emission": "R"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 125,
+					"y": 428.71389645776566
+				},
+				"startPos": {
+					"x": 435.2699268382593,
+					"y": 270.6199555347289
+				},
+				"anchorAngle": 2.670344756623803,
+				"text": "0.4",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e1": {
+				"x": 402.5,
+				"y": 350,
+				"startNode": {
+					"x": 462,
+					"y": 257,
+					"id": 1,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 343,
+					"y": 443,
+					"id": "e1",
+					"text": "W",
+					"emission": "W"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 362.19354838709677,
+					"y": 413
+				},
+				"startPos": {
+					"x": 445.8322446726707,
+					"y": 282.2706091670861
+				},
+				"anchorAngle": 2.139956939318775,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e2": {
+				"x": 543,
+				"y": 349.5,
+				"startNode": {
+					"x": 462,
+					"y": 257,
+					"id": 1,
+					"text": "s2",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 624,
+					"y": 442,
+					"id": "e2",
+					"text": "B",
+					"emission": "B"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 597.7297297297297,
+					"y": 412
+				},
+				"startPos": {
+					"x": 481.7637738598013,
+					"y": 279.5697417534768
+				},
+				"anchorAngle": 0.851583771721391,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"e0": [],
+		"e1": [],
+		"e2": []
+	},
+	"initialProbabilityDistribution": {
+		"0": "0.8",
+		"1": "0.2",
+		"2": 0,
+		"3": 0
+	},
+	"emissionStates": {
+		"e0": {
+			"x": 95,
+			"y": 444,
+			"id": "e0",
+			"text": "R",
+			"emission": "R"
+		},
+		"e1": {
+			"x": 343,
+			"y": 443,
+			"id": "e1",
+			"text": "W",
+			"emission": "W"
+		},
+		"e2": {
+			"x": 624,
+			"y": 442,
+			"id": "e2",
+			"text": "B",
+			"emission": "B"
+		}
+	}
+}

@@ -13,10 +13,10 @@ var offset;
 
 initCanvas = function() {
 
-	setModelMC();
-    closeAlgPanel();
 
     canvas = document.getElementById('markovCanvas');
+	setModelMC();
+    closeAlgPanel();
 
 	console.log (document.body.clientWidth);
 	canvas.width = document.body.clientWidth;
@@ -38,6 +38,9 @@ initCanvas = function() {
 		if (selectedObj instanceof State){
             if (!oldSelectedObj){
                 closeAccordion(document.getElementById("stateButton"));
+            }
+            if (selectedObj instanceof EmissionState){
+                closeAccordion(document.getElementById("sTransitionBtn"));
             }
             refreshInfoPanels();
             openAccordion(document.getElementById("stateButton"));
@@ -137,7 +140,7 @@ function canvasHasFocus() {
 
 var shift = false;
 var control = false;
-document.onkeydown = function(e) {
+document.onkeydown = function(e) { //holding buttons or escape keys
 	var key = e.key;
 	console.log(key);
 	if (key == "Enter" && selectedObj != null){
@@ -151,15 +154,14 @@ document.onkeydown = function(e) {
 	} else if(key == "Control"){
 		control = true;
 	
-	} else if(key == "Delete") { // delete key
+	} else if(key == "Delete") {
 		if(selectedObj != null) {
 			model.delete(selectedObj);
 			selectedObj = null;
 			refresh();
             closeAccordion(document.getElementById("stateButton"));
 		}
-	}else if(!canvasHasFocus() || running == true){ // changed hoe this works a bit , now less imprtant
-		//don't read keystrokes when other things have focus
+	}else if(!canvasHasFocus() || running == true){ // changed how this works a bit , now less imprtant
 		return true;
     } else if(key == "Escape") { 
 		selectedObj = null;
@@ -184,12 +186,10 @@ document.onkeydown = function(e) {
 	
 }
 
-document.onkeyup = function(e) {
+document.onkeyup = function(e) {// end holding buttons
 	var key = e.key;
 
-	console.log("key up " + e);
 	if(key == "Shift") {
-		console.log("key up shift");
 		shift = false;
 	} else if(key == "Control"){
 		control = false;
@@ -197,11 +197,9 @@ document.onkeyup = function(e) {
 }
 
 
-document.onkeypress = function(e) {
+document.onkeypress = function(e) { // typing on the model
 	var key = e.key;
 	var keyCode = key.charCodeAt(0);
-    console.log(key);
-	console.log(key.charCodeAt(0));
 	if (key == "Enter"){
 		selectedObj = null;
 		refresh();
@@ -231,11 +229,9 @@ document.onkeypress = function(e) {
 		resetCaret();
 		refresh();
 
-		// don't let keys do their actions (like space scrolls down the page)
 		return false;
-	} else if(keyCode == 8) {
-		// backspace is a shortcut for the back button, but do NOT want to change pages
-		return false;
+	} else if(keyCode == 8) {// this is backspace
+		return false; // this stops going back a page.
 	}
 }
 
@@ -252,23 +248,15 @@ elementPos = function(e) {
 
 
 function  getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect(), // abs. size of element
-        scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
-        scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+    var rect = canvas.getBoundingClientRect(),
+        scaleX = canvas.width / rect.width,
+        scaleY = canvas.height / rect.height;
   
     return {
-      x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
-      y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
+      x: (evt.clientX - rect.left) * scaleX,
+      y: (evt.clientY - rect.top) * scaleY
     }
   }
-relativeMousePos = function(e){
-    var element = elementPos(e);
-    return {
-		'x': e.pageX - element.x,
-		'y': e.pageY - element.y
-	};
-}
-
 
 
 
@@ -340,6 +328,6 @@ var caretVisible = true;
 
 function resetCaret() {
 	clearInterval(caretTimer);
-	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 530); // 530 is the defult time
+	caretTimer = setInterval('caretVisible = !caretVisible; refreshComponents()', 530); // 530 is the defult time for text editors and especially HTML input tags.
 	caretVisible = true;
 }

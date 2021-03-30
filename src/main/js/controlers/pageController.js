@@ -128,6 +128,7 @@ function setModelHMM(){
     document.getElementById("emissionHide").disabled = false;
     document.getElementById("outerAlgDiv").style.display = null;
     initModelUI();
+    refreshComponents();
 }
 
 function setModelMC(){
@@ -137,6 +138,7 @@ function setModelMC(){
     document.getElementById("emissionHide").disabled = true;
     document.getElementById("outerAlgDiv").style.display = 'none';
     initModelUI();
+    refreshComponents();
 
 }
 
@@ -162,7 +164,7 @@ window.onload = function() {
 
     // buttons
     document.getElementById("saveBtn").addEventListener("click", function() {
-        save();
+        saveToJSON();
     });
     document.getElementById("loadBtn").addEventListener("click", function() {
         load();
@@ -226,14 +228,21 @@ window.onload = function() {
             panel.style.maxHeight = panel.scrollHeight + "px";
             document.getElementById("errorButton").classList.add("active");
             return;
+        } else if (document.getElementById("algString").value != ''){
+            model.algStep(document.getElementById("algorithmDropdown").value);
+            refresh();
+            if (model.algProsessor.done){
+                highlightTable();
+            }
         }
-        model.algStep(document.getElementById("algorithmDropdown").value);
-        refresh();
+        
     });
 
     var obserevedString = document.getElementById("algString");
     obserevedString.addEventListener('input', function(e){
         var obsStr = model.validateObs(obserevedString.value);
+        model.clearAlgProsessor()
+        model.algProsessor.obserevedString = obsStr;
         obserevedString.value = obsStr;
         refresh();
     });
@@ -243,6 +252,7 @@ window.onload = function() {
         model.clearAlgProsessor();
         model.algProsessor.type = dropdown.value;
         setAlgDescription(dropdown.value);
+        model.algProsessor.done = false;
     };
 
     var varDropdown = document.getElementById("algVarDropdown");
@@ -574,39 +584,52 @@ function refreshInfoPanels(){
     var values = [];
     if (model.algProsessor.type == model.AlgType.FORWARD){
         values =  model.getAlpha();
-    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+    } else if (model.algProsessor.type == model.AlgType.BACKWARD){
         values =  model.getBeta();
     } else {
         var type = document.getElementById("algVarDropdown").value;
         values = model.getVar(type);
     }
-        var states = model.states;
+    var states = model.states;
+    var table = "";
     if(str.length > 0){
         
-        var table = "<tr>" +
+        table = "<tr>" +
                     "<th></th>";
-        for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
+        if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+            table += th("∅");
+            for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
+            str = " " + str;
+        } else {
+            for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
+        }
         table += "</tr>";
 
         for (i in states){
             table += "<tr>" +
                     th(states[i].text);
-            for (j = 1; j <= str.length; j++){
+            for (j = 0; j <= (str.length); j++){
+                if (model.algProsessor.type != model.AlgType.FORWARDBACKWARD && j ==0){continue;};
+                if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD && j == str.length){continue;};
                 if(!values[j]) {values[j] = []};
                 if(values[j][i]==null) {values[j][i] = new Big(0);};
-                table += td((isNaN(values[j][i]))? values[j][i] : removeZeros(values[j][i].toPrecision(8)),j,i); 
+                if(values[j][i][0] != null){
+                    table += td("",j,i);
+                    table = table.substr(0,table.length-5);
+                    for(var k in values[j][i]){
+                        table += (isNaN(values[j][i][k]))? values[j][i][k] : removeZeros(values[j][i][k].toPrecision(4))
+                    }
+                    table += "</td>";
+                } else {
+                    table += td((isNaN(values[j][i]))? values[j][i] : removeZeros(values[j][i].toPrecision(8)),j,i); 
+                }
             }
             table += "</tr>";
 
         }
-        document.getElementById("algTable").innerHTML = table;
-
-        var tablecomp = document.getElementById("algDiv");
-        tablecomp.clientHeight;
-        tablecomp.style.top;
-        height = window.innerHeight * 0.20;
         
     }
+    document.getElementById("algTable").innerHTML = table;
 }
 
 function removeZeros(str){
@@ -619,8 +642,10 @@ function highlightTable(){
     var values = [];
     if (model.algProsessor.type == model.AlgType.FORWARD){
         values =  model.getAlpha();
-    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+    } else if (model.algProsessor.type == model.AlgType.BACKWARD){
         values =  model.getBeta();
+    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+        values =  model.getVar(model.AlgVars.Y);
     }
 
     var currentMax = 0;
@@ -645,7 +670,7 @@ function spotlight(id,t,nodeA,nodeB){
     console.log("focus",id,t,nodeA,nodeB);
     
     clearInterval(caretTimer);
-    caretVisible = flase;
+    caretVisible = false;
 
     equType = (id.length < 2 && t == 1)? "init" : "equ";
 
@@ -714,7 +739,7 @@ function tableCellMouseOver(e,comp,j,i){
         } else {
             str = forwardInduction(t,i,s,output,A);
         }
-    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.B){
+    } else if (model.algProsessor.type == model.AlgType.BACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.B){
         var t = j;
         var s = model.states[i];
         for (var k in model.states){S++;}
@@ -726,7 +751,7 @@ function tableCellMouseOver(e,comp,j,i){
         } else {
             str = backwardInduction(t,i,s,output,B);
         }
-    } else if (model.algProsessor.type == model.AlgType.MOSTLIKELY || document.getElementById("algVarDropdown").value == model.AlgVars.Y){
+    } else if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD || document.getElementById("algVarDropdown").value == model.AlgVars.Y){
         var t = j;
         var s = model.states[i];
         for (var k in model.states){S++;}
@@ -736,6 +761,17 @@ function tableCellMouseOver(e,comp,j,i){
         var G = model.getVar(model.AlgVars.Y);
 
         str = gammaInduction(t,i,s,output,G,A,B);
+    } else if (model.algProsessor.type == model.AlgType.VITERBI || document.getElementById("algVarDropdown").value == model.AlgVars.D){
+        var t = j;
+        var s = model.states[i];
+        for (var k in model.states){S++;}
+        var output = document.getElementById("algString").value;
+        var D = model.getVar(model.AlgVars.D);
+        if (t == 1){
+            str = viterbiInital(t,i,s,output,D);
+        } else {
+            str = viterbiInduction(t,i,s,output,D);
+        }
     }
     
 
@@ -796,7 +832,7 @@ function setAlgDescription(type){
         str += forwardDescription[1];
         str += forwardEquations[1];
         str += forwardDescription[2];
-    } else if (type == model.AlgType.FORWARDBACKWARD){
+    } else if (type == model.AlgType.BACKWARD){
         str += backwardDescription[0];
         str += backwardEquations[0];
         str += backwardDescription[1];
@@ -817,9 +853,9 @@ function setAlgDescription(type){
         }
         algVar.innerHTML = dropdownText;
         algVar.style.display = "";
-    } else if (dropdown.value == model.AlgType.MOSTLIKELY){
-        for (i in model.mostLikelyVars){
-            dropdownText += "<option value=\""+model.mostLikelyVars[i] + "\">"+model.mostLikelyVars[i]+"</option>"
+    } else if (dropdown.value == model.AlgType.FORWARDBACKWARD){
+        for (i in model.forwardBackwardVars){
+            dropdownText += "<option value=\""+model.forwardBackwardVars[i] + "\">"+model.forwardBackwardVars[i]+"</option>"
         }
         algVar.innerHTML = dropdownText;
         algVar.style.display = "";

@@ -1,0 +1,317 @@
+{
+	"type": "HiddenMarkovModel",
+	"states": {
+		"0": {
+			"x": 200,
+			"y": 199,
+			"id": 0,
+			"text": "Rain",
+			"emissionProabilities": {},
+			"colour": "#0000FF"
+		},
+		"1": {
+			"x": 449,
+			"y": 196,
+			"id": 1,
+			"text": "noRain",
+			"emissionProabilities": {},
+			"colour": "#FF0000"
+		}
+	},
+	"transitions": {
+		"0": {
+			"0": {
+				"x": 200,
+				"y": 199,
+				"startNode": {
+					"x": 200,
+					"y": 199,
+					"id": 0,
+					"text": "Rain",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 200,
+					"y": 199,
+					"id": 0,
+					"text": "Rain",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 194.9343645581651,
+					"y": 169.54953440162348
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": -2.1995926132103296,
+				"text": "0.7",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"1": {
+				"x": 324.5,
+				"y": 197.5,
+				"startNode": {
+					"x": 200,
+					"y": 199,
+					"id": 0,
+					"text": "Rain",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 449,
+					"y": 196,
+					"id": 1,
+					"text": "noRain",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 420.2841365194975,
+					"y": 204.65864894983625
+				},
+				"startPos": {
+					"x": 228.91613982284082,
+					"y": 206.96428746425394
+				},
+				"anchorAngle": -0.012047609854185994,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e0": {
+				"x": 186.5,
+				"y": 293,
+				"startNode": {
+					"x": 200,
+					"y": 199,
+					"id": 0,
+					"text": "Rain",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 173,
+					"y": 387,
+					"id": "e0",
+					"text": "U",
+					"emission": "U"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 177.30851063829786,
+					"y": 357
+				},
+				"startPos": {
+					"x": 195.73524695469828,
+					"y": 228.69531750061935
+				},
+				"anchorAngle": 1.7135316041700532,
+				"text": "0.9",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e1": {
+				"x": 326,
+				"y": 291,
+				"startNode": {
+					"x": 200,
+					"y": 199,
+					"id": 0,
+					"text": "Rain",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"endNode": {
+					"x": 452,
+					"y": 383,
+					"id": "e1",
+					"text": "noU",
+					"emission": "N"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 422,
+					"y": 361.0952380952381
+				},
+				"startPos": {
+					"x": 224.22877812437443,
+					"y": 216.69085386859084
+				},
+				"anchorAngle": 0.5918230243108544,
+				"text": "0.1",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"1": {
+			"0": {
+				"x": 324.5,
+				"y": 197.5,
+				"startNode": {
+					"x": 449,
+					"y": 196,
+					"id": 1,
+					"text": "noRain",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 200,
+					"y": 199,
+					"id": 0,
+					"text": "Rain",
+					"emissionProabilities": {},
+					"colour": "#0000FF"
+				},
+				"type": "arc",
+				"endPos": {
+					"x": 228.71586348050175,
+					"y": 190.3413510501618
+				},
+				"startPos": {
+					"x": 420.08386017715986,
+					"y": 188.0357125357437
+				},
+				"anchorAngle": 3.1295450437356074,
+				"text": "0.3",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"1": {
+				"x": 449,
+				"y": 196,
+				"startNode": {
+					"x": 449,
+					"y": 196,
+					"id": 1,
+					"text": "noRain",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 449,
+					"y": 196,
+					"id": 1,
+					"text": "noRain",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"type": "self",
+				"endPos": {
+					"x": 475.7971176265637,
+					"y": 209.22516817658064
+				},
+				"startPos": {
+					"x": 0,
+					"y": 0
+				},
+				"anchorAngle": 0,
+				"text": "0.7",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": false
+			},
+			"e0": {
+				"x": 311,
+				"y": 291.5,
+				"startNode": {
+					"x": 449,
+					"y": 196,
+					"id": 1,
+					"text": "noRain",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 173,
+					"y": 387,
+					"id": "e0",
+					"text": "U",
+					"emission": "U"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 203,
+					"y": 366.2391304347826
+				},
+				"startPos": {
+					"x": 424.33101699514265,
+					"y": 213.07165128234695
+				},
+				"anchorAngle": 2.584641326207193,
+				"text": "0.2",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			},
+			"e1": {
+				"x": 450.5,
+				"y": 289.5,
+				"startNode": {
+					"x": 449,
+					"y": 196,
+					"id": 1,
+					"text": "noRain",
+					"emissionProabilities": {},
+					"colour": "#FF0000"
+				},
+				"endNode": {
+					"x": 452,
+					"y": 383,
+					"id": "e1",
+					"text": "noU",
+					"emission": "N"
+				},
+				"type": "direct",
+				"endPos": {
+					"x": 451.5187165775401,
+					"y": 353
+				},
+				"startPos": {
+					"x": 449.4812215002592,
+					"y": 225.996140182825
+				},
+				"anchorAngle": 1.619243236364376,
+				"text": "0.8",
+				"perpendicularPart": 20,
+				"parallelPart": 0.5,
+				"isEmission": true
+			}
+		},
+		"e0": [],
+		"e1": []
+	},
+	"initialProbabilityDistribution": {
+		"0": "0.5",
+		"1": "0.5"
+	},
+	"emissionStates": {
+		"e0": {
+			"x": 173,
+			"y": 387,
+			"id": "e0",
+			"text": "U",
+			"emission": "U"
+		},
+		"e1": {
+			"x": 452,
+			"y": 383,
+			"id": "e1",
+			"text": "noU",
+			"emission": "N"
+		}
+	}
+}
