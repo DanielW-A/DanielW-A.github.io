@@ -39,6 +39,9 @@ initCanvas = function() {
             if (!oldSelectedObj){
                 closeAccordion(document.getElementById("stateButton"));
             }
+            if (selectedObj instanceof EmissionState){
+                closeAccordion(document.getElementById("sTransitionBtn"));
+            }
             refreshInfoPanels();
             openAccordion(document.getElementById("stateButton"));
             document.getElementById("sNameText").focus();
