@@ -479,9 +479,9 @@ test('Hidden Markov Model: Running Backward Algorithm', () => {
 
     model.initBackward();
     Beta = model.algProsessor.B;
-    expect(Beta[emissionStr.length+1][0].toString()).toEqual("1")
+    expect(Beta[emissionStr.length][0].toString()).toEqual("1")
 
-    expect(Beta[emissionStr.length+1][1].toString()).toEqual("1");
+    expect(Beta[emissionStr.length][1].toString()).toEqual("1");
 
 
     for (var i = 1; i < emissionStr.length; i++){
@@ -569,6 +569,10 @@ test('Hidden Markov Model: large model', ()  => {
 
 });
 
+//http://pages.cs.wisc.edu/~matthewb/pages/notes/pdf/hmms/BackwardAlgorithm.pdf
+
+//https://www.cs.rice.edu/~ogilvie/comp571/2020/10/23/backward-algorithm.html - all log so needs work
+
 //https://www.cs.rochester.edu/u/james/CSC248/Lec11.pdf
 test('forward and backward off this model', () => {
     var model = new mm.hiddenMarkovModel();
@@ -620,20 +624,20 @@ test('forward and backward off this model', () => {
     Big.RM = 1;
 
         
-    expect(Beta[5][0].round(1).toString()).toEqual("1");
-    expect(Beta[5][1].round(1).toString()).toEqual("1");
+    expect(Beta[4][0].round(1).toString()).toEqual("1");
+    expect(Beta[4][1].round(1).toString()).toEqual("1");
     
-    expect(Beta[4][0].round(1).toString()).toEqual("0.3");
-    expect(Beta[4][1].round(1).toString()).toEqual("0.3");
+    expect(Beta[3][0].round(1).toString()).toEqual("0.3");
+    expect(Beta[3][1].round(1).toString()).toEqual("0.3");
         
-    expect(Beta[3][0].round(2).toString()).toEqual("0.09");
-    expect(Beta[3][1].round(2).toString()).toEqual("0.09");
+    expect(Beta[2][0].round(2).toString()).toEqual("0.09");
+    expect(Beta[2][1].round(2).toString()).toEqual("0.09");
 
-    expect(Beta[2][0].round(4).toString()).toEqual("0.0324");
-    expect(Beta[2][1].round(4).toString()).toEqual("0.0297");
+    expect(Beta[1][0].round(4).toString()).toEqual("0.0324");
+    expect(Beta[1][1].round(4).toString()).toEqual("0.0297");
 
-    // expect(Beta[1][0].round(4).toString()).toEqual("0.0078"); // this treats beta a liitle differnetly than my model
-    // expect(Beta[1][1].round(4).toString()).toEqual("0.0024");
+    expect(Beta[0][0].round(4).toString()).toEqual("0.0078");
+    expect(Beta[0][1].round(4).toString()).toEqual("0.0024");
   
 
 });

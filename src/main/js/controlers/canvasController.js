@@ -36,12 +36,15 @@ initCanvas = function() {
 		var oldSelectedObj = selectedObj;
         selectedObj = model.getElementAt(mousePos);
 		if (selectedObj instanceof State){
+            if (selectedObj instanceof EmissionState){
+                // closeAccordion(document.getElementById("sTransitionBtn"));
+            } else {
+                openAccordion(document.getElementById("sTransitionBtn"));
+            }
             if (!oldSelectedObj){
                 closeAccordion(document.getElementById("stateButton"));
             }
-            if (selectedObj instanceof EmissionState){
-                closeAccordion(document.getElementById("sTransitionBtn"));
-            }
+            
             refreshInfoPanels();
             openAccordion(document.getElementById("stateButton"));
             document.getElementById("sNameText").focus();

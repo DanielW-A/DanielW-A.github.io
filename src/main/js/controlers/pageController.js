@@ -579,8 +579,7 @@ function refreshInfoPanels(){
 
     // table :
     var str = document.getElementById("algString").value;
-    if (str == ""){ 
-        str = model.algProsessor.getObserevedString()}
+    if (str == ""){str = model.algProsessor.getObserevedString()}
     var values = [];
     if (model.algProsessor.type == model.AlgType.FORWARD){
         values =  model.getAlpha();
@@ -596,7 +595,7 @@ function refreshInfoPanels(){
         
         table = "<tr>" +
                     "<th></th>";
-        if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD){
+        if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD ||model.algProsessor.type == model.AlgType.BACKWARD ){
             table += th("∅");
             for (i = 0; i < str.length; i++){table += th(str.charAt(i));}
             str = " " + str;
@@ -609,16 +608,17 @@ function refreshInfoPanels(){
             table += "<tr>" +
                     th(states[i].text);
             for (j = 0; j <= (str.length); j++){
-                if (model.algProsessor.type != model.AlgType.FORWARDBACKWARD && j ==0){continue;};
-                if (model.algProsessor.type == model.AlgType.FORWARDBACKWARD && j == str.length){continue;};
+                if (!(model.algProsessor.type == model.AlgType.FORWARDBACKWARD ||model.algProsessor.type == model.AlgType.BACKWARD) && j ==0){continue;};
+                if ((model.algProsessor.type == model.AlgType.FORWARDBACKWARD || model.algProsessor.type == model.AlgType.BACKWARD) && j == str.length){continue;};
                 if(!values[j]) {values[j] = []};
                 if(values[j][i]==null) {values[j][i] = new Big(0);};
-                if(values[j][i][0] != null){
+                if(model.algProsessor.type == model.AlgType.BAUMWELCH && values[j][i][0] != null){
                     table += td("",j,i);
                     table = table.substr(0,table.length-5);
                     for(var k in values[j][i]){
-                        table += (isNaN(values[j][i][k]))? values[j][i][k] : removeZeros(values[j][i][k].toPrecision(4))
+                        table += (isNaN(values[j][i][k]))? values[j][i][k] : removeZeros(values[j][i][k].toPrecision(4)) + " , "
                     }
+                    table = table.substr(0,table.length-3);
                     table += "</td>";
                 } else {
                     table += td((isNaN(values[j][i]))? values[j][i] : removeZeros(values[j][i].toPrecision(8)),j,i); 
@@ -725,16 +725,20 @@ function tableCellMouseOver(e,comp,j,i){
 
     panel.style.display = "inline";
 
+    var output = document.getElementById("algString").value;
+    if (output == ""){output = model.algProsessor.getObserevedString()}
+
     var str;
     if (model.algProsessor.type == model.AlgType.FORWARD || document.getElementById("algVarDropdown").value == model.AlgVars.A){
         var t = j;
         var S = 0;
         for (var k in model.states){S++;}
         var s = model.states[i];
-        var output = document.getElementById("algString").value;
         var A = model.getAlpha();
 
-        if (t == 1){
+        if (t == 0){
+            str = forwardZero(t,i,s,output,A);
+        } else if (t == 1){
             str = forwardInital(t,i,s,output,A);
         } else {
             str = forwardInduction(t,i,s,output,A);
@@ -743,10 +747,11 @@ function tableCellMouseOver(e,comp,j,i){
         var t = j;
         var s = model.states[i];
         for (var k in model.states){S++;}
-        var output = document.getElementById("algString").value;
         var B = model.getBeta();
 
-        if (t == output.length){
+        if (model.algProsessor.type == model.AlgType.BACKWARD && t == 0){
+            str = backwardZero(t,i,s,output,B);
+        } else if (t == output.length){
             str = backwardInital(t,i,s,output,B);
         } else {
             str = backwardInduction(t,i,s,output,B);
@@ -755,7 +760,6 @@ function tableCellMouseOver(e,comp,j,i){
         var t = j;
         var s = model.states[i];
         for (var k in model.states){S++;}
-        var output = document.getElementById("algString").value;
         var A = model.getAlpha();
         var B = model.getBeta();
         var G = model.getVar(model.AlgVars.Y);
@@ -765,7 +769,6 @@ function tableCellMouseOver(e,comp,j,i){
         var t = j;
         var s = model.states[i];
         for (var k in model.states){S++;}
-        var output = document.getElementById("algString").value;
         var D = model.getVar(model.AlgVars.D);
         if (t == 1){
             str = viterbiInital(t,i,s,output,D);
@@ -866,6 +869,7 @@ function setAlgDescription(type){
         algVar.innerHTML = dropdownText;
         algVar.style.display = "";
     } else {
+        algVar.value = "";
         algVar.style.display = "none";
 
     }

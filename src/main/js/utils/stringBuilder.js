@@ -31,11 +31,11 @@ const forwardDescription = [p("This is used to calculate the chances of the mode
 
 const forwardDesc = ["The Initial Alpha is calculated by multiplying the probability of the HMM starting in this state and the probability of this state emitting the observed value.",
         "The Alpha in the inductive step is calculated by summing all the product of all previous alphas by the transition probability from the previous state to the state for the new alpha, this is then also multiplied by the probability of the state emitting the observed string.",
-        "Note: while this shows the most likely state at a given time it does NOT show the most likely sequence of states. In fact the sequence shown may not even be valid."]
+        "Note: while this shows the most likely state at each time given the previous observations it does NOT show the most likely sequence of states. In fact the sequence shown may not even be valid."]
 
-const forwardEquations = ["<div id=\"init0\">" + spanNH("init","\\(\\alpha_t (j)\\)",1) + " = " + spanNH("init","\\(\\pi(e_i)\\)",2) + spanNH("init","\\(e_j (o_t)\\)",4) + spanNH("equ","\\(, t = 1 , 1 <= j <= |S|)\\)",5)+"</div>",
+const forwardEquations = ["<div id=\"init0\">" + spanNH("init","\\(\\alpha_t (j)\\)",1) + " = " + spanNH("init","\\(\\pi(e_i)\\)",2) + spanNH("init","\\(e_j (o_t)\\)",4) + spanNH("equ","\\(, t = 1 , 1 <= j <= |S|\\)",5)+"</div>",
         "<div id=\"equ0\">" + spanNH("equ","\\(\\alpha_t (j)\\)",1) + " = " + spanNH("equ","\\((\\Sigma^{|S|}_{i=1}\\)",0) + spanNH("equ","\\(\\alpha_{t-1} (i)\\)",2) + spanNH("equ","\\(m_{i,j}\\)",3) +
-        spanNH("equ","\\(e_j (o_t)\\)",4) + spanNH("equ","\\(, 1 < t <= T , 1 <= j <= |S|)\\)",5) +"</div>"]
+        spanNH("equ","\\(e_j (o_t))\\)",4) + spanNH("equ","\\(, 1 < t <= T , 1 <= j <= |S|\\)",5) +"</div>"]
 
 const backwardDescription = [p("This is used to calculate the chances of the model being in internal state \\(i\\) at time \\(t\\) given the observation sequence from \\(t\\) to \\(T\\)."  +
         " this is done by a set of cached variables called Beta \\(\\beta\\). This is calculated by these 2 equations: ")+
@@ -64,7 +64,15 @@ const viterbiDesc = p("This is used to calculate the most likely sequence of  in
 ///////////////////////////////////////////////////////
 // algTable descriptions
 ///////////////////////////////////////////////////////
+function forwardZero(t,i,s,output,A){
+    equType = "equ";
+    str =  "<div id=\"equ1\">" + span(1,1,t,i,"∅","\\(\\alpha_{0}("+s.text+")\\)") + " = (";
+    str += span(1,2,t,i,null,"\\(\\pi("+ s.text +")\\)") + "</div>";
 
+    str +=  "<div id=\"init2\">" + span(2,1,t,i,"∅","\\("+removeZeros(A[t][i].toPrecision(6))+"\\)") + " = (";
+    str += span(2,2,t,i,null,"\\("+model.initialProbabilityDistribution[i]+"\\)") + ")</div>";
+    return str;
+}
 function forwardInital(t,i,s,output,A){
     equType = "init";
     str =  "<div id=\"init1\">" + span(1,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\(\\alpha_{"+t+"}("+s.text+")\\)") + " = (";
@@ -89,12 +97,35 @@ function forwardInduction(t,i,s,output,A){
 
     str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(A[t][i].toPrecision(6))+"\\)") + " = (";
     for (var k in model.states){
-        str += span(2,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\("+A[t-1][k]+"\\)") + '*';
+        str += span(2,2+""+k,t-1,k,model.getEmissionState(output.charAt(t-2)),"\\("+removeZeros(A[t-1][k].toPrecision(6))+"\\)") + '*';
         str += span(2,3+""+k,t-1,k,i,"\\("+model.transitions[k][i].text+"\\)");
         str += " + ";
     }
     str = str.substr(0, str.length - 3);
     str +=  ")" + span(2,4,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+ s.getEmissionProbability(output.charAt(t-1))+"\\)") + "</div>";
+    return str;
+}
+function backwardZero(t,i,s,output,B){
+    equType = "equ";
+    str = "<div id=\"equ1\">" + span(1,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\(\\beta_{"+t+"}("+s.text+")\\)") + " = (";
+    for (var k in model.states){
+        str += span(1,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\(\\beta_{"+(t+1)+"} ("+model.states[k].text+")\\)");
+        str += span(1,3+""+k,t+1,i,k,"\\(m_{"+s.text+","+model.states[k].text+"} \\)");
+        str += span(1,4+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\(e_{"+model.states[k].text+"} ("+output.charAt(t)+")\\)");
+        str += " + ";
+    } 
+    str = str.substr(0, str.length - 3);
+    str +=  ")" + span(1,2,t,i,null,"\\(\\pi("+ s.text +")\\)") + "</div>";
+
+    str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(B[t][i].toPrecision(6))+"\\)") + " = (";
+    for (var k in model.states){
+        str += span(2,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+removeZeros(B[t+1][k].toPrecision(6))+"\\)") + '*';
+        str += span(2,3+""+k,t+1,i,k,"\\("+model.transitions[i][k].text+"\\)") + '*';
+        str += span(2,4+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+ model.states[k].getEmissionProbability(output.charAt(t))+"\\)");
+        str += " + ";
+    }
+    str = str.substr(0, str.length - 3);
+    str +=  ")" + span(2,2,t,i,null,"\\("+model.initialProbabilityDistribution[i]+"\\)") + "</div>";
     return str;
 }
 function backwardInital(t,i,s,output,B){
@@ -118,7 +149,7 @@ function backwardInduction(t,i,s,output,B){
 
     str += "<div id=\"equ2\">" + span(2,1,t,i,model.getEmissionState(output.charAt(t-1)),"\\("+removeZeros(B[t][i].toPrecision(6))+"\\)") + " = (";
     for (var k in model.states){
-        str += span(2,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+B[t+1][k]+"\\)") + '*';
+        str += span(2,2+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+removeZeros(B[t+1][k].toPrecision(6))+"\\)") + '*';
         str += span(2,3+""+k,t+1,i,k,"\\("+model.transitions[i][k].text+"\\)") + '*';
         str += span(2,4+""+k,t+1,k,model.getEmissionState(output.charAt(t)),"\\("+ model.states[k].getEmissionProbability(output.charAt(t))+"\\)");
         str += " + ";
@@ -129,7 +160,7 @@ function backwardInduction(t,i,s,output,B){
 }
 function gammaInduction(t,i,s,output,G,A,B){
     equType = "equ";
-    str = "<div id=\"equ1\">" + "\\(\\gamma_{"+t+"}("+s.text+") = \\frac{(\\alpha_{"+(t)+"} ("+s.text+") \\beta_{"+(t)+"} ("+s.text+")}{";
+    str = "<div id=\"equ1\">" + "\\(\\gamma_{"+t+"}("+s.text+") = \\frac{\\alpha_{"+(t)+"} ("+s.text+")*\\beta_{"+(t)+"} ("+s.text+")}{";
     for (var k in model.states){
         str += "\\alpha_{"+(t)+"} ("+model.states[k].text+") \\beta{"+(t)+"} ("+model.states[k].text+")";
         str += " + ";
@@ -137,7 +168,7 @@ function gammaInduction(t,i,s,output,G,A,B){
     str = str.substr(0, str.length - 3);
     str +=  "}\\)" + "</div>";
 
-    str += "<div id=\"equ2\">" + "\\("+removeZeros(G[t][i].toPrecision(6))+" = \\frac{("+removeZeros(A[t][i].toPrecision(6))+" "+removeZeros(B[t][i].toPrecision(6))+"}{";
+    str += "<div id=\"equ2\">" + "\\("+removeZeros(G[t][i].toPrecision(6))+" = \\frac{("+removeZeros(A[t][i].toPrecision(6))+"*"+removeZeros(B[t][i].toPrecision(6))+"}{";
     for (var k in model.states){
         str += ""+removeZeros(A[t][k].toPrecision(6))+" "+removeZeros(B[t][k].toPrecision(6))+"";
         str += " + ";
