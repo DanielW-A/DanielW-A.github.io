@@ -411,7 +411,7 @@ class HiddenMarkovModel extends MarkovModel{
         this.validCheck();
         this.currentAlg = type;
         if (type == this.AlgType.FORWARD){this.forwardStep();}
-        else if (type === this.AlgType.BACKWARD){this.forwardBackwardStep();}
+        else if (type === this.AlgType.BACKWARD){this.backwardStep();}
         else if (type === this.AlgType.VITERBI){this.viterbiStep();}
         else if (type === this.AlgType.FORWARDBACKWARD){this.gammaStep();}
         else if (type === this.AlgType.BAUMWELCH){this.baumWelchStep();}//TODO;
@@ -475,15 +475,16 @@ class HiddenMarkovModel extends MarkovModel{
         return null;
     }
     /////////////////////////////////////////////////
-    // Forward-Backward
+    // Backward
     /////////////////////////////////////////////////
-    forwardBackwardStep(){
+    //todo fix move down one
+    backwardStep(){
         if (this.algProsessor.observedString == null){
             var comp = document.getElementById("algString");
             comp.disabled = true;
             this.algProsessor.observedString = this.decodeEmissions(comp.value);
             this.initBackward();
-        } else if (this.algProsessor.t <= 1){
+        } else if (this.algProsessor.t <= 0){
             var comp = document.getElementById("algString");
             comp.disabled = false;
             comp.value = "";
@@ -495,20 +496,24 @@ class HiddenMarkovModel extends MarkovModel{
     }
     
     terminationBeta(){
+        this.inductiveBackward();
         this.algProsessor.t = 0;
         var t = this.algProsessor.t;
-        this.algProsessor.B[t] = [];
+        // this.algProsessor.B[t] = [];
         var char = this.algProsessor.observedString[t];
         for (var i in this.states){
             this.algProsessor.B[t][i] = this.algProsessor.B[t+1][i].times(this.states[i].getEmissionProbability(this.getStateFromEmission(char))).times(this.initialProbabilityDistribution[i])
         }
+        // for (var i in this.states){
+        //     this.algProsessor.B[t][i] = this.algProsessor.B[t][i].times(this.initialProbabilityDistribution[i]);
+        // }
     }
 
     inductiveBackward(){
         this.algProsessor.t--;
         var t = this.algProsessor.t;
         this.algProsessor.B[t] = [];
-        var char = this.algProsessor.observedString[t-1];
+        var char = this.algProsessor.observedString[t];
         for(var i in this.states){
             var tempSum = new Big(0);
             for(var j in this.states){
@@ -521,7 +526,7 @@ class HiddenMarkovModel extends MarkovModel{
     initBackward(){
         //get the string
         //stop string being edited 
-        this.algProsessor.t = this.algProsessor.observedString.length +1;
+        this.algProsessor.t = this.algProsessor.observedString.length;
         this.algProsessor.B[this.algProsessor.t] = [];
         // var char = this.algProsessor.observedString[this.algProsessor.t-1];
         for (var i in this.states){
@@ -584,10 +589,11 @@ class HiddenMarkovModel extends MarkovModel{
         this.initBackward();
         for (var i = 0; i < this.algProsessor.observedString.length-1; i++){
             this.inductiveBackward();
+            // this.normalise(this.algProsessor.B);
         }
-        this.normalise(this.algProsessor.B);
-        this.reduceT(this.algProsessor.B);
         // this.terminationBeta();
+        this.normalise(this.algProsessor.B);
+        // this.reduceT(this.algProsessor.B);
     }
     
     reduceT(input){
