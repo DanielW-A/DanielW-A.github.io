@@ -224,9 +224,7 @@ window.onload = function() {
             var output = document.getElementById('outputString');
             output.innerHTML = "There are unresolved errors";
             refreshInfoPanels();
-            var panel = document.getElementById("errorPanelInfo");
-            panel.style.maxHeight = panel.scrollHeight + "px";
-            document.getElementById("errorButton").classList.add("active");
+            openAccordion(document.getElementById("errorButton"));
             return;
         } else if (document.getElementById("algString").value != ''){
             model.algStep(document.getElementById("algorithmDropdown").value);
@@ -372,9 +370,7 @@ run = function(steps,time){
     if (!model.validCheck()) { 
         output.innerHTML = "There are unresolved errors";
         refreshInfoPanels();
-        var panel = document.getElementById("errorPanelInfo");
-        panel.style.maxHeight = panel.scrollHeight + "px";
-        document.getElementById("errorButton").classList.add("active");
+        openAccordion(document.getElementById("errorButton"));
         return;
     }
 
@@ -578,6 +574,7 @@ function refreshInfoPanels(){
 
 
     // table :
+    if (model instanceof MarkovChain){return};
     var str = document.getElementById("algString").value;
     if (str == ""){str = model.algProsessor.getObserevedString()}
     var values = [];

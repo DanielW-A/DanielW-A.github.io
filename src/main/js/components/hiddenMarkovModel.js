@@ -198,7 +198,8 @@ class HiddenMarkovModel extends MarkovModel{
             }
         }
         for (i in this.transitions){
-            for (j in this.transitions[i]){
+            if (!this.transitions[i]) {continue}
+            for (var j in this.transitions[i]){
                 var trans = this.transitions[i][j];
                 if (trans.isNear(mouse)){
                     return trans;
@@ -610,7 +611,8 @@ class HiddenMarkovModel extends MarkovModel{
                 sum = sum.plus(input[i][j]);
             }
             for (var j in input[i]){
-                if (input[i][j] != 1) {input[i][j] = input[i][j].div(sum)};
+                if (sum.eq('0')){input[i][j] = sum;}
+                else if (input[i][j] != 1) {input[i][j] = input[i][j].div(sum)};
             }
         }
         return input;
@@ -629,7 +631,11 @@ class HiddenMarkovModel extends MarkovModel{
         }
         for(var i in this.states){
             var numerator = new Big(this.algProsessor.A[t][i]).times(this.algProsessor.B[t][i])
-            this.algProsessor.Y[t][i] = numerator.div(tempSum);
+            if (tempSum.eq('0')){
+                this.algProsessor.Y[t][i] = tempSum;
+            }else {
+                this.algProsessor.Y[t][i] = numerator.div(tempSum);
+            }
         }
     }
 
@@ -657,15 +663,15 @@ class HiddenMarkovModel extends MarkovModel{
     }
 
     getSqeuence(){
-        var max = 0;
+        var max = new Big(0);
         var argMax = "";
         for (var i in this.algProsessor.D[this.algProsessor.t]){
-            if (this.algProsessor.D[this.algProsessor.t][i] >= max){
+            if (this.algProsessor.D[this.algProsessor.t][i].gte(max)){
                 max = this.algProsessor.D[this.algProsessor.t][i];
                 argMax = i;
             }
         }
-        var sequence = ","+this.states[i].text;
+        var sequence = ","+this.states[argMax].text;
         for (var i = this.algProsessor.t+1; i--; 2 < i){
             if (i < 2){
                 continue;
@@ -702,7 +708,7 @@ class HiddenMarkovModel extends MarkovModel{
             argMax = "";
             for (var i in this.states){
                 var temp = new Big(this.algProsessor.D[this.algProsessor.t-1][i]).times(this.getTrasitionProability(i,j));
-                if (temp.gt(max)){
+                if (temp.gte(max)){
                     max = temp;
                     argMax = i;
                 }
@@ -753,7 +759,7 @@ class HiddenMarkovModel extends MarkovModel{
         var bigSum = new Big('0');
         for (var i in this.states){
             for (var j in this.states){
-                bigSum = bigSum.plus(this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j]);
+                bigSum = bigSum.plus(this.algProsessor.A[t][i]*this.getTrasitionProability(i,j)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j]);
             }
         }
 
@@ -762,7 +768,7 @@ class HiddenMarkovModel extends MarkovModel{
         var sum = 0;
         for (var i in this.states){
             for (var j in this.states){
-                sum += this.algProsessor.A[t][i]*parseFloat(this.transitions[i][j].text)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j];
+                sum += this.algProsessor.A[t][i]*this.getTrasitionProability(i,j)*this.states[j].getEmissionProbability(this.getStateFromEmission(char))*this.algProsessor.B[t+1][j];
             }
         }
         var sum2 = 0;
@@ -908,7 +914,11 @@ class HiddenMarkovModel extends MarkovModel{
             if (!this.algProsessor.X[t][i]){this.algProsessor.X[t][i] = [];}
             for (var j in this.states){
                 var numerator = this.algProsessor.A[t][i].times(this.getTrasitionProability(i,j)).times(this.states[j].getEmissionProbability(this.getStateFromEmission(char))).times(this.algProsessor.B[t+1][j])
-                this.algProsessor.X[t][i][j] = numerator.div(sum);
+                if (sum.eq('0')) {
+                    this.algProsessor.X[t][i][j] = sum
+                }else {
+                    this.algProsessor.X[t][i][j] = numerator.div(sum);
+                }
             }
         }
     }
