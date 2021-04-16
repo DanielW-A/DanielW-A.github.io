@@ -426,7 +426,7 @@ test('Hidden Markov Model: Running the model', () => {
     }
 });
 
-test('Hidden Markov Model: Running Forward Algorithm', () => {
+test('Hidden Markov Model: Hand Work Forward Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
     var Alpha
@@ -470,7 +470,7 @@ test('Hidden Markov Model: Running Forward Algorithm', () => {
 
 });
 
-test('Hidden Markov Model: Running Backward Algorithm', () => {
+test('Hidden Markov Model: Hand Work Backward Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
     var Beta;
@@ -496,28 +496,28 @@ test('Hidden Markov Model: Running Backward Algorithm', () => {
 
 });
 
-test('Hidden Markov Model: Running Gamma Algorithm', () => {
+test('Hidden Markov Model: Hand Work Gamma Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
     //TODO
 
 });
 
-test('Hidden Markov Model: Running Viterbi Algorithm', () => {
+test('Hidden Markov Model: Hand Work Viterbi Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
     //TODO
 
 });
 
-test('Hidden Markov Model: Running Balm-Welch Algorithm', () => {
+test('Hidden Markov Model: Hand Work Balm-Welch Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
     //TODO
 
 });
 
-test('Hidden Markov Model: Gamma and Balm-Welch Equal', () => {
+test('Hidden Markov Model: Gamma and Xi Equal', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
 
@@ -569,12 +569,16 @@ test('Hidden Markov Model: large model', ()  => {
 
 });
 
+/////////////////////////////////////////////////////////////
+// HMM algs off of 
+/////////////////////////////////////////////////////////////
+
 //http://pages.cs.wisc.edu/~matthewb/pages/notes/pdf/hmms/BackwardAlgorithm.pdf
 
 //https://www.cs.rice.edu/~ogilvie/comp571/2020/10/23/backward-algorithm.html - all log so needs work
 
 //https://www.cs.rochester.edu/u/james/CSC248/Lec11.pdf
-test('forward and backward off this model', () => {
+test('Hidden Markov Model: Rochester Forward/backward', () => {
     var model = new mm.hiddenMarkovModel();
 
     const fs = require('fs');
@@ -643,7 +647,7 @@ test('forward and backward off this model', () => {
 });
 
 //https://iulg.sitehost.iu.edu/moss/hmmcalculations.pdf
-test("Baulm-Welch from HMMcaculations", () => {
+test("Hidden Markov Model: Indiana Baulm-Welch", () => {
     var model = new mm.hiddenMarkovModel();
 
     var fs = require('fs');
@@ -720,7 +724,7 @@ test("Baulm-Welch from HMMcaculations", () => {
 //http://www.biostat.jhsph.edu/bstcourse/bio638/notes/HMMs_BaumWelch.pdf
 
 //https://www.cis.upenn.edu/~cis262/notes/Example-Viterbi-DNA.pdf
-test("viterbi from upenn", () => {
+test("Hidden Markov Model: Upenn viterbi", () => {
     var model = new mm.hiddenMarkovModel();
 
     var fs = require('fs');
@@ -766,7 +770,7 @@ test("viterbi from upenn", () => {
 
 
 //https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
-test("forward-Backward off Russell & Norvig umbrella world", () => {
+test("Hidden Markov Model: Russell & Norvig forward-Backward", () => {
     var model = new mm.hiddenMarkovModel();
 
     var fs = require('fs');
