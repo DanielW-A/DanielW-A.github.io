@@ -1,4 +1,3 @@
-
 const { expect } = require('@jest/globals');
 const mm = require('./mm');
 const { default: Big } = require("big.js");
@@ -466,8 +465,6 @@ test('Hidden Markov Model: Hand Work Forward Algorithm', () => {
 
     expect(Alpha != null);
 
-    //TODO check some random values from my own caculations.
-
 });
 
 test('Hidden Markov Model: Hand Work Backward Algorithm', () => {
@@ -490,30 +487,140 @@ test('Hidden Markov Model: Hand Work Backward Algorithm', () => {
 
     Beta = model.algProsessor.B;
 
+    expect(Beta[2][0].toPrecision(6)).toEqual("0.0000507833");
+    expect(Beta[2][1].toPrecision(6)).toEqual("0.0000431913");
+    
+    expect(Beta[3][0].toPrecision(6)).toEqual("0.000145938");
+    expect(Beta[3][1].toPrecision(6)).toEqual("0.000110229");
+    
+    expect(Beta[4][0].toPrecision(6)).toEqual("0.000363295");
+    expect(Beta[4][1].toPrecision(6)).toEqual("0.000626163");
+    
+    expect(Beta[9][0].toString()).toEqual("0.1408");
+    expect(Beta[9][1].toString()).toEqual("0.0916");
+    
+    expect(Beta[10][0].toString()).toEqual("0.38");
+    expect(Beta[10][1].toString()).toEqual("0.26");
+
     expect(Beta != null);
 
-    //TODO check some random values from my own caculations.
 
 });
 
-test('Hidden Markov Model: Hand Work Gamma Algorithm', () => {
+test('Hidden Markov Model: Hand Work Forward-Backward Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    //TODO
+    model.algProsessor.observedString = model.decodeEmissions(emissionStr);
+
+
+    model.runForward();
+    model.runBackward();
+    
+    model.algProsessor.t=-1;
+    for (var i = 0; i <= model.algProsessor.observedString.length; i++){
+        model.inductiveGamma();
+    }
+
+    var Gamma = model.algProsessor.Y;
+
+
+    expect(Gamma[0][0].toPrecision(5)).toEqual("0.69805");
+    expect(Gamma[0][1].toPrecision(5)).toEqual("0.30195");
+
+    expect(Gamma[2][0].toPrecision(5)).toEqual("0.92098");
+    expect(Gamma[2][1].toPrecision(5)).toEqual("0.079023");
+    
+    expect(Gamma[3][0].toPrecision(5)).toEqual("0.78378");
+    expect(Gamma[3][1].toPrecision(5)).toEqual("0.21622");
+    
+    expect(Gamma[4][0].toPrecision(5)).toEqual("0.82542");
+    expect(Gamma[4][1].toPrecision(5)).toEqual("0.17458");
+    
+    expect(Gamma[7][0].toPrecision(5)).toEqual("0.38058");
+    expect(Gamma[7][1].toPrecision(5)).toEqual("0.61942");
+
+    expect(Gamma[9][0].toPrecision(5)).toEqual("0.17406");
+    expect(Gamma[9][1].toPrecision(5)).toEqual("0.82594");
+    
+    expect(Gamma[11][0].toPrecision(5)).toEqual("0.89823");
+    expect(Gamma[11][1].toPrecision(5)).toEqual("0.10177");
 
 });
 
 test('Hidden Markov Model: Hand Work Viterbi Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    //TODO
+    model.algProsessor.observedString = model.decodeEmissions(emissionStr);
+    
+    
+    model.initViterbi();
+    for (var i = 0; i < model.algProsessor.observedString.length-1; i++){
+        model.inductiveViterbi();
+    }
+
+    Delta = model.algProsessor.D;
+    Psi = model.algProsessor.P;
+
+    expect(Delta[1][0].toString()).toEqual("0.3");
+    expect(Delta[1][1].toString()).toEqual("0.04");
+    // expect(Psi[1][0]).toEqual("H");
+    // expect(Psi[1][1]).toEqual("H");
+
+    expect(Delta[2][0].toString()).toEqual("0.105");
+    expect(Delta[2][1].toString()).toEqual("0.009");
+    expect(Psi[2][0]).toEqual("H");
+    expect(Psi[2][1]).toEqual("H");
+    
+    expect(Delta[3][0].toString()).toEqual("0.0294");
+    expect(Delta[3][1].toString()).toEqual("0.00945");
+    expect(Psi[3][0]).toEqual("H");
+    expect(Psi[3][1]).toEqual("H");
+    
+    expect(Delta[4][0].toString()).toEqual("0.01029");
+    expect(Delta[4][1].toString()).toEqual("0.000882");
+    expect(Psi[4][0]).toEqual("H");
+    expect(Psi[4][1]).toEqual("H");
+    
+    expect(Delta[7][0].toPrecision(6)).toEqual("0.000106687");
+    expect(Delta[7][1].toPrecision(6)).toEqual("0.000120023");
+    expect(Psi[7][0]).toEqual("F");
+    expect(Psi[7][1]).toEqual("F");
+
+    expect(Delta[9][0].toPrecision(6)).toEqual("0.00000172832");
+    expect(Delta[9][1].toPrecision(7)).toEqual("0.00001555492");
+    expect(Psi[9][0]).toEqual("F");
+    expect(Psi[9][1]).toEqual("F");
+    
+    expect(model.getSqeuence()).toEqual("H,H,H,H,F,F,F,F,F,H,H");
 
 });
 
 test('Hidden Markov Model: Hand Work Balm-Welch Algorithm', () => {
     var model = createSimpleHiddenMarkovModel(new mm.hiddenMarkovModel());
 
-    //TODO
+    model.algProsessor.observedString = model.decodeEmissions(emissionStr);
+
+    model.runForward();
+    model.runBackward();
+    model.runGamma();
+    for (var i = 1; i < emissionStr.length-1; i++){
+        model.inductiveBaumWelch();
+    }
+
+    Xi= model.algProsessor.X;
+
+    expect(Xi[1][0][0].toPrecision(6)).toEqual("0.855776");
+    expect(Xi[1][0][1].toPrecision(5)).toEqual("0.062386");
+
+    expect(Xi[1][1][0].toPrecision(5)).toEqual("0.065202");
+    expect(Xi[1][1][1].toPrecision(5)).toEqual("0.016636");
+    
+    
+    expect(Xi[5][0][0].toPrecision(5)).toEqual("0.045366");
+    expect(Xi[5][0][1].toPrecision(5)).toEqual("0.12556");
+
+    expect(Xi[5][1][0].toPrecision(5)).toEqual("0.077581");
+    expect(Xi[5][1][1].toPrecision(6)).toEqual("0.751497");
 
 });
 
@@ -572,10 +679,6 @@ test('Hidden Markov Model: large model', ()  => {
 /////////////////////////////////////////////////////////////
 // HMM algs off of 
 /////////////////////////////////////////////////////////////
-
-//http://pages.cs.wisc.edu/~matthewb/pages/notes/pdf/hmms/BackwardAlgorithm.pdf
-
-//https://www.cs.rice.edu/~ogilvie/comp571/2020/10/23/backward-algorithm.html - all log so needs work
 
 //https://www.cs.rochester.edu/u/james/CSC248/Lec11.pdf
 test('Hidden Markov Model: Rochester Forward/backward', () => {
@@ -720,8 +823,6 @@ test("Hidden Markov Model: Indiana Baulm-Welch", () => {
     expect(Xi[2][1][1].round(5).minus(new Big("0.68996")).abs().toNumber()).toBeLessThan(0.02);
     
 });
-
-//http://www.biostat.jhsph.edu/bstcourse/bio638/notes/HMMs_BaumWelch.pdf
 
 //https://www.cis.upenn.edu/~cis262/notes/Example-Viterbi-DNA.pdf
 test("Hidden Markov Model: Upenn viterbi", () => {
