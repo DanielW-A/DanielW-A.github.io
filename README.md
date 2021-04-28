@@ -42,5 +42,5 @@ This is a browser-based tool for experimenting and learning Markov chains and Hi
 - To load in JSON files press the "load" button.
 - To clear the canvas, press the "clear” button.
 - To run locally download this repository and run "index.html" in a web browser.
-- To test the project download this repository and run "npm run tests" in the root of the project.
+- To test the project download this repository and run "npm run test" in the root of the project.
  
