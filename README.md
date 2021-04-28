@@ -5,7 +5,7 @@ This is a browser-based tool for experimenting and learning Markov chains and Hi
 ### How to use it
 
 - Navigate to https://danielw-a.github.io/.
-- Switch type of model (Hidden Markov model or Markov Chain) at the top, the default is Markov Chain.
+- Switch type of model (hidden Markov model or Markov chain) at the top, the default is Markov chain.
 
 ##### Create a model
 
@@ -41,4 +41,6 @@ This is a browser-based tool for experimenting and learning Markov chains and Hi
 - To Export the model to a LaTeX figure, press the "export" button.
 - To load in JSON files press the "load" button.
 - To clear the canvas, press the "clear” button.
+- To run locally download this repository and run "index.html" in a web browser.
+- To test the project download this repository and run "npm run tests" in the root of the project.
  
