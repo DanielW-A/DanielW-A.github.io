@@ -13,26 +13,17 @@ h1 {
 canvas {
 	display: block;
 	background: white;
-	/* border-radius: 20px; */
-	/* -moz-border-radius: 20px; */
-	/* margin: 10px auto; */
-    /* border: 3px solid #000000; */  /* if i want a border it needs to be drawn on the canvas*/
-    /* outline-width: 2px; */
-    /* min-height: 100%; */
 }
 
 .markovCanvasDiv{
     position:absolute;
     z-index: -1;
-    /* min-height: 1000px; */
-    /* border: 3px solid #73AD21; */
     margin: 0px;
 }
 
-.right {
+.right { /* used to float the information panel to the right of the screen */
     float: right;
     width: 20%;
-    /* border: 3px solid #73AD21; */
     padding: 10px;
     text-align: left;
 }
@@ -51,7 +42,6 @@ canvas {
   background: none;
   color: black;
   cursor: pointer;
-  /* padding: 18px; */
   width: 100%;
   border: none;
   text-align: start;
@@ -73,14 +63,6 @@ canvas {
   background-color: #aaa;
 }
 
-/* .topButton{
-  color:blanchedalmond;
-}
-
-.active, .topButton {
-  disab
-} */
-
 .panel {
   padding: 0 18px;
   background-color: white;
@@ -101,49 +83,43 @@ canvas {
 }
 
 .algorithms {
-    
     max-width: 94%;
     position: absolute;
-    /* bottom: 10%; */
     top: 72%;
-    /* padding: 5%; */
-    /* margin: 2%; */
     margin-left: 2%;
     margin-right: 2%;
     bottom :0px;
     overflow-y: auto;
     text-align: left;
 }
+
 #tableWrapper {
   position:relative;
 }
+
 #tableScroll {
   overflow:auto;  
   pointer-events: all;
 }
+
 #tableWrapper table {
   max-width:100%;
   border-collapse: collapse;
 }
+
 #tableWrapper table * {
   border: 1px solid#000000;
   background-color:rgba(200,200,200,0.2);
   white-space: nowrap;
 }
+
 #tableWrapper table th {
     background-color: rgba(80,80,80,0.2);;
 }
+
 #tableWrapper td th {
     width: 10%;
 }
-/* #tableWrapper table thead th {
-  position:absolute;   
-  top:-20px;
-  z-index:2;
-  height:20px;
-  width:35%;
-  border:1px solid red;
-} */
 
 .hoverInfo{
     pointer-events: all;
@@ -154,20 +130,9 @@ canvas {
     text-align: center;
 }
 
-.usable{
-    
+.usable{ 
   pointer-events: all;
 }
-/* 
-#algDiv{
-    transition: width 2s;
-    background: red;
-}
-
-
-#algDiv:hover{
-    width: 300px;
-} */
 
 #algDiv {
   max-width: 100%;
@@ -176,8 +141,6 @@ canvas {
   transition-delay: 0ms;
   width: min-content;
 }
-
-
 
 .algInput{
     text-align: left;
@@ -198,20 +161,25 @@ canvas {
   display: table;
   text-align: left;
 }
+
 #information p{
   display: table-row;
 }
+
 #information label{
   width: 30%;
   display: table-cell;
 }
+
 #information input{
   width: 70%;
   display: table-cell;
 }
+
 #init0{
   text-align: center;
 }
+
 #equ0{
   text-align: center;
 }

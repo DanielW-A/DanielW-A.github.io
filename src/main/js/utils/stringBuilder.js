@@ -47,10 +47,10 @@ const backwardDescription = [p("This is used to calculate the chances of the mod
 
 const backwardEquations = ["<div id=\"init0\">" + spanNH("init","\\(\\beta_T (j)\\)",1) + " =  1" + spanNH("equ","\\(, t = T , 1 <= j <= |S|)\\)",5) +"</div>",
         "<div id=\"equ0\">" + spanNH("equ","\\(\\beta_t (i)\\)",1) + " = " + spanNH("equ","\\((\\Sigma^{|S|}_{j=1}\\)",0) +spanNH("equ","\\(\\beta_{t+1} (j)\\)",2)+
-        spanNH("equ","\\(m_{i,j}\\)",3) + spanNH("equ","\\(e_j (o_t)\\)",4) + spanNH("equ","\\(, 1 <= t < T , 1 <= j <= |S|)\\)",5)+"</div>"];
+        spanNH("equ","\\(m_{i,j}\\)",3) + spanNH("equ","\\(e_j (o_t))\\)",4) + spanNH("equ","\\(, 1 <= t < T , 1 <= j <= |S|\\)",5)+"</div>"];
 
 const viterbiDesc = p("This is used to calculate the most likely sequence of  internal states the model took, this is the most important algorithm to solve the decoding problem and uses 2 variables. \\(\\delta\\) (defined as the most likely valid sequence of states that ends at the current state in the current timestep)" +
- "and \\(\\phi\\) (\\(\\phi \\) is used to cache the most likely previous state so the chain can be traced backwards to find the most likely sequence of states).")
+ "and \\(\\phi\\), (\\(\\phi \\) is used to cache the most likely previous state so the chain can be traced backwards to find the most likely sequence of states).")
 + p("\\(\\delta\\) and \\(\\phi\\) at the base case:")
 + "<div id=\"init0\">" + spanNH("init","\\(\\delta_1(i)\\)",1) + "=" + spanNH("init","\\(\\pi_i\\)",2) + spanNH("init", "\\(e_i(o_1)\\)",3) + "<br>"
 + spanNH("init","\\(\\psi_1(i)\\)",4) + "=" + spanNH("init", "\\(0\\)",5) + "</div>" 
@@ -58,7 +58,27 @@ const viterbiDesc = p("This is used to calculate the most likely sequence of  in
 + "<div id=\"equ0\">" + spanNH("equ","\\(\\delta_t(j)\\)",1) + " = \\(max_i\\)[" + spanNH("equ","\\(\\delta_{t-1}(i)\\)",2) + spanNH("equ","\\(m_{i,j}\\)",3) + "] " + spanNH("equ","\\(e_j(o_t)\\)",4) + "<br>"
 + spanNH("equ","\\(\\psi_t(i)\\)",5) + " = \\(argmax_i\\)[" + spanNH("equ","\\(\\delta_{t-1}(i)\\)",6) + spanNH("equ","\\(m_{i,j} \\)",7) + "] </div>"
 + p("When t > 1 then delta is the maximum of the previous values and the transition probability multiplied, multiplied by the chance that that state will emit the observed emission state.")
-+ p("After this is we trace back through the (\\(\\phi \\) s starting at the (\\(\\phi \\) with the highest corresponding (\\(\\delta\\) at time T.");
++ p("After this is we trace back through the \\(\\phi \\) s starting at the \\(\\phi \\) with the highest corresponding \\(\\delta\\) at time T.");
+
+const fbDesc = p("The forward-backward algorithm is one way of calculating the most likely sequence of internal states of a model give the observations. Although note that this may not produce a valid sequence of states (the state at time \\(t\\) may have a probability of 0 to transition to the state at time \\(t+1\\)).")
++ p("This algorithm has no base case and is based around the values cached by the forward and backward algorithms. It uses one new variable gamma(\\(\\gamma\\))")
++ "<div id=\"equ0\">" + spanNH("equ","\\( \\gamma_t(i) = \\frac{\\alpha_t(i)\\beta_t(i)}{ \\Sigma^{|S|}_{j=1} \\alpha_t(j) \\beta_t(j)}\\)",0) + "</div>"
++ p("The gamma(\\(\\gamma\\) ) at time t is equal to the product of corresponding alpha and beta. This value is then normalised by the sum of each alpha beta pair for all the other latent states, this means that all the gamma values at each timestep sums to 1.")
++ p("To calculate the most likely sequence of states simply take the state at each timestep with the heist probability.");
+
+const bwDesc = p("The Baum-Welch algorithm is the most complex algorithm and is used for training the model to fit the observed string better. This is done using the forward backward and one new variable Xi(\\(\\xi\\)).")
++ p("To start this algorithm it is advised to create a “best guess” model, this model should contain all the states and transitions > 0 wanted on the final model (it especially must already be possible to create the observed string from the model).")
++ p("It is run by first creating the alpha beta and gamma values (from the forward backward and forward-backward algorithms respectively) then calculating Xi as follows:")
++ "<div id=\"equ0\">" + spanNH("equ","\\(\\xi_t(i,j) = \\frac{\\alpha_t(i)m_{i,j}e_j(o_{t+1})\\beta_{t+1}(j)}{P(O|\\lambda)}\\)",0) + "</div>"
++ p("Xi represents the chances of being in state i and transitioning to state j in the subsequent timestep. Note that \\(P(O|\\lambda)\\) is a normalising term defined as:")
++ "<div id=\"equ0\">" + spanNH("equ","\\(P(O|\\lambda) = \\Sigma^{|S|}_{i=1} \\Sigma^{|S|}_{j=1} \\alpha_t(i)m_{i,j}e_j(o_{t+1})\\beta_{t+1}(j)\\)",0) + "</div>"
++ p("With all these variables it is possible to recalculate the initial, transition and emission probabilities of the tool with the equations to follow:")
++ "<div id=\"equ0\">" + spanNH("equ","\\(\\pi'_i = \\gamma_1(i)\\)",0) + "</div>"
++ p("The number of times in state \\(S_i\\) when \\(t=1\\).")
++ "<div id=\"equ0\">" + spanNH("equ","\\(m'_{i,j} = \\frac{ \\Sigma^{T-1}_{t=1} \\xi_t(i,j)}{ \\Sigma^{T-1}_{t} \\gamma_t(i)}\\)",0) + "</div>"
++ p("The number of transitions from \\(S_i\\) to \\(S_j\\) normalised by the number of transitions from \\(S_i\\) to any other state.")
++ "<div id=\"equ0\">" + spanNH("equ","\\(e'_j(k) = \\frac{ \\Sigma^{T-1}_{t=1} \\gamma_t(j)_{s.t. o_t=k}}{ \\Sigma^{T-1}_{t=1}\\gamma_t(j)}\\)",0) + "</div>"
++ p("The number of times in state \\(S_j\\) and observing symbol \\(k\\) normalised by the number of times in state \\(S_j\\) and observing any symbol.");
 
 
 ///////////////////////////////////////////////////////
