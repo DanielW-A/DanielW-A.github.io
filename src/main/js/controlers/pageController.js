@@ -30,6 +30,7 @@ function toggleAccordion(component){
     } catch (err){
         // will be a NPE 
         console.log(err)
+        console.log("error handled")
     }
     
 }
@@ -840,6 +841,10 @@ function setAlgDescription(type){
         str += backwardDescription[2];
     } else if (type == model.AlgType.VITERBI){
         str = viterbiDesc;
+    } else if (type == model.AlgType.FORWARDBACKWARD){
+        str = fbDesc;
+    } else if (type == model.AlgType.BAUMWELCH){
+        str = bwDesc;
     }
     info.innerHTML = str;
 
