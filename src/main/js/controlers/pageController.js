@@ -773,6 +773,9 @@ function tableCellMouseOver(e,comp,j,i){
         } else {
             str = viterbiInduction(t,i,s,output,D);
         }
+    } else {
+        panel.style.display = "none";
+        return;
     }
     
 
